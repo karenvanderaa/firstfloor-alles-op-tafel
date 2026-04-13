@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
             'api-key': BREVO_API_KEY,
           },
           body: JSON.stringify({
-            sender: { name: 'Ronde Tafels by First Floor', email: 'karen@firstfloortalent.be' },
+            sender: { name: 'Ronde Tafels by First Floor', email: 'karen.vanderaa@firstfloorcareers.be' },
             to: [{ email, name: voornaam }],
             subject: 'Bedankt voor je aanvraag – Ronde Tafels',
             htmlContent: emailHtml,
