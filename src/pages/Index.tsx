@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import RondeTafelCard from "@/components/RondeTafelCard";
+import PhotoSlider from "@/components/PhotoSlider";
 import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
 
