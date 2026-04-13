@@ -111,6 +111,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
           listIds: [61],
           updateEnabled: true,
           ext_id: listTag,
+          sendConfirmation: true,
         },
       });
 
