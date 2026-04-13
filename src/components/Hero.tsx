@@ -7,7 +7,7 @@ const Hero = () => (
         <img
           src={heroImage}
           alt="Een intiem ronde tafel gesprek bij First Floor"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-bottom"
         />
       </div>
       <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em] mb-6">
