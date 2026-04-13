@@ -49,7 +49,7 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
         Meld je aan voor deze tafel →
       </Button>
 
-      <img src={rondeTafelsLogo} alt="Ronde Tafels" className="absolute bottom-6 right-6 w-24 h-24 opacity-[0.12]" aria-hidden="true" />
+      <img src={rondeTafelsLogo} alt="Ronde Tafels" className="absolute top-6 right-6 w-14 h-14 rounded-full shadow-md" />
     </div>
   );
 };
