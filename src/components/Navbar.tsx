@@ -6,7 +6,7 @@ const Navbar = () => (
       {/* Logo + Ronde Tafels */}
       <div className="flex items-center gap-3">
         <img src={logoFirstFloor} alt="First Floor" className="h-8" />
-        <span className="text-primary font-heading font-semibold text-sm tracking-wide">Ronde Tafels</span>
+        <span className="text-primary font-heading font-semibold text-sm tracking-wide">Alles op tafel</span>
       </div>
 
       {/* Navigation */}
