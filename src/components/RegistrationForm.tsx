@@ -82,7 +82,7 @@ const RegistrationForm = ({ tafel, defaultSessie }: RegistrationFormProps) => {
       <Field label="E-mailadres" name="email" type="email" value={form.email} onChange={handleChange} required />
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-body font-medium text-foreground">Voorkeur sessie</legend>
+        <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment <span className="text-destructive">*</span></legend>
         <div className="flex gap-4">
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input
@@ -93,7 +93,7 @@ const RegistrationForm = ({ tafel, defaultSessie }: RegistrationFormProps) => {
               onChange={handleChange}
               className="accent-primary"
             />
-            Ochtendsessie
+            Ochtendsessie (8u - 10u)
           </label>
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input
@@ -104,7 +104,7 @@ const RegistrationForm = ({ tafel, defaultSessie }: RegistrationFormProps) => {
               onChange={handleChange}
               className="accent-primary"
             />
-            Avondsessie
+            Avondsessie (16u - 18u)
           </label>
         </div>
       </fieldset>
