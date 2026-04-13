@@ -86,6 +86,8 @@ Deno.serve(async (req) => {
     }
 
     // 1. Create/update contact
+    const enrichedAttributes = { ...(attributes || {}), OUTBOUND_CAMPAIGN: 'Ronde Tafel LP' }
+
     const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
       headers: {
@@ -94,7 +96,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         email,
-        attributes: { ...(attributes || {}), OUTBOUND_CAMPAIGN: 'Ronde Tafel LP' },
+        attributes: enrichedAttributes,
         listIds: listIds || [],
         updateEnabled: updateEnabled ?? true,
         ext_id: ext_id || undefined,
@@ -122,7 +124,7 @@ Deno.serve(async (req) => {
           'api-key': BREVO_API_KEY,
         },
         body: JSON.stringify({
-          attributes: { ...(attributes || {}), OUTBOUND_CAMPAIGN: 'Ronde Tafel LP' },
+          attributes: enrichedAttributes,
           listIds: listIds || [],
         }),
       })
@@ -134,22 +136,36 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2. Add "RondeTafel" tag to contact
+    // 2. Add "RondeTafel" tag via Brevo's manage process endpoint
     try {
-      const tagResponse = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'api-key': BREVO_API_KEY,
-        },
-        body: JSON.stringify({
-          tags: ['RondeTafel'],
-        }),
+      // First, get the contact to retrieve their ID
+      const getContactRes = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: { 'api-key': BREVO_API_KEY },
       })
-      if (!tagResponse.ok && tagResponse.status !== 204) {
-        console.error(`Brevo tag API error [${tagResponse.status}]: ${await tagResponse.text()}`)
+      if (getContactRes.ok) {
+        const contactInfo = await getContactRes.json()
+        // Use PUT to update contact with tags (Brevo expects tags as array of strings on contact update)
+        // Merge existing tags with new tag
+        const existingTags: string[] = contactInfo.tags || []
+        if (!existingTags.includes('RondeTafel')) {
+          existingTags.push('RondeTafel')
+        }
+        const tagUpdateRes = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': BREVO_API_KEY,
+          },
+          body: JSON.stringify({ tags: existingTags }),
+        })
+        if (!tagUpdateRes.ok && tagUpdateRes.status !== 204) {
+          console.error(`Brevo tag update error [${tagUpdateRes.status}]: ${await tagUpdateRes.text()}`)
+        } else {
+          console.log('Tag RondeTafel added successfully')
+        }
       } else {
-        console.log('Tag RondeTafel added successfully')
+        console.error(`Could not fetch contact for tagging: ${getContactRes.status}`)
       }
     } catch (tagErr) {
       console.error('Failed to add tag:', tagErr)
