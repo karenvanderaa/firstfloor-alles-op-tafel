@@ -18,7 +18,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             Aanmelden
           </p>
           <div className="flex items-center gap-3 mb-4">
-            <img src={rondeTafelsLogo} alt="" className="w-8 h-8" aria-hidden="true" />
+            <img src={rondeTafelsLogo} alt="" className="w-12 h-12" aria-hidden="true" />
             <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
               Erbij zijn?
             </h2>

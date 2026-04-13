@@ -7,8 +7,8 @@
       .logo-tag { font-family: 'Sora', sans-serif; font-weight: 400; font-size: 18px; fill: #315eff; letter-spacing: 1px; }
     </style>
   </defs>
-  <circle cx="200" cy="200" r="190" fill="#ffffff"/>
+  <circle cx="200" cy="200" r="190" fill="#f9b8c4"/>
   <text x="200" y="188" text-anchor="middle" class="logo-title">RONDE TAFELS</text>
-  <rect x="148" y="202" width="104" height="2" rx="1" fill="#f9b8c4" opacity="0.9"/>
+  <rect x="148" y="202" width="104" height="2" rx="1" fill="#315eff" opacity="0.9"/>
   <text x="200" y="234" text-anchor="middle" class="logo-tag">Alles op tafel.</text>
 </svg>
