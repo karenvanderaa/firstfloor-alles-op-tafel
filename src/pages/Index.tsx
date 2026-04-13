@@ -46,7 +46,7 @@ const Index = () => {
         <div className="container max-w-5xl mx-auto px-6 space-y-10">
           <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em]">Komende edities</p>
           <RondeTafelCard
-            editieLabel="Editie 2 | Mei 2026"
+            editieLabel="Editie | Mei 2026"
             title="AI in HR: wat betekent dat nu écht?"
             body={tafel1Body}
             borderColor="#315eff"
@@ -54,7 +54,7 @@ const Index = () => {
             onSelectTheme={handleSelectTheme}
           />
           <RondeTafelCard
-            editieLabel="Editie 3 | Mei 2026"
+            editieLabel="Editie | Mei 2026"
             title="Verandering staat op de agenda. Draagvlak niet."
             body={tafel2Body}
             borderColor="#04c9ff"
