@@ -104,11 +104,16 @@ Deno.serve(async (req) => {
     const contactData = await contactResponse.text()
 
     if (!contactResponse.ok && contactResponse.status !== 204) {
-      console.error(`Brevo contact API error [${contactResponse.status}]: ${contactData}`)
-      return new Response(
-        JSON.stringify({ error: 'Failed to create contact', details: contactData }),
-        { status: contactResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      // Duplicate contact is OK — continue to send confirmation email
+      const isDuplicate = contactData.includes('duplicate_parameter')
+      if (!isDuplicate) {
+        console.error(`Brevo contact API error [${contactResponse.status}]: ${contactData}`)
+        return new Response(
+          JSON.stringify({ error: 'Failed to create contact', details: contactData }),
+          { status: contactResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+      console.log('Contact already exists, proceeding with confirmation email')
     }
 
     // 2. Send confirmation email if requested
