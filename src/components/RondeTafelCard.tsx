@@ -41,7 +41,7 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
       <div className="bg-muted rounded-md p-5 my-6 space-y-2 text-sm text-foreground">
         <p>📅 Datum: <span className="text-muted-foreground">[DATUM VOLGT]</span></p>
         <p>📍 Locatie: <span className="text-muted-foreground">[LOCATIE VOLGT]</span></p>
-        <p>🕐 Duur: 2 uur</p>
+        <p>🕐 Ochtendsessie: 8u - 10u | Avondsessie: 16u - 18u</p>
         <p>👥 Max. 6 deelnemers</p>
       </div>
 
