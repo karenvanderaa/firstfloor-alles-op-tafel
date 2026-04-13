@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-
+import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 interface RondeTafelCardProps {
   editieLabel: string;
   title: string;
