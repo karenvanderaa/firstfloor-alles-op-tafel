@@ -16,11 +16,11 @@ const Hero = () => (
       <h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground leading-tight max-w-3xl mb-6">
         Een open gesprek met de mensen die er écht toe doen.
       </h1>
-      <p className="text-foreground/80 text-lg md:text-xl leading-relaxed max-w-2xl mb-10">
-        Twee keer per jaar brengt First Floor een kleine groep bedrijfsleiders en
-        HR-eindverantwoordelijken samen. Geen grote zaal. Geen PowerPoint. Twee uur lang
-        een eerlijk, scherp gesprek over wat vandaag écht speelt in organisaties.
-      </p>
+      <div className="text-foreground/80 text-lg md:text-xl leading-relaxed mb-10 space-y-4">
+        <p>De beste gesprekken vinden niet plaats in grote zalen. Ze vinden plaats aan een tafel, met mensen die begrijpen wat jij meemaakt — of net de scherpe buitenstaandersblik meebrengen die je intern mist.</p>
+        <p>Wij geloven in de kracht van een klein, goed samengesteld gezelschap. Geen netwerkevent. Geen kennissessie met slides. Twee uur lang een open, eerlijk gesprek met maximaal zes professionals — zorgvuldig geselecteerd op complementariteit en betrokkenheid.</p>
+        <p className="font-semibold text-foreground">Dat is onze Ronde Tafel.</p>
+      </div>
       <div className="flex flex-wrap gap-4">
         <Pill icon="🕐" text="2 uur" />
         <Pill icon="👥" text="Max. 6 deelnemers" />
