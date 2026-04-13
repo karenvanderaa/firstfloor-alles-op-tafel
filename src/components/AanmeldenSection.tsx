@@ -25,7 +25,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
               Erbij zijn?
             </h2>
           </div>
-          <p className="text-foreground/80 font-body leading-relaxed max-w-3xl mb-6">
+          <p className="text-foreground/80 font-body leading-relaxed mb-6">
             We werken met een kleine, zorgvuldig samengestelde groep. Geen open inschrijving: we kijken naar je rol, je sector en de relevantie van het thema voor jouw organisatie. Zo blijft het gesprek scherp en waardevol.
           </p>
           <div className="flex flex-wrap gap-3">
