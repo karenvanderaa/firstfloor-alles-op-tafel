@@ -104,7 +104,6 @@ Deno.serve(async (req) => {
     const contactData = await contactResponse.text()
 
     if (!contactResponse.ok && contactResponse.status !== 204) {
-      // Duplicate contact is OK — continue to send confirmation email
       const isDuplicate = contactData.includes('duplicate_parameter')
       if (!isDuplicate) {
         console.error(`Brevo contact API error [${contactResponse.status}]: ${contactData}`)
@@ -113,7 +112,26 @@ Deno.serve(async (req) => {
           { status: contactResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-      console.log('Contact already exists, proceeding with confirmation email')
+
+      // Contact exists — update attributes and add to list via PUT
+      console.log('Contact already exists, updating via PUT')
+      const updateResponse = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': BREVO_API_KEY,
+        },
+        body: JSON.stringify({
+          attributes: attributes || {},
+          listIds: listIds || [],
+        }),
+      })
+      const updateData = await updateResponse.text()
+      if (!updateResponse.ok && updateResponse.status !== 204) {
+        console.error(`Brevo update API error [${updateResponse.status}]: ${updateData}`)
+      } else {
+        console.log('Contact updated successfully')
+      }
     }
 
     // 2. Send confirmation email if requested
