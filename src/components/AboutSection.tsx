@@ -1,5 +1,5 @@
 import aboutPhoto from "@/assets/photo-about.jpg";
-import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
+import rondeTafelsLogoWhite from "@/assets/ronde-tafels-logo-white.svg";
 
 const AboutSection = () => (
   <section id="over" className="bg-primary py-12 md:py-16">
@@ -7,7 +7,7 @@ const AboutSection = () => (
       <div className="flex flex-col md:flex-row gap-10 items-center">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-6">
-            <img src={rondeTafelsLogo} alt="" className="w-12 h-12 rounded-full shadow-lg" aria-hidden="true" />
+            <img src={rondeTafelsLogoWhite} alt="" className="w-16 h-16 rounded-full shadow-lg" aria-hidden="true" />
             <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground">
               Over <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a>
             </h2>
