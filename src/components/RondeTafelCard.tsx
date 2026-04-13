@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 
 interface RondeTafelCardProps {
   editieLabel: string;
@@ -20,7 +21,7 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
 
   return (
     <div
-      className="bg-card rounded-lg p-8 md:p-10 shadow-sm"
+      className="bg-card rounded-lg p-8 md:p-10 shadow-sm relative overflow-hidden"
       style={{ borderLeft: `4px solid ${borderColor}` }}
     >
       <div className="flex items-center gap-3 mb-3">
@@ -48,6 +49,8 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
       <Button size="lg" onClick={handleClick}>
         Meld je aan voor deze tafel →
       </Button>
+
+      <img src={rondeTafelsLogo} alt="" className="absolute bottom-4 right-4 w-16 h-16 opacity-[0.06]" aria-hidden="true" />
     </div>
   );
 };
