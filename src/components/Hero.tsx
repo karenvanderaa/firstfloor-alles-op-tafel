@@ -26,8 +26,10 @@ const Hero = () => (
         <p>De beste gesprekken vinden niet plaats in grote zalen. Ze vinden plaats aan een tafel, met mensen die begrijpen wat jij meemaakt, of net de scherpe buitenstaandersblik meebrengen die je intern mist.</p>
         <p>Wij geloven in de kracht van een klein, goed samengesteld gezelschap. Geen netwerkevent. Geen kennissessie met slides. Twee uur lang een open, eerlijk gesprek met maximaal zes professionals, zorgvuldig geselecteerd op complementariteit en betrokkenheid.</p>
         <p className="font-semibold text-foreground">Dat is onze Ronde Tafel.</p>
+        <p className="text-primary font-semibold text-foreground">Nieuw vanaf 2026: nog exclusiever, nog intiemer. Bewust gekozen voor maximaal zes deelnemers per tafel.</p>
       </div>
       <div className="flex flex-wrap gap-4">
+        <Pill icon="✨" text="Nieuw formaat" highlight />
         <Pill icon="🕐" text="2 uur" />
         <Pill icon="👥" text="Max. 6 deelnemers" />
         <Pill icon="✅" text="Deelname op uitnodiging" />
@@ -36,8 +38,8 @@ const Hero = () => (
   </section>
 );
 
-const Pill = ({ icon, text }: { icon: string; text: string }) => (
-  <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full text-sm font-body text-foreground shadow-sm border border-border">
+const Pill = ({ icon, text, highlight }: { icon: string; text: string; highlight?: boolean }) => (
+  <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-body shadow-sm border ${highlight ? 'bg-accent-pink/10 border-accent-pink text-accent-pink font-semibold' : 'bg-card border-border text-foreground'}`}>
     <span>{icon}</span>
     <span>{text}</span>
   </div>

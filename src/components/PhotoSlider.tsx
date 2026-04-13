@@ -21,7 +21,10 @@ const PhotoSlider = () => (
   <section className="py-12 bg-background overflow-hidden">
     <div className="container max-w-5xl mx-auto px-6 mb-6">
       <p className="text-[#315eff] font-heading text-xs font-semibold uppercase tracking-[0.2em]">
-        Zo gaat het eraan toe
+        Sfeerbeelden uit eerdere edities
+      </p>
+      <p className="text-muted-foreground font-body text-sm mt-2">
+        Vanaf editie 2 kiezen we bewust voor kleinere tafels. Intiemer, scherper, persoonlijker.
       </p>
     </div>
     <div className="relative">

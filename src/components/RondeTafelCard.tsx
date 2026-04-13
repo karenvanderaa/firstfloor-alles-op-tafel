@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface RondeTafelCardProps {
   editieLabel: string;
@@ -22,9 +23,14 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
       className="bg-card rounded-lg p-8 md:p-10 shadow-sm"
       style={{ borderLeft: `4px solid ${borderColor}` }}
     >
-      <p className="text-xs font-heading font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-3">
-        {editieLabel}
-      </p>
+      <div className="flex items-center gap-3 mb-3">
+        <p className="text-xs font-heading font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+          {editieLabel}
+        </p>
+        <Badge className="bg-accent-pink/10 text-accent-pink border-accent-pink text-[10px] uppercase tracking-wider">
+          ✨ Nieuw: intiem formaat
+        </Badge>
+      </div>
       <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-5">{title}</h2>
       {body.map((p, i) => (
         <p key={i} className="text-foreground/80 font-body leading-relaxed mb-4">
