@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import RegistrationForm from "./RegistrationForm";
 
 interface RondeTafelCardProps {
   editieLabel: string;
