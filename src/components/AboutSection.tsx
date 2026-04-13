@@ -1,5 +1,5 @@
 import aboutPhoto from "@/assets/photo-about.jpg";
-import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
+import rondeTafelsLogoWhite from "@/assets/ronde-tafels-logo-white.svg";
 
 const AboutSection = () => (
   <section id="over" className="bg-primary py-12 md:py-16">
