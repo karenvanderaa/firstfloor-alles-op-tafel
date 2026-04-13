@@ -19,7 +19,7 @@ const Hero = () => (
       <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em] mb-6">
         Ronde Tafels | Mei 2026
       </p>
-      <h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground leading-tight max-w-3xl mb-6">
+      <h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground leading-tight max-w-4xl mb-6">
         Een open gesprek met de mensen die er écht toe doen.
       </h1>
       <div className="text-foreground/80 text-lg md:text-xl leading-relaxed mb-10 space-y-4">
