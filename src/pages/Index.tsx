@@ -50,6 +50,7 @@ const Index = () => (
       </div>
     </section>
 
+    <PhotoSlider />
     <AboutSection />
     <Footer />
   </div>
