@@ -164,11 +164,11 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         <div className="flex gap-4">
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="radio" name="moment" value="Ochtendsessie" checked={form.moment === "Ochtendsessie"} onChange={handleChange} className="accent-[#315eff]" required />
-            Ochtendsessie
+             Ochtendsessie (8u - 10u)
           </label>
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="radio" name="moment" value="Avondsessie" checked={form.moment === "Avondsessie"} onChange={handleChange} className="accent-[#315eff]" />
-            Avondsessie
+             Avondsessie (16u - 18u)
           </label>
         </div>
       </fieldset>
