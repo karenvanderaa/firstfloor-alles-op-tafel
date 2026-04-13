@@ -6,9 +6,17 @@ interface RondeTafelCardProps {
   body: string[];
   borderColor: string;
   tafelName: string;
+  onSelectTheme?: (theme: string) => void;
 }
 
-const RondeTafelCard = ({ editieLabel, title, body, borderColor, tafelName }: RondeTafelCardProps) => {
+const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }: RondeTafelCardProps) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onSelectTheme?.(title);
+    const el = document.getElementById("aanmelden");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div
       className="bg-card rounded-lg p-8 md:p-10 shadow-sm"
@@ -24,7 +32,6 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, tafelName }: Ro
         </p>
       ))}
 
-      {/* Practical info */}
       <div className="bg-muted rounded-md p-5 my-6 space-y-2 text-sm text-foreground">
         <p>📅 Datum: <span className="text-muted-foreground">[DATUM VOLGT]</span></p>
         <p>📍 Locatie: <span className="text-muted-foreground">[LOCATIE VOLGT]</span></p>
@@ -32,17 +39,9 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, tafelName }: Ro
         <p>👥 Max. 6 deelnemers</p>
       </div>
 
-      <a
-        href="#aanmelden"
-        onClick={() => {
-          // Dispatch custom event so the form can pick up the theme
-          window.dispatchEvent(new CustomEvent("select-theme", { detail: title }));
-        }}
-      >
-        <Button size="lg" asChild>
-          <span>Meld je aan voor deze tafel →</span>
-        </Button>
-      </a>
+      <Button size="lg" onClick={handleClick}>
+        Meld je aan voor deze tafel →
+      </Button>
     </div>
   );
 };

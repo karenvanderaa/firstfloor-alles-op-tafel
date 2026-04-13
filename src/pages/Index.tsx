@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import RondeTafelCard from "@/components/RondeTafelCard";
@@ -7,6 +7,8 @@ import PhotoSlider from "@/components/PhotoSlider";
 import AboutSection from "@/components/AboutSection";
 import AanmeldenSection from "@/components/AanmeldenSection";
 import Footer from "@/components/Footer";
+
+type Theme = "AI in HR: wat betekent dat nu écht?" | "Verandering staat op de agenda. Draagvlak niet.";
 
 const tafel1Body = [
   "AI zit plots overal in het gesprek. Maar in veel organisaties blijft de vraag dezelfde: wat verandert er nu echt, en wat niet?",
@@ -21,21 +23,14 @@ const tafel2Body = [
 ];
 
 const Index = () => {
-  const [preselectedTheme, setPreselectedTheme] = useState<
-    "AI in HR: wat betekent dat nu écht?" | "Verandering staat op de agenda. Draagvlak niet." | undefined
-  >(undefined);
+  const [preselectedTheme, setPreselectedTheme] = useState<Theme | undefined>(undefined);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail?.includes("AI")) {
-        setPreselectedTheme("AI in HR: wat betekent dat nu écht?");
-      } else {
-        setPreselectedTheme("Verandering staat op de agenda. Draagvlak niet.");
-      }
-    };
-    window.addEventListener("select-theme", handler);
-    return () => window.removeEventListener("select-theme", handler);
+  const handleSelectTheme = useCallback((title: string) => {
+    if (title.includes("AI")) {
+      setPreselectedTheme("AI in HR: wat betekent dat nu écht?");
+    } else {
+      setPreselectedTheme("Verandering staat op de agenda. Draagvlak niet.");
+    }
   }, []);
 
   return (
@@ -43,7 +38,6 @@ const Index = () => {
       <Navbar />
       <Hero />
 
-      {/* Geometric accent divider */}
       <div className="flex justify-center gap-3 py-4 bg-background">
         <div className="w-12 h-1 rounded-full bg-primary" />
         <div className="w-12 h-1 rounded-full bg-accent-cyan" />
@@ -51,7 +45,6 @@ const Index = () => {
         <div className="w-12 h-1 rounded-full bg-accent-yellow" />
       </div>
 
-      {/* Ronde Tafels */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container max-w-5xl mx-auto px-6 space-y-10">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Komende edities</h2>
@@ -61,6 +54,7 @@ const Index = () => {
             body={tafel1Body}
             borderColor="#315eff"
             tafelName="AI in HR"
+            onSelectTheme={handleSelectTheme}
           />
           <RondeTafelCard
             editieLabel="Editie 3 | Mei 2026"
@@ -68,13 +62,14 @@ const Index = () => {
             body={tafel2Body}
             borderColor="#04c9ff"
             tafelName="Verandering & Draagvlak"
+            onSelectTheme={handleSelectTheme}
           />
         </div>
       </section>
 
       <FacilitatorsSection />
       <PhotoSlider />
-      <AanmeldenSection preselectedTheme={preselectedTheme} />
+      <AanmeldenSection key={preselectedTheme || "default"} preselectedTheme={preselectedTheme} />
       <AboutSection />
       <Footer />
     </div>
