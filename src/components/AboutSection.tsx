@@ -17,9 +17,6 @@ const AboutSection = () => (
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed mb-4">
             We werken als change-partner van vooruitstrevende bedrijven binnen het domein van people & organisation. Dat betekent: diepgaand analyseren, meeschrijven aan de toekomst en pas stoppen wanneer alles geïntegreerd is in de dagelijkse werking. Zooming out om de juiste oplossing voor de juiste uitdagingen te bouwen.
           </p>
-          <p className="text-primary-foreground/90 font-body text-lg leading-relaxed">
-            Vanaf 2026 kiezen we bewust voor een nog exclusiever formaat: maximaal zes deelnemers per tafel. Omdat de beste inzichten ontstaan wanneer iedereen écht aan het woord komt.
-          </p>
         </div>
         <div className="w-full md:w-[320px] flex-shrink-0 rounded-xl overflow-hidden">
           <img
