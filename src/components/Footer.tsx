@@ -1,8 +1,11 @@
 const Footer = () => (
   <footer className="bg-foreground py-10">
     <div className="container max-w-5xl mx-auto px-6 text-center">
-      <p className="text-sm text-background/70 font-body">
-        © 2026 First Floor
+      <p className="text-sm text-background/70 font-body mb-2">
+        © 2026  — First Floor
+      </p>
+      <p className="text-sm text-background/50 font-body italic mb-4">
+        Schuren doet blinken. Als er verbinding is.
       </p>
       <a
         href="https://www.firstfloor.be"

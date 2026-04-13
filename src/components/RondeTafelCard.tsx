@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import RegistrationForm from "./RegistrationForm";
 
 interface RondeTafelCardProps {
   editieLabel: string;
@@ -11,9 +9,6 @@ interface RondeTafelCardProps {
 }
 
 const RondeTafelCard = ({ editieLabel, title, body, borderColor, tafelName }: RondeTafelCardProps) => {
-  const [sessie, setSessie] = useState<"ochtend" | "avond">("ochtend");
-  const [showForm, setShowForm] = useState(false);
-
   return (
     <div
       className="bg-card rounded-lg p-8 md:p-10 shadow-sm"
@@ -37,37 +32,17 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, tafelName }: Ro
         <p>👥 Max. 6 deelnemers</p>
       </div>
 
-      {/* Session toggle */}
-      <div className="flex gap-2 mb-6">
-        <button
-          onClick={() => setSessie("ochtend")}
-          className={`px-4 py-2 rounded-full text-sm font-body transition-colors ${
-            sessie === "ochtend"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-muted/80"
-          }`}
-        >
-          Ochtendsessie
-        </button>
-        <button
-          onClick={() => setSessie("avond")}
-          className={`px-4 py-2 rounded-full text-sm font-body transition-colors ${
-            sessie === "avond"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-foreground hover:bg-muted/80"
-          }`}
-        >
-          Avondsessie
-        </button>
-      </div>
-
-      {!showForm ? (
-        <Button onClick={() => setShowForm(true)} size="lg">
-          Schrijf je in voor deze tafel →
+      <a
+        href="#aanmelden"
+        onClick={() => {
+          // Dispatch custom event so the form can pick up the theme
+          window.dispatchEvent(new CustomEvent("select-theme", { detail: title }));
+        }}
+      >
+        <Button size="lg" asChild>
+          <span>Meld je aan voor deze tafel →</span>
         </Button>
-      ) : (
-        <RegistrationForm tafel={tafelName} defaultSessie={sessie} />
-      )}
+      </a>
     </div>
   );
 };

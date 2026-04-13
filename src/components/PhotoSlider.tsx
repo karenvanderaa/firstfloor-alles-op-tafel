@@ -19,6 +19,11 @@ const allPhotos = [...photos, ...photos];
 
 const PhotoSlider = () => (
   <section className="py-12 bg-background overflow-hidden">
+    <div className="container max-w-5xl mx-auto px-6 mb-6">
+      <p className="text-[#315eff] font-heading text-xs font-semibold uppercase tracking-[0.2em]">
+        Zo gaat het eraan toe
+      </p>
+    </div>
     <div className="relative">
       <div className="flex gap-4 animate-marquee">
         {allPhotos.map((photo, i) => (
