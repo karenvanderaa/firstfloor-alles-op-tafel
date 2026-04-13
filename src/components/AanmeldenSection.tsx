@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 type Theme = "AI in HR: wat betekent dat nu écht?" | "Verandering staat op de agenda. Draagvlak niet.";
 
@@ -62,6 +64,7 @@ const InfoPill = ({ text }: { text: string }) => (
 
 /* ── 3C: Main registration form ── */
 const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }) => {
+  const { toast } = useToast();
   const [form, setForm] = useState({
     voornaam: "",
     bedrijf: "",
@@ -92,38 +95,42 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
     const listTag = form.thema.includes("AI") ? "ronde-tafel-ai-hr" : "ronde-tafel-verandering";
 
     try {
-      const apiKey = import.meta.env.VITE_BREVO_API_KEY;
-      if (apiKey) {
-        await fetch("https://api.brevo.com/v3/contacts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "api-key": apiKey,
+      const { data, error } = await supabase.functions.invoke("brevo-contact", {
+        body: {
+          email: form.email,
+          attributes: {
+            FIRSTNAME: form.voornaam.split(" ")[0],
+            LASTNAME: form.voornaam.split(" ").slice(1).join(" "),
+            COMPANY: form.bedrijf,
+            FUNCTION: form.functie,
+            PHONE: form.telefoon,
+            SESSIE: form.moment,
+            TAFEL: form.thema,
+            TOELICHTING: form.toelichting,
           },
-          body: JSON.stringify({
-            email: form.email,
-            attributes: {
-              FIRSTNAME: form.voornaam.split(" ")[0],
-              LASTNAME: form.voornaam.split(" ").slice(1).join(" "),
-              COMPANY: form.bedrijf,
-              FUNCTION: form.functie,
-              PHONE: form.telefoon,
-              SESSIE: form.moment,
-              TAFEL: form.thema,
-              TOELICHTING: form.toelichting,
-            },
-            listIds: [61],
-            updateEnabled: true,
-            ext_id: listTag,
-          }),
-        });
-      }
-    } catch {
-      // silently handle
-    }
+          listIds: [61],
+          updateEnabled: true,
+          ext_id: listTag,
+        },
+      });
 
-    setLoading(false);
-    setSubmitted(true);
+      if (error) throw error;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Registration error:", err);
+      toast({
+        title: "Er ging iets mis",
+        description: "Je aanvraag kon niet verzonden worden. Probeer het later opnieuw of neem contact op.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -238,6 +245,7 @@ const Field = ({
 
 /* ── 3D: Keep me posted ── */
 const KeepMePosted = () => {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ naam: "", email: "" });
   const [submitted, setSubmitted] = useState(false);
@@ -252,29 +260,36 @@ const KeepMePosted = () => {
     setLoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_BREVO_API_KEY;
-      if (apiKey) {
-        await fetch("https://api.brevo.com/v3/contacts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "api-key": apiKey },
-          body: JSON.stringify({
-            email: form.email,
-            attributes: {
-              FIRSTNAME: form.naam.split(" ")[0],
-              LASTNAME: form.naam.split(" ").slice(1).join(" "),
-            },
-            listIds: [60],
-            updateEnabled: true,
-            ext_id: "ronde-tafel-updates",
-          }),
-        });
-      }
-    } catch {
-      // silently handle
-    }
+      const { data, error } = await supabase.functions.invoke("brevo-contact", {
+        body: {
+          email: form.email,
+          attributes: {
+            FIRSTNAME: form.naam.split(" ")[0],
+            LASTNAME: form.naam.split(" ").slice(1).join(" "),
+          },
+          listIds: [60],
+          updateEnabled: true,
+          ext_id: "ronde-tafel-updates",
+        },
+      });
 
-    setLoading(false);
-    setSubmitted(true);
+      if (error) throw error;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Keep me posted error:", err);
+      toast({
+        title: "Er ging iets mis",
+        description: "Je aanmelding kon niet verzonden worden. Probeer het later opnieuw.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
