@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import RondeTafelCard from "@/components/RondeTafelCard";
+import FacilitatorsSection from "@/components/FacilitatorsSection";
 import PhotoSlider from "@/components/PhotoSlider";
 import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
@@ -51,6 +52,7 @@ const Index = () => (
       </div>
     </section>
 
+    <FacilitatorsSection />
     <PhotoSlider />
     <AboutSection />
     <Footer />
