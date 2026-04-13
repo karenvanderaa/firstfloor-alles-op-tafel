@@ -38,11 +38,8 @@ const Index = () => {
       <Navbar />
       <Hero />
 
-      <div className="flex justify-center gap-3 py-3 bg-background">
-        <div className="w-12 h-1 rounded-full bg-primary" />
-        <div className="w-12 h-1 rounded-full bg-accent-cyan" />
-        <div className="w-12 h-1 rounded-full bg-accent-pink" />
-        <div className="w-12 h-1 rounded-full bg-accent-yellow" />
+      <div className="flex justify-center py-4 bg-background">
+        <div className="w-24 h-[2px] rounded-full bg-accent-pink" />
       </div>
 
       <section id="edities" className="py-12 md:py-16 bg-background">

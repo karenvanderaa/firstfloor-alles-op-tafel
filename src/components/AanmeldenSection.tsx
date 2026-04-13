@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 import { Button } from "@/components/ui/button";
 
 type Theme = "AI in HR: wat betekent dat nu écht?" | "Verandering staat op de agenda. Draagvlak niet.";
@@ -16,9 +17,12 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
           <p className="text-[#315eff] font-heading text-xs font-semibold uppercase tracking-[0.2em] mb-3">
             Aanmelden
           </p>
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-4">
-            Erbij zijn?
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <img src={rondeTafelsLogo} alt="" className="w-8 h-8" aria-hidden="true" />
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+              Erbij zijn?
+            </h2>
+          </div>
           <p className="text-foreground/80 font-body leading-relaxed max-w-3xl mb-6">
             We werken met een kleine, zorgvuldig samengestelde groep. Geen open inschrijving: we kijken naar je rol, je sector en de relevantie van het thema voor jouw organisatie. Zo blijft het gesprek scherp en waardevol.
           </p>

@@ -1,13 +1,17 @@
 import aboutPhoto from "@/assets/photo-about.jpg";
+import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 
 const AboutSection = () => (
   <section id="over" className="bg-primary py-12 md:py-16">
     <div className="container max-w-5xl mx-auto px-6">
       <div className="flex flex-col md:flex-row gap-10 items-center">
         <div className="flex-1">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground mb-6">
-            Over <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a>
-          </h2>
+          <div className="flex items-center gap-3 mb-6">
+            <img src={rondeTafelsLogo} alt="" className="w-10 h-10 brightness-0 invert opacity-80" aria-hidden="true" />
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground">
+              Over <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a>
+            </h2>
+          </div>
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed mb-4">
             De Ronde Tafels zijn een verlengstuk van hoe wij werken: eerlijk, scherp en dicht op wat er écht beweegt in organisaties. Echte gesprekken tussen mensen die elkaar in de ogen kijken: "been there, felt that".
           </p>
