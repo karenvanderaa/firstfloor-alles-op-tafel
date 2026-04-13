@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
+
 
 interface RondeTafelCardProps {
   editieLabel: string;
@@ -50,7 +50,7 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
         Meld je aan voor deze tafel →
       </Button>
 
-      <img src={rondeTafelsLogo} alt="" className="absolute bottom-4 right-4 w-16 h-16 opacity-[0.06]" aria-hidden="true" />
+      
     </div>
   );
 };
