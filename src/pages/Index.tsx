@@ -52,6 +52,7 @@ const Index = () => (
       </div>
     </section>
 
+    <FacilitatorsSection />
     <PhotoSlider />
     <AboutSection />
     <Footer />
