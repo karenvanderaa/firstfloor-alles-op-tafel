@@ -1,26 +1,38 @@
 
 
-## Plan: Brevo API-integratie configureren
+## Plan: Positionering "Nieuw formaat" als strategische troef
 
-Je redenering klopt. Twee aanpassingen nodig:
+### Wat verandert er
 
-### 1. API key veilig opslaan
-De Brevo API key is een **private key** en mag niet in de broncode. We slaan hem op als secret via Lovable, zodat hij beschikbaar is als `VITE_BREVO_API_KEY` in de build.
+**1. PhotoSlider: context toevoegen**
+- Subtitel wijzigen van "Zo gaat het eraan toe" naar iets als: "Onze vorige edities" of "Sfeerbeelden uit eerdere edities"
+- Kleine disclaimer toevoegen onder de subtitel: *"Vanaf editie 2 kiezen we bewust voor kleinere tafels. Intiemer, scherper, persoonlijker."*
 
-> **Let op**: omdat dit een client-side app is zonder backend, wordt de key zichtbaar in de browser. Voor een productie-omgeving zou een edge function beter zijn, maar voor nu werkt dit.
+**2. Hero: de shift als troef framen**
+- Toevoegen van een opvallende "Nieuw formaat" badge/pill naast de bestaande pills
+- De bestaande copy versterken met een zin die de evolutie benadrukt
 
-### 2. listIds aanpassen in AanmeldenSection.tsx
+Huidige hero-tekst is al sterk ("klein, goed samengesteld gezelschap", "maximaal zes professionals"). Voorstel om toe te voegen:
+> "Nieuw vanaf 2026: nog exclusiever, nog intiemer. Bewust gekozen voor maximaal zes deelnemers per tafel."
 
-**Hoofdformulier (RegistrationFormFull)** — regel ~100:
-- `listIds: []` → `listIds: [61]`
+**3. RondeTafelCard: "Nieuw formaat" badge**
+- Een kleine badge toevoegen bovenaan elke kaart, naast het editie-label, in een opvallende kleur (accent-pink of accent-yellow): **"Nieuw: intiem formaat"**
 
-**Mini-formulier (KeepMePosted)** — regel ~175:
-- `listIds: []` → `listIds: [60]`
+**4. Optioneel: extra zin in About-sectie**
+- Korte zin toevoegen die de bewuste keuze voor kleiner formaat benoemt als onderdeel van de First Floor-filosofie
 
-Dat is alles. De rest van de Brevo-integratie (velden, attributes, API-call) staat er al correct in.
+### Concrete wijzigingen per bestand
 
-### Technische details
-- Bestand: `src/components/AanmeldenSection.tsx`
-- Twee kleine wijzigingen: beide `listIds` arrays vullen
-- API key opslaan via Lovable's secret management tool
+| Bestand | Wijziging |
+|---|---|
+| `PhotoSlider.tsx` | Subtitel naar "Sfeerbeelden uit eerdere edities" + toelichtende zin |
+| `Hero.tsx` | Extra pill "Nieuw formaat" met sparkle-icoon + versterkte copy |
+| `RondeTafelCard.tsx` | Badge component "Nieuw: intiem formaat" toevoegen |
+| `AboutSection.tsx` | Optioneel: korte zin over bewuste evolutie |
+
+### Toon en taal
+- Niet defensief ("sorry dat de foto's niet kloppen")
+- Wel zelfverzekerd ("we hebben bewust gekozen")
+- Schaarste benadrukken ("slechts zes plaatsen")
+- Het woord "exclusief" koppelen aan kwaliteit, niet aan uitsluiting
 
