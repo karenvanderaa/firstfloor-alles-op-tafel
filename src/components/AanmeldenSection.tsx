@@ -9,7 +9,7 @@ interface AanmeldenSectionProps {
 
 const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
   return (
-    <section id="aanmelden" className="bg-secondary py-16 md:py-24">
+    <section id="aanmelden" className="bg-secondary py-12 md:py-16">
       <div className="container max-w-5xl mx-auto px-6 space-y-12">
         {/* 3A — Intro */}
         <div>

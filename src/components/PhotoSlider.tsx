@@ -18,7 +18,7 @@ const photos = [
 const allPhotos = [...photos, ...photos];
 
 const PhotoSlider = () => (
-  <section className="py-12 bg-background overflow-hidden">
+  <section className="py-10 bg-background overflow-hidden">
     <div className="container max-w-5xl mx-auto px-6 mb-6">
       <p className="text-[#315eff] font-heading text-xs font-semibold uppercase tracking-[0.2em]">
         Sfeerbeelden uit eerdere edities
