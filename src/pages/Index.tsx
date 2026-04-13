@@ -34,14 +34,14 @@ const Index = () => (
     <section className="py-16 md:py-24 bg-background">
       <div className="container max-w-5xl mx-auto px-6 space-y-10">
         <RondeTafelCard
-          editieLabel="Editie 2 — Mei 2026"
+          editieLabel="Editie 2 | Mei 2026"
           title="AI in HR: wat betekent dat nu écht?"
           body={tafel1Body}
           borderColor="#315eff"
           tafelName="AI in HR"
         />
         <RondeTafelCard
-          editieLabel="Editie 3 — Mei 2026"
+          editieLabel="Editie 3 | Mei 2026"
           title="Verandering staat op de agenda. Draagvlak niet."
           body={tafel2Body}
           borderColor="#04c9ff"

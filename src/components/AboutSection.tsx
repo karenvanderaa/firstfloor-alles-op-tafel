@@ -12,7 +12,7 @@ const AboutSection = () => (
             First Floor is een strategische partner voor bedrijfsleiders en HR-eindverantwoordelijken
             die hun organisatie van binnenuit willen versterken. Geen klassieke HR-dienstverlener.
             Geen quick-fix coaching. Wij helpen leiders structuur geven aan wat onderhuids al beweegt
-            — en blijven tot en met de implementatie.
+            en blijven tot en met de implementatie.
           </p>
         </div>
         <div className="w-full md:w-[320px] flex-shrink-0 rounded-xl overflow-hidden">
