@@ -24,7 +24,7 @@ const PhotoSlider = () => (
         Sfeerbeelden uit eerdere edities
       </p>
       <p className="text-muted-foreground font-body text-sm mt-2">
-        Vanaf editie 2 kiezen we bewust voor kleinere tafels. Intiemer, scherper, persoonlijker.
+        Vanaf 2026 kiezen we bewust voor kleinere tafels. Intiemer, scherper, persoonlijker.
       </p>
     </div>
     <div className="relative">
