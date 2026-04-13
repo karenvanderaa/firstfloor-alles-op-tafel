@@ -45,7 +45,7 @@ const Index = () => {
         <div className="w-12 h-1 rounded-full bg-accent-yellow" />
       </div>
 
-      <section id="edities" className="py-16 md:py-24 bg-background">
+      <section id="edities" className="pt-8 pb-16 md:pt-10 md:pb-24 bg-background">
         <div className="container max-w-5xl mx-auto px-6 space-y-10">
           <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em]">Komende edities</p>
           <RondeTafelCard
