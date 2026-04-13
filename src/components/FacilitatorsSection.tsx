@@ -6,6 +6,8 @@ const facilitators = [
     name: "Karen Van der Aa",
     photo: karenPhoto,
     bio: "Met 20 jaar ervaring in HR, bedrijfsvoering en psychotherapie ziet Karen wat er écht speelt achter structuren en plannen. Ze kijkt niet alleen naar rollen of processen, maar naar gedrag dat prestaties aanstuurt. In 2018 richtte ze First Floor op. Vandaag is ze een strategische partner voor CEO's en leiders die hun organisatie willen laten werken in de praktijk.",
+    bookTitle: "De generatieconfrontatie",
+    bookUrl: "https://degeneratieconfrontatie.be/",
   },
   {
     name: "Ellen Poppe",
@@ -38,7 +40,22 @@ const FacilitatorsSection = () => (
               <h3 className="font-heading text-lg font-bold text-foreground mb-2">
                 {f.name}
               </h3>
-              <p className="text-foreground/80 leading-relaxed">{f.bio}</p>
+              <p className="text-foreground/80 leading-relaxed">
+                {f.bio}
+                {f.bookTitle && (
+                  <>
+                    {" "}Auteur van het boek{" "}
+                    <a
+                      href={f.bookUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:text-primary/80 transition-colors"
+                    >
+                      "{f.bookTitle}"
+                    </a>
+                  </>
+                )}
+              </p>
             </div>
           </div>
         ))}
