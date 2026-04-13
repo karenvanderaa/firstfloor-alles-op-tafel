@@ -134,7 +134,28 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2. Send confirmation email if requested
+    // 2. Add "RondeTafel" tag to contact
+    try {
+      const tagResponse = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': BREVO_API_KEY,
+        },
+        body: JSON.stringify({
+          tags: ['RondeTafel'],
+        }),
+      })
+      if (!tagResponse.ok && tagResponse.status !== 204) {
+        console.error(`Brevo tag API error [${tagResponse.status}]: ${await tagResponse.text()}`)
+      } else {
+        console.log('Tag RondeTafel added successfully')
+      }
+    } catch (tagErr) {
+      console.error('Failed to add tag:', tagErr)
+    }
+
+    // 3. Send confirmation email if requested
     if (sendConfirmation && attributes?.TAFEL && attributes?.SESSIE) {
       try {
         const voornaam = `${attributes.FIRSTNAME || ''} ${attributes.LASTNAME || ''}`.trim()
