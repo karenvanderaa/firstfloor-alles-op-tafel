@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
           'api-key': BREVO_API_KEY,
         },
         body: JSON.stringify({
-          attributes: attributes || {},
+          attributes: { ...(attributes || {}), OUTBOUND_CAMPAIGN: 'Ronde Tafel LP' },
           listIds: listIds || [],
         }),
       })
