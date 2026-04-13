@@ -71,12 +71,11 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Sync preselectedTheme when it changes
-  useState(() => {
-    if (preselectedTheme && !form.thema) {
+  useEffect(() => {
+    if (preselectedTheme) {
       setForm((f) => ({ ...f, thema: preselectedTheme }));
     }
-  });
+  }, [preselectedTheme]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
