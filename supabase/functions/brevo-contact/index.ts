@@ -45,7 +45,7 @@ function buildConfirmationHtml(voornaam: string, thema: string, moment: string):
           </p>
           <p style="color:#71737a;font-size:13px;line-height:1.5;margin:24px 0 0;border-top:1px solid #e5e7eb;padding-top:20px;">
             Vragen? Neem gerust contact op via 
-            <a href="mailto:karen@firstfloortalent.be" style="color:#315eff;text-decoration:none;">karen@firstfloortalent.be</a>
+            <a href="mailto:karen.vanderaa@firstfloorcareers.be" style="color:#315eff;text-decoration:none;">karen.vanderaa@firstfloorcareers.be</a>
           </p>
         </td></tr>
         <!-- Footer -->
@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
             'api-key': BREVO_API_KEY,
           },
           body: JSON.stringify({
-            sender: { name: 'Ronde Tafels by First Floor', email: 'karen@firstfloortalent.be' },
+            sender: { name: 'Ronde Tafels by First Floor', email: 'karen.vanderaa@firstfloorcareers.be' },
             to: [{ email, name: voornaam }],
             subject: 'Bedankt voor je aanvraag – Ronde Tafels',
             htmlContent: emailHtml,
