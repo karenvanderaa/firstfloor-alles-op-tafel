@@ -69,7 +69,7 @@ const Index = () => {
 
       <FacilitatorsSection />
       <PhotoSlider />
-      <AanmeldenSection preselectedTheme={preselectedTheme} />
+      <AanmeldenSection key={preselectedTheme || "default"} preselectedTheme={preselectedTheme} />
       <AboutSection />
       <Footer />
     </div>
