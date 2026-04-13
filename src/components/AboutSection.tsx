@@ -8,11 +8,11 @@ const AboutSection = () => (
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground mb-6">
             Over First Floor
           </h2>
+          <p className="text-primary-foreground/90 font-body text-lg leading-relaxed mb-4">
+            De Ronde Tafels zijn een verlengstuk van hoe wij werken: eerlijk, scherp en dicht op wat er écht beweegt in organisaties. Echte gesprekken tussen mensen die elkaar in de ogen kijken: "been there, felt that".
+          </p>
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed">
-            First Floor is een strategische partner voor bedrijfsleiders en HR-eindverantwoordelijken
-            die hun organisatie van binnenuit willen versterken. Geen klassieke HR-dienstverlener.
-            Geen quick-fix coaching. Wij helpen leiders structuur geven aan wat onderhuids al beweegt
-            en blijven tot en met de implementatie.
+            First Floor begeleidt bedrijfsleiders en HR-eindverantwoordelijken bij de vraagstukken die je niet oplost met een rapport of een training. We helpen structuur geven aan wat onderhuids al speelt — en blijven tot en met de implementatie.
           </p>
         </div>
         <div className="w-full md:w-[320px] flex-shrink-0 rounded-xl overflow-hidden">
