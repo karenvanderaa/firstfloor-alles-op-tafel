@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         email,
-        attributes: attributes || {},
+        attributes: { ...(attributes || {}), OUTBOUND_CAMPAIGN: 'Ronde Tafel LP' },
         listIds: listIds || [],
         updateEnabled: updateEnabled ?? true,
         ext_id: ext_id || undefined,
