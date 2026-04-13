@@ -47,7 +47,7 @@ const Index = () => {
 
       <section id="edities" className="py-16 md:py-24 bg-background">
         <div className="container max-w-5xl mx-auto px-6 space-y-10">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Komende edities</h2>
+          <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em]">Komende edities</p>
           <RondeTafelCard
             editieLabel="Editie 2 | Mei 2026"
             title="AI in HR: wat betekent dat nu écht?"
