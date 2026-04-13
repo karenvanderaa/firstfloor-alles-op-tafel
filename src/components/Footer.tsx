@@ -7,7 +7,7 @@ const Footer = () => (
       <p className="text-sm text-background/50 font-body italic mb-4">
         Schuren doet blinken. Als er verbinding is.
       </p>
-      <
+      <a
         href="https://www.firstfloor.be"
         target="_blank"
         rel="noopener noreferrer"
