@@ -41,7 +41,14 @@ const FacilitatorsSection = () => (
                 {f.name}
               </h3>
               <p className="text-foreground/80 leading-relaxed">
-                {f.bio}
+                {f.bio.split("First Floor").map((part, i, arr) => (
+                  <span key={i}>
+                    {part}
+                    {i < arr.length - 1 && (
+                      <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">First Floor</a>
+                    )}
+                  </span>
+                ))}
                 {f.bookTitle && (
                   <>
                     {" "}Auteur van het boek{" "}

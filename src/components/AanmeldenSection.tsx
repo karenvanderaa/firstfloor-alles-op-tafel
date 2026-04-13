@@ -20,7 +20,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             Erbij zijn?
           </h2>
           <p className="text-foreground/80 font-body leading-relaxed max-w-3xl mb-6">
-            We werken met een kleine, zorgvuldig samengestelde groep. Geen open inschrijving — we kijken naar je rol, je sector en de relevantie van het thema voor jouw organisatie. Zo blijft het gesprek scherp en waardevol.
+            We werken met een kleine, zorgvuldig samengestelde groep. Geen open inschrijving: we kijken naar je rol, je sector en de relevantie van het thema voor jouw organisatie. Zo blijft het gesprek scherp en waardevol.
           </p>
           <div className="flex flex-wrap gap-3">
             <InfoPill text="4–6 deelnemers" />
@@ -32,7 +32,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
         {/* 3B — Praktisch */}
         <div className="bg-card rounded-xl p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-foreground">
-            <p>📍 First Floor — Prins Boudewijnlaan 24C, 2550 Kontich</p>
+            <p>📍 <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">First Floor</a>, Prins Boudewijnlaan 24C, 2550 Kontich</p>
             <p>🕐 ± 2 uur</p>
             <p>🗓 Ochtendsessie &amp; avondsessie per thema</p>
             <p>📅 Datum: <span className="text-muted-foreground">[DATUM VOLGT]</span></p>
@@ -204,7 +204,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
           rel="noopener noreferrer"
           className="text-sm text-[#315eff] hover:underline font-body"
         >
-          Twijfel je of dit relevant is voor jouw situatie? Plan een korte call — 15 min. →
+          Twijfel je of dit relevant is voor jouw situatie? Plan een korte call, 15 min. →
         </a>
       </div>
     </form>

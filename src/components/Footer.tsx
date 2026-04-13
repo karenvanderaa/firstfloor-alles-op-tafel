@@ -2,7 +2,7 @@ const Footer = () => (
   <footer className="bg-foreground py-10">
     <div className="container max-w-5xl mx-auto px-6 text-center">
       <p className="text-sm text-background/70 font-body mb-2">
-        © 2026  — First Floor
+        © 2026 <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:text-background/90 transition-colors">First Floor</a>
       </p>
       <p className="text-sm text-background/50 font-body italic mb-4">
         Schuren doet blinken. Als er verbinding is.

@@ -6,13 +6,13 @@ const AboutSection = () => (
       <div className="flex flex-col md:flex-row gap-10 items-center">
         <div className="flex-1">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground mb-6">
-            Over First Floor
+            Over <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a>
           </h2>
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed mb-4">
             De Ronde Tafels zijn een verlengstuk van hoe wij werken: eerlijk, scherp en dicht op wat er écht beweegt in organisaties. Echte gesprekken tussen mensen die elkaar in de ogen kijken: "been there, felt that".
           </p>
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed">
-            First Floor begeleidt bedrijfsleiders en HR-eindverantwoordelijken bij de vraagstukken die je niet oplost met een rapport of een training. We helpen structuur geven aan wat onderhuids al speelt — en blijven tot en met de implementatie.
+            <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a> begeleidt bedrijfsleiders en HR-eindverantwoordelijken bij de vraagstukken die je niet oplost met een rapport of een training. We helpen structuur geven aan wat onderhuids al speelt en blijven tot en met de implementatie.
           </p>
         </div>
         <div className="w-full md:w-[320px] flex-shrink-0 rounded-xl overflow-hidden">
