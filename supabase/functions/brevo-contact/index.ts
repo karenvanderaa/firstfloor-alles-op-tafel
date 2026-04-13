@@ -3,6 +3,64 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function buildConfirmationHtml(voornaam: string, thema: string, moment: string): string {
+  const firstName = voornaam.split(' ')[0] || 'daar'
+  return `
+<!DOCTYPE html>
+<html lang="nl">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Inter',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
+        <!-- Header -->
+        <tr><td style="background:#315eff;padding:32px 40px;text-align:center;">
+          <h1 style="color:#ffffff;font-family:'Sora',Arial,sans-serif;font-size:22px;margin:0;">
+            Ronde Tafels
+          </h1>
+          <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:8px 0 0;letter-spacing:0.1em;text-transform:uppercase;">
+            by First Floor
+          </p>
+        </td></tr>
+        <!-- Body -->
+        <tr><td style="padding:40px;">
+          <h2 style="font-family:'Sora',Arial,sans-serif;color:#4e5056;font-size:20px;margin:0 0 16px;">
+            Hallo ${firstName},
+          </h2>
+          <p style="color:#4e5056;font-size:15px;line-height:1.6;margin:0 0 20px;">
+            Bedankt voor je aanvraag voor onze ronde tafel. We hebben je gegevens goed ontvangen!
+          </p>
+          <table cellpadding="0" cellspacing="0" style="background:#f0f4f8;border-radius:8px;width:100%;margin:0 0 24px;">
+            <tr><td style="padding:20px;">
+              <p style="margin:0 0 8px;font-size:14px;color:#4e5056;">
+                <strong>Thema:</strong> ${thema}
+              </p>
+              <p style="margin:0;font-size:14px;color:#4e5056;">
+                <strong>Voorkeur:</strong> ${moment}
+              </p>
+            </td></tr>
+          </table>
+          <p style="color:#4e5056;font-size:15px;line-height:1.6;margin:0 0 20px;">
+            We bekijken je aanvraag zorgvuldig en laten je persoonlijk weten of deze ronde tafel de juiste match is voor jou. Je hoort zo snel mogelijk van ons.
+          </p>
+          <p style="color:#71737a;font-size:13px;line-height:1.5;margin:24px 0 0;border-top:1px solid #e5e7eb;padding-top:20px;">
+            Vragen? Neem gerust contact op via 
+            <a href="mailto:karen@firstfloortalent.be" style="color:#315eff;text-decoration:none;">karen@firstfloortalent.be</a>
+          </p>
+        </td></tr>
+        <!-- Footer -->
+        <tr><td style="background:#f0f4f8;padding:20px 40px;text-align:center;">
+          <p style="color:#71737a;font-size:12px;margin:0;">
+            © ${new Date().getFullYear()} First Floor · Prins Boudewijnlaan 24C, 2550 Kontich
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -18,7 +76,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json()
-    const { email, attributes, listIds, updateEnabled, ext_id } = body
+    const { email, attributes, listIds, updateEnabled, ext_id, sendConfirmation } = body
 
     if (!email) {
       return new Response(
@@ -27,7 +85,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    const response = await fetch('https://api.brevo.com/v3/contacts', {
+    // 1. Create/update contact
+    const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,14 +101,44 @@ Deno.serve(async (req) => {
       }),
     })
 
-    const data = await response.text()
+    const contactData = await contactResponse.text()
 
-    if (!response.ok && response.status !== 204) {
-      console.error(`Brevo API error [${response.status}]: ${data}`)
+    if (!contactResponse.ok && contactResponse.status !== 204) {
+      console.error(`Brevo contact API error [${contactResponse.status}]: ${contactData}`)
       return new Response(
-        JSON.stringify({ error: 'Failed to create contact', details: data }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Failed to create contact', details: contactData }),
+        { status: contactResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    // 2. Send confirmation email if requested
+    if (sendConfirmation && attributes?.TAFEL && attributes?.SESSIE) {
+      try {
+        const voornaam = `${attributes.FIRSTNAME || ''} ${attributes.LASTNAME || ''}`.trim()
+        const emailHtml = buildConfirmationHtml(voornaam, attributes.TAFEL, attributes.SESSIE)
+
+        const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': BREVO_API_KEY,
+          },
+          body: JSON.stringify({
+            sender: { name: 'Ronde Tafels by First Floor', email: 'karen@firstfloortalent.be' },
+            to: [{ email, name: voornaam }],
+            subject: 'Bedankt voor je aanvraag – Ronde Tafels',
+            htmlContent: emailHtml,
+          }),
+        })
+
+        const emailData = await emailResponse.text()
+        if (!emailResponse.ok) {
+          console.error(`Brevo email API error [${emailResponse.status}]: ${emailData}`)
+        }
+      } catch (emailErr) {
+        console.error('Failed to send confirmation email:', emailErr)
+        // Don't fail the whole request if email fails
+      }
     }
 
     return new Response(
