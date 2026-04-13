@@ -1,7 +1,7 @@
 import aboutPhoto from "@/assets/photo-about.jpg";
 
 const AboutSection = () => (
-  <section className="bg-primary py-20">
+  <section id="over" className="bg-primary py-20">
     <div className="container max-w-5xl mx-auto px-6">
       <div className="flex flex-col md:flex-row gap-10 items-center">
         <div className="flex-1">
