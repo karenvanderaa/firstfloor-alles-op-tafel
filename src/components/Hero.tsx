@@ -4,12 +4,14 @@ import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 const Hero = () => (
   <section className="bg-background py-20 md:py-28">
     <div className="container max-w-5xl mx-auto px-6">
-      <img
-        src={rondeTafelsLogo}
-        alt="Ronde Tafels - Alles op tafel"
-        className="w-24 h-24 md:w-32 md:h-32 mb-8"
-      />
-      <div className="mb-10 rounded-2xl overflow-hidden max-h-[420px]">
+      <div className="flex justify-center mb-10">
+        <img
+          src={rondeTafelsLogo}
+          alt="Ronde Tafels - Alles op tafel"
+          className="w-28 h-28 md:w-36 md:h-36"
+        />
+      </div>
+      <div className="mb-10 rounded-2xl overflow-hidden h-[300px] md:h-[420px]">
         <img
           src={heroImage}
           alt="Een intiem ronde tafel gesprek bij First Floor"
