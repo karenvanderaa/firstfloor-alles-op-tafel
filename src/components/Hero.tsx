@@ -1,6 +1,15 @@
+import heroImage from "@/assets/hero-roundtable.jpg";
+
 const Hero = () => (
   <section className="bg-background py-20 md:py-28">
     <div className="container max-w-5xl mx-auto px-6">
+      <div className="mb-10 rounded-2xl overflow-hidden max-h-[420px]">
+        <img
+          src={heroImage}
+          alt="Een intiem ronde tafel gesprek bij First Floor"
+          className="w-full h-full object-cover object-center"
+        />
+      </div>
       <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em] mb-6">
         Ronde Tafels — Mei 2026
       </p>
