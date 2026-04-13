@@ -2,7 +2,7 @@ import heroImage from "@/assets/hero-roundtable.jpg";
 import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 
 const Hero = () => (
-  <section className="bg-background py-10 md:py-14">
+  <section className="bg-background py-8 md:py-12">
     <div className="container max-w-5xl mx-auto px-6">
       <div className="mb-10 rounded-2xl overflow-hidden h-[300px] md:h-[420px] relative">
         <img

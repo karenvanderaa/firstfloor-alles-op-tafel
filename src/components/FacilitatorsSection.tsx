@@ -17,7 +17,7 @@ const facilitators = [
 ];
 
 const FacilitatorsSection = () => (
-  <section id="facilitators" className="py-16 md:py-24 bg-card">
+  <section id="facilitators" className="py-12 md:py-16 bg-card">
     <div className="container max-w-5xl mx-auto px-6">
       <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em] mb-3">
         Facilitators
