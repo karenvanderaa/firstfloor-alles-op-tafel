@@ -12,7 +12,7 @@ const facilitators = [
   {
     name: "Ellen Poppe",
     photo: ellenPhoto,
-    bio: "Met meer dan 10 jaar ervaring in digitale transformatie en organisatieverandering brengt Ellen de brug tussen strategie en technologie. Ze leidde ERP-implementaties, bouwde AI-gedreven HR-platformen en stuurde digitale trajecten in België, Nederland en Marokko. Haar focus: verandering laten landen. Via adoptie, samenwerking en concrete toepassingen.",
+    bio: "Met meer dan 20 jaar ervaring in digitale transformatie en organisatieverandering brengt Ellen de brug tussen strategie en technologie. Ze leidde ERP-implementaties, bouwde AI-gedreven HR-platformen en stuurde digitale trajecten in België, Nederland en Marokko. Haar focus: verandering laten landen. Via adoptie, samenwerking en concrete toepassingen.",
   },
 ];
 
