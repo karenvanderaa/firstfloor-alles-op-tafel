@@ -12,7 +12,7 @@ const AboutSection = () => (
             De Ronde Tafels zijn een verlengstuk van hoe wij werken: eerlijk, scherp en dicht op wat er écht beweegt in organisaties. Echte gesprekken tussen mensen die elkaar in de ogen kijken: "been there, felt that".
           </p>
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed mb-4">
-            <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a> begeleidt bedrijfsleiders en HR-eindverantwoordelijken bij de vraagstukken die je niet oplost met een rapport of een training. We helpen structuur geven aan wat onderhuids al speelt en blijven tot en met de implementatie.
+            <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="hover:underline">First Floor</a> begeleidt als strategische partner bedrijfsleiders en HR-verantwoordelijken bij de vraagstukken die je niet oplost met een rapport of een training. We helpen structuur geven aan wat onderhuids al speelt, vertalen gedrag naar resultaat en blijven tot en met de implementatie.
           </p>
           <p className="text-primary-foreground/90 font-body text-lg leading-relaxed">
             Vanaf 2026 kiezen we bewust voor een nog exclusiever formaat: maximaal zes deelnemers per tafel. Omdat de beste inzichten ontstaan wanneer iedereen écht aan het woord komt.
