@@ -46,8 +46,8 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             </div>
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
-              <p>📅 Ochtendsessie: wo 20/5 — 8u tot 10u</p>
-              <p>📅 Avondsessie: wo 20/5 — 16u tot 18u</p>
+              <p>📅 Ochtendsessie: do 21/5 — 8u tot 10u</p>
+              <p>📅 Avondsessie: do 21/5 — 16u tot 18u</p>
             </div>
             <p>🥂 Snacks en drankjes voorzien</p>
           </div>
@@ -200,12 +200,12 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
           ) : form.thema.includes("Verandering") ? (
             <>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Ochtendsessie wo 20/5" checked={form.moment === "Ochtendsessie wo 20/5"} onChange={handleChange} className="accent-[#315eff]" required />
-                Ochtendsessie — wo 20/5 (8u - 10u)
+                <input type="radio" name="moment" value="Ochtendsessie do 21/5" checked={form.moment === "Ochtendsessie do 21/5"} onChange={handleChange} className="accent-[#315eff]" required />
+                 Ochtendsessie — do 21/5 (8u - 10u)
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Avondsessie wo 20/5" checked={form.moment === "Avondsessie wo 20/5"} onChange={handleChange} className="accent-[#315eff]" />
-                Avondsessie — wo 20/5 (16u - 18u)
+                <input type="radio" name="moment" value="Avondsessie do 21/5" checked={form.moment === "Avondsessie do 21/5"} onChange={handleChange} className="accent-[#315eff]" />
+                 Avondsessie — do 21/5 (16u - 18u)
               </label>
             </>
           ) : (
