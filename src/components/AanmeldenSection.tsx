@@ -37,11 +37,18 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
 
         {/* 3B — Praktisch */}
         <div className="bg-card rounded-xl p-6 md:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-foreground">
+          <div className="space-y-4 text-sm text-foreground">
             <p>📍 <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">First Floor</a>, Prins Boudewijnlaan 24C, 2550 Kontich</p>
-            <p>🕐 ± 2 uur</p>
-            <p>🗓 Ochtendsessie &amp; avondsessie per thema</p>
-            <p>📅 Datum: <span className="text-muted-foreground">[DATUM VOLGT]</span></p>
+            <div>
+              <p className="font-semibold mb-1">AI in HR: wat betekent dat nu écht?</p>
+              <p>📅 Ochtendsessie: do 29/5 — 8u tot 10u</p>
+              <p>📅 Avondsessie: wo 28/5 — 16u tot 18u</p>
+            </div>
+            <div>
+              <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
+              <p>📅 Ochtendsessie: wo 20/5 — 8u tot 10u</p>
+              <p>📅 Avondsessie: wo 20/5 — 16u tot 18u</p>
+            </div>
             <p>🥂 Snacks en drankjes voorzien</p>
           </div>
         </div>
@@ -173,15 +180,41 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
       {/* Moment */}
       <fieldset className="space-y-2">
         <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment *</legend>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input type="radio" name="moment" value="Ochtendsessie" checked={form.moment === "Ochtendsessie"} onChange={handleChange} className="accent-[#315eff]" required />
-             Ochtendsessie (8u - 10u)
-          </label>
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input type="radio" name="moment" value="Avondsessie" checked={form.moment === "Avondsessie"} onChange={handleChange} className="accent-[#315eff]" />
-             Avondsessie (16u - 18u)
-          </label>
+        <div className="flex flex-col gap-2">
+          {form.thema.includes("AI") ? (
+            <>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="moment" value="Ochtendsessie do 29/5" checked={form.moment === "Ochtendsessie do 29/5"} onChange={handleChange} className="accent-[#315eff]" required />
+                Ochtendsessie — do 29/5 (8u - 10u)
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="moment" value="Avondsessie wo 28/5" checked={form.moment === "Avondsessie wo 28/5"} onChange={handleChange} className="accent-[#315eff]" />
+                Avondsessie — wo 28/5 (16u - 18u)
+              </label>
+            </>
+          ) : form.thema.includes("Verandering") ? (
+            <>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="moment" value="Ochtendsessie wo 20/5" checked={form.moment === "Ochtendsessie wo 20/5"} onChange={handleChange} className="accent-[#315eff]" required />
+                Ochtendsessie — wo 20/5 (8u - 10u)
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="moment" value="Avondsessie wo 20/5" checked={form.moment === "Avondsessie wo 20/5"} onChange={handleChange} className="accent-[#315eff]" />
+                Avondsessie — wo 20/5 (16u - 18u)
+              </label>
+            </>
+          ) : (
+            <>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="moment" value="Ochtendsessie" checked={form.moment === "Ochtendsessie"} onChange={handleChange} className="accent-[#315eff]" required />
+                Ochtendsessie (8u - 10u)
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="moment" value="Avondsessie" checked={form.moment === "Avondsessie"} onChange={handleChange} className="accent-[#315eff]" />
+                Avondsessie (16u - 18u)
+              </label>
+            </>
+          )}
         </div>
       </fieldset>
 
