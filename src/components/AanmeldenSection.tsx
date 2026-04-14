@@ -92,7 +92,12 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
   }, [preselectedTheme]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "thema") {
+      setForm({ ...form, thema: value, moment: "" });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
