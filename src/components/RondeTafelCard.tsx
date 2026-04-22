@@ -46,8 +46,8 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
           </>
         ) : (
           <>
-            <p>📅 Ochtendsessie: do 21/5 — 8u tot 10u</p>
-            <p>📅 Avondsessie: do 21/5 — 16u tot 18u</p>
+            <p>📅 Ochtendsessie: do 18/6 — 8u tot 10u</p>
+            <p>📅 Avondsessie: di 9/6 — 16u tot 18u</p>
           </>
         )}
         <p>📍 <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">First Floor</a>, Prins Boudewijnlaan 24C, 2550 Kontich</p>
