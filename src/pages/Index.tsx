@@ -54,7 +54,7 @@ const Index = () => {
             onSelectTheme={handleSelectTheme}
           />
           <RondeTafelCard
-            editieLabel="Editie | Mei 2026"
+            editieLabel="Editie | Juni 2026"
             title="Verandering staat op de agenda. Draagvlak niet."
             body={tafel2Body}
             borderColor="#04c9ff"
