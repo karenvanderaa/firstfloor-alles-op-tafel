@@ -41,8 +41,8 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             <p>📍 <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">First Floor</a>, Prins Boudewijnlaan 24C, 2550 Kontich</p>
             <div>
               <p className="font-semibold mb-1">AI in HR: wat betekent dat nu écht?</p>
-              <p>📅 Ochtendsessie: do 29/5 — 8u tot 10u</p>
-              <p>📅 Avondsessie: wo 28/5 — 16u tot 18u</p>
+              <p>📅 Ochtendsessie: vrij 29/5 — 8u tot 10u</p>
+              <p>📅 Avondsessie: don 28/5 — 16u tot 18u</p>
             </div>
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
@@ -189,12 +189,12 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
           {form.thema.includes("AI") ? (
             <>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Ochtendsessie do 29/5" checked={form.moment === "Ochtendsessie do 29/5"} onChange={handleChange} className="accent-[#315eff]" required />
-                Ochtendsessie — do 29/5 (8u - 10u)
+                <input type="radio" name="moment" value="Ochtendsessie vrij 29/5" checked={form.moment === "Ochtendsessie vrij 29/5"} onChange={handleChange} className="accent-[#315eff]" required />
+                Ochtendsessie — vrij 29/5 (8u - 10u)
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Avondsessie wo 28/5" checked={form.moment === "Avondsessie wo 28/5"} onChange={handleChange} className="accent-[#315eff]" />
-                Avondsessie — wo 28/5 (16u - 18u)
+                <input type="radio" name="moment" value="Avondsessie don 28/5" checked={form.moment === "Avondsessie don 28/5"} onChange={handleChange} className="accent-[#315eff]" />
+                Avondsessie — don 28/5 (16u - 18u)
               </label>
             </>
           ) : form.thema.includes("Verandering") ? (

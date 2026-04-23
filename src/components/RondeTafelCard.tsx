@@ -41,8 +41,8 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
       <div className="bg-muted rounded-md p-5 my-6 space-y-2 text-sm text-foreground">
         {title.includes("AI") ? (
           <>
-            <p>📅 Ochtendsessie: do 29/5 — 8u tot 10u</p>
-            <p>📅 Avondsessie: wo 28/5 — 16u tot 18u</p>
+            <p>📅 Ochtendsessie: vrij 29/5 — 8u tot 10u</p>
+            <p>📅 Avondsessie: don 28/5 — 16u tot 18u</p>
           </>
         ) : (
           <>
