@@ -107,6 +107,19 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
     const listTag = form.thema.includes("AI") ? "ronde-tafel-ai-hr" : "ronde-tafel-verandering";
 
     try {
+      // Save to Lovable Cloud (admin dashboard)
+      const { error: dbError } = await supabase.from("registrations").insert({
+        voornaam: form.voornaam,
+        bedrijf: form.bedrijf,
+        functie: form.functie,
+        email: form.email,
+        telefoon: form.telefoon || null,
+        thema: form.thema,
+        moment: form.moment,
+        toelichting: form.toelichting || null,
+      });
+      if (dbError) console.error("DB save error:", dbError);
+
       const { data, error } = await supabase.functions.invoke("brevo-contact", {
         body: {
           email: form.email,
