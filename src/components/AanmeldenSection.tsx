@@ -189,22 +189,22 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
           {form.thema.includes("AI") ? (
             <>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Avondsessie don 28/5" checked={form.moment === "Avondsessie don 28/5"} onChange={handleChange} className="accent-[#315eff]" required />
+                <input type="radio" name="moment" value="Avondsessie — don 28/5 (16u - 18u)" checked={form.moment === "Avondsessie — don 28/5 (16u - 18u)"} onChange={handleChange} className="accent-[#315eff]" required />
                 Avondsessie — don 28/5 (16u - 18u)
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Ochtendsessie vrij 29/5" checked={form.moment === "Ochtendsessie vrij 29/5"} onChange={handleChange} className="accent-[#315eff]" />
+                <input type="radio" name="moment" value="Ochtendsessie — vrij 29/5 (8u - 10u)" checked={form.moment === "Ochtendsessie — vrij 29/5 (8u - 10u)"} onChange={handleChange} className="accent-[#315eff]" />
                 Ochtendsessie — vrij 29/5 (8u - 10u)
               </label>
             </>
           ) : form.thema.includes("Verandering") ? (
             <>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Avondsessie di 9/6" checked={form.moment === "Avondsessie di 9/6"} onChange={handleChange} className="accent-[#315eff]" required />
+                <input type="radio" name="moment" value="Avondsessie — di 9/6 (16u - 18u)" checked={form.moment === "Avondsessie — di 9/6 (16u - 18u)"} onChange={handleChange} className="accent-[#315eff]" required />
                  Avondsessie — di 9/6 (16u - 18u)
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Ochtendsessie do 18/6" checked={form.moment === "Ochtendsessie do 18/6"} onChange={handleChange} className="accent-[#315eff]" />
+                <input type="radio" name="moment" value="Ochtendsessie — do 18/6 (8u - 10u)" checked={form.moment === "Ochtendsessie — do 18/6 (8u - 10u)"} onChange={handleChange} className="accent-[#315eff]" />
                  Ochtendsessie — do 18/6 (8u - 10u)
               </label>
             </>
