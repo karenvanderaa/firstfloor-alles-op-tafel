@@ -58,6 +58,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [rows, setRows] = useState<Registration[]>([]);
+  const [subs, setSubs] = useState<Subscriber[]>([]);
   const [fetching, setFetching] = useState(true);
   const [themaFilter, setThemaFilter] = useState<string>("all");
   const [sessieFilter, setSessieFilter] = useState<string>("all");
