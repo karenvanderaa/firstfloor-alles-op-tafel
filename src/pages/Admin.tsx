@@ -250,9 +250,15 @@ const Admin = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={exportCSV} variant="outline" className="ml-auto">
-              <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
-            </Button>
+            <div className="ml-auto flex gap-2">
+              <Button onClick={importFromBrevo} variant="outline" disabled={importing}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${importing ? "animate-spin" : ""}`} />
+                {importing ? "Importeren…" : "Importeer uit Brevo"}
+              </Button>
+              <Button onClick={exportCSV} variant="outline">
+                <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
