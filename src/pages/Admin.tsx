@@ -213,104 +213,161 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-6 py-8 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {(Object.keys(stats) as Status[]).map((s) => (
-            <Card key={s}>
-              <CardContent className="pt-6">
-                <p className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</p>
-                <p className="text-2xl font-bold">{stats[s]}</p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Global actions */}
+        <div className="flex justify-end">
+          <Button onClick={importFromBrevo} variant="outline" disabled={importing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${importing ? "animate-spin" : ""}`} />
+            {importing ? "Importeren uit Brevo…" : "Importeer uit Brevo"}
+          </Button>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardContent className="pt-6 flex flex-wrap gap-3 items-end">
-            <div className="space-y-1">
-              <Label className="text-xs">Thema</Label>
-              <Select value={themaFilter} onValueChange={setThemaFilter}>
-                <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle thema's</SelectItem>
-                  {themas.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Sessie</Label>
-              <Select value={sessieFilter} onValueChange={setSessieFilter}>
-                <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle sessies</SelectItem>
-                  {sessies.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle statussen</SelectItem>
-                  {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
-                    <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="ml-auto flex gap-2">
-              <Button onClick={importFromBrevo} variant="outline" disabled={importing}>
-                <RefreshCw className={`mr-2 h-4 w-4 ${importing ? "animate-spin" : ""}`} />
-                {importing ? "Importeren…" : "Importeer uit Brevo"}
-              </Button>
-              <Button onClick={exportCSV} variant="outline">
-                <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="inschrijvingen" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="inschrijvingen">Inschrijvingen ({rows.length})</TabsTrigger>
+            <TabsTrigger value="abonnees">Op de hoogte ({subs.length})</TabsTrigger>
+          </TabsList>
 
-        {/* Table */}
-        <Card>
-          <CardContent className="pt-6">
-            {fetching ? (
-              <p className="text-sm text-muted-foreground">Laden…</p>
-            ) : filtered.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Geen inschrijvingen gevonden.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Datum</TableHead>
-                    <TableHead>Naam</TableHead>
-                    <TableHead>Bedrijf</TableHead>
-                    <TableHead>Thema</TableHead>
-                    <TableHead>Sessie</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((r) => (
-                    <TableRow key={r.id} onClick={() => openDetail(r)} className="cursor-pointer">
-                      <TableCell className="text-xs whitespace-nowrap">
-                        {new Date(r.created_at).toLocaleDateString("nl-BE")}
-                      </TableCell>
-                      <TableCell className="font-medium">{r.voornaam}</TableCell>
-                      <TableCell>{r.bedrijf}</TableCell>
-                      <TableCell className="max-w-[240px] truncate">{r.thema}</TableCell>
-                      <TableCell className="max-w-[200px] truncate text-xs">{r.moment}</TableCell>
-                      <TableCell>
-                        <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+          <TabsContent value="inschrijvingen" className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(Object.keys(stats) as Status[]).map((s) => (
+                <Card key={s}>
+                  <CardContent className="pt-6">
+                    <p className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</p>
+                    <p className="text-2xl font-bold">{stats[s]}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Filters */}
+            <Card>
+              <CardContent className="pt-6 flex flex-wrap gap-3 items-end">
+                <div className="space-y-1">
+                  <Label className="text-xs">Thema</Label>
+                  <Select value={themaFilter} onValueChange={setThemaFilter}>
+                    <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Alle thema's</SelectItem>
+                      {themas.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Sessie</Label>
+                  <Select value={sessieFilter} onValueChange={setSessieFilter}>
+                    <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Alle sessies</SelectItem>
+                      {sessies.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Status</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Alle statussen</SelectItem>
+                      {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+                        <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={exportCSV} variant="outline" className="ml-auto">
+                  <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Table */}
+            <Card>
+              <CardContent className="pt-6">
+                {fetching ? (
+                  <p className="text-sm text-muted-foreground">Laden…</p>
+                ) : filtered.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Geen inschrijvingen gevonden.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Naam</TableHead>
+                        <TableHead>Bedrijf</TableHead>
+                        <TableHead>Thema</TableHead>
+                        <TableHead>Sessie</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((r) => (
+                        <TableRow key={r.id} onClick={() => openDetail(r)} className="cursor-pointer">
+                          <TableCell className="text-xs whitespace-nowrap">
+                            {new Date(r.created_at).toLocaleDateString("nl-BE")}
+                          </TableCell>
+                          <TableCell className="font-medium">{r.voornaam}</TableCell>
+                          <TableCell>{r.bedrijf}</TableCell>
+                          <TableCell className="max-w-[240px] truncate">{r.thema}</TableCell>
+                          <TableCell className="max-w-[200px] truncate text-xs">{r.moment}</TableCell>
+                          <TableCell>
+                            <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="abonnees" className="space-y-6">
+            <Card>
+              <CardContent className="pt-6 flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">
+                  Mensen die zich aanmeldden voor updates ("Houd me op de hoogte").
+                </p>
+                <Button onClick={() => exportSubsCSV()} variant="outline">
+                  <Download className="mr-2 h-4 w-4" /> Export CSV ({subs.length})
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                {fetching ? (
+                  <p className="text-sm text-muted-foreground">Laden…</p>
+                ) : subs.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nog geen abonnees.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Voornaam</TableHead>
+                        <TableHead>Achternaam</TableHead>
+                        <TableHead>E-mail</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {subs.map((s) => (
+                        <TableRow key={s.id}>
+                          <TableCell className="text-xs whitespace-nowrap">
+                            {new Date(s.created_at).toLocaleDateString("nl-BE")}
+                          </TableCell>
+                          <TableCell>{s.voornaam || "—"}</TableCell>
+                          <TableCell>{s.achternaam || "—"}</TableCell>
+                          <TableCell className="font-medium">{s.email}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
