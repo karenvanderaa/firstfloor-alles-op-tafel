@@ -120,23 +120,28 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
       });
       if (dbError) console.error("DB save error:", dbError);
 
+      const brevoAttributes: Record<string, unknown> = {
+        FIRSTNAME: form.voornaam.split(" ")[0],
+        LASTNAME: form.voornaam.split(" ").slice(1).join(" "),
+        BEDRIJF: form.bedrijf,
+        JOB_TITLE: form.functie,
+      };
+      if (form.telefoon) {
+        brevoAttributes.SMS = form.telefoon;
+        brevoAttributes.WHATSAPP = form.telefoon;
+      }
+
+      // Pass thema/moment/toelichting along — the edge function decides what Brevo accepts.
+      // Dashboard already has the canonical copy, so any Brevo loss is non-fatal.
       const { data, error } = await supabase.functions.invoke("brevo-contact", {
         body: {
           email: form.email,
-          attributes: {
-            FIRSTNAME: form.voornaam.split(" ")[0],
-            LASTNAME: form.voornaam.split(" ").slice(1).join(" "),
-            COMPANY: form.bedrijf,
-            FUNCTION: form.functie,
-            PHONE: form.telefoon,
-            SESSIE: form.moment,
-            TAFEL: form.thema,
-            TOELICHTING: form.toelichting,
-          },
+          attributes: brevoAttributes,
           listIds: [61],
           updateEnabled: true,
           ext_id: listTag,
           sendConfirmation: true,
+          confirmation: { thema: form.thema, moment: form.moment },
         },
       });
 

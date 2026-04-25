@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json()
-    const { email, attributes, listIds, updateEnabled, ext_id, sendConfirmation } = body
+    const { email, attributes, listIds, updateEnabled, ext_id, sendConfirmation, confirmation } = body
 
     if (!email) {
       return new Response(
@@ -85,8 +85,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    // 1. Create/update contact
-    const enrichedAttributes = { ...(attributes || {}), OUTBOUND_CAMPAIGN: 'Ronde Tafel LP' }
+    // 1. Create/update contact — OUTBOUND_CAMPAGNES is multi-choice in Brevo (array).
+    const enrichedAttributes = { ...(attributes || {}), OUTBOUND_CAMPAGNES: ['Ronde Tafel LP'] }
 
     const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
@@ -172,10 +172,10 @@ Deno.serve(async (req) => {
     }
 
     // 3. Send confirmation email if requested
-    if (sendConfirmation && attributes?.TAFEL && attributes?.SESSIE) {
+    if (sendConfirmation && confirmation?.thema && confirmation?.moment) {
       try {
-        const voornaam = `${attributes.FIRSTNAME || ''} ${attributes.LASTNAME || ''}`.trim()
-        const emailHtml = buildConfirmationHtml(voornaam, attributes.TAFEL, attributes.SESSIE)
+        const voornaam = `${attributes?.FIRSTNAME || ''} ${attributes?.LASTNAME || ''}`.trim()
+        const emailHtml = buildConfirmationHtml(voornaam, confirmation.thema, confirmation.moment)
 
         const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
