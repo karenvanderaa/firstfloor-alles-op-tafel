@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +31,14 @@ interface Registration {
   created_at: string;
 }
 
+interface Subscriber {
+  id: string;
+  email: string;
+  voornaam: string | null;
+  achternaam: string | null;
+  created_at: string;
+}
+
 const STATUS_LABEL: Record<Status, string> = {
   in_afwachting: "In afwachting",
   bevestigd: "Bevestigd",
@@ -49,6 +58,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [rows, setRows] = useState<Registration[]>([]);
+  const [subs, setSubs] = useState<Subscriber[]>([]);
   const [fetching, setFetching] = useState(true);
   const [themaFilter, setThemaFilter] = useState<string>("all");
   const [sessieFilter, setSessieFilter] = useState<string>("all");
@@ -77,15 +87,14 @@ const Admin = () => {
 
   const fetchRows = async () => {
     setFetching(true);
-    const { data, error } = await supabase
-      .from("registrations")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) {
-      toast({ title: "Fout", description: error.message, variant: "destructive" });
-    } else {
-      setRows((data as Registration[]) || []);
-    }
+    const [regRes, subRes] = await Promise.all([
+      supabase.from("registrations").select("*").order("created_at", { ascending: false }),
+      supabase.from("subscribers").select("*").order("created_at", { ascending: false }),
+    ]);
+    if (regRes.error) toast({ title: "Fout", description: regRes.error.message, variant: "destructive" });
+    else setRows((regRes.data as Registration[]) || []);
+    if (subRes.error) toast({ title: "Fout abonnees", description: subRes.error.message, variant: "destructive" });
+    else setSubs((subRes.data as Subscriber[]) || []);
     setFetching(false);
   };
 
@@ -152,6 +161,24 @@ const Admin = () => {
     URL.revokeObjectURL(url);
   };
 
+  const exportSubsCSV = () => {
+    const headers = ["Datum", "Voornaam", "Achternaam", "E-mail"];
+    const escape = (v: string | null) => `"${(v || "").replace(/"/g, '""')}"`;
+    const csv = [
+      headers.join(","),
+      ...subs.map((s) =>
+        [new Date(s.created_at).toLocaleString("nl-BE"), s.voornaam, s.achternaam, s.email].map(escape).join(","),
+      ),
+    ].join("\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `abonnees-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const importFromBrevo = async () => {
     setImporting(true);
     const { data, error } = await supabase.functions.invoke("brevo-import");
@@ -160,15 +187,16 @@ const Admin = () => {
       toast({ title: "Import mislukt", description: error.message, variant: "destructive" });
       return;
     }
-    const { imported = 0, updated = 0, skipped = [], candidates = 0 } = data || {};
-    const skippedCount = Array.isArray(skipped) ? skipped.length : 0;
+    const reg = data?.registrations || {};
+    const sub = data?.subscribers || {};
+    const skippedCount = Array.isArray(reg.skipped) ? reg.skipped.length : 0;
     toast({
       title: "Brevo import voltooid",
-      description: `${candidates} matches gevonden · ${imported} nieuw · ${updated} aangevuld · ${skippedCount} overgeslagen (incomplete data)`,
+      description: `Inschrijvingen: ${reg.imported || 0} nieuw · ${reg.updated || 0} aangevuld · ${skippedCount} overgeslagen. Abonnees: ${sub.imported || 0} nieuw · ${sub.updated || 0} aangevuld.`,
     });
-    if (skippedCount > 0) {
-      console.log("Overgeslagen contacten:", skipped);
-    }
+    if (skippedCount > 0) console.log("Overgeslagen inschrijvingen:", reg.skipped);
+    if (reg.errors?.length) console.log("Reg errors:", reg.errors);
+    if (sub.errors?.length) console.log("Sub errors:", sub.errors);
     fetchRows();
   };
 
@@ -203,104 +231,161 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-6 py-8 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {(Object.keys(stats) as Status[]).map((s) => (
-            <Card key={s}>
-              <CardContent className="pt-6">
-                <p className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</p>
-                <p className="text-2xl font-bold">{stats[s]}</p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Global actions */}
+        <div className="flex justify-end">
+          <Button onClick={importFromBrevo} variant="outline" disabled={importing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${importing ? "animate-spin" : ""}`} />
+            {importing ? "Importeren uit Brevo…" : "Importeer uit Brevo"}
+          </Button>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardContent className="pt-6 flex flex-wrap gap-3 items-end">
-            <div className="space-y-1">
-              <Label className="text-xs">Thema</Label>
-              <Select value={themaFilter} onValueChange={setThemaFilter}>
-                <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle thema's</SelectItem>
-                  {themas.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Sessie</Label>
-              <Select value={sessieFilter} onValueChange={setSessieFilter}>
-                <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle sessies</SelectItem>
-                  {sessies.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle statussen</SelectItem>
-                  {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
-                    <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="ml-auto flex gap-2">
-              <Button onClick={importFromBrevo} variant="outline" disabled={importing}>
-                <RefreshCw className={`mr-2 h-4 w-4 ${importing ? "animate-spin" : ""}`} />
-                {importing ? "Importeren…" : "Importeer uit Brevo"}
-              </Button>
-              <Button onClick={exportCSV} variant="outline">
-                <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="inschrijvingen" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="inschrijvingen">Inschrijvingen ({rows.length})</TabsTrigger>
+            <TabsTrigger value="abonnees">Op de hoogte ({subs.length})</TabsTrigger>
+          </TabsList>
 
-        {/* Table */}
-        <Card>
-          <CardContent className="pt-6">
-            {fetching ? (
-              <p className="text-sm text-muted-foreground">Laden…</p>
-            ) : filtered.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Geen inschrijvingen gevonden.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Datum</TableHead>
-                    <TableHead>Naam</TableHead>
-                    <TableHead>Bedrijf</TableHead>
-                    <TableHead>Thema</TableHead>
-                    <TableHead>Sessie</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((r) => (
-                    <TableRow key={r.id} onClick={() => openDetail(r)} className="cursor-pointer">
-                      <TableCell className="text-xs whitespace-nowrap">
-                        {new Date(r.created_at).toLocaleDateString("nl-BE")}
-                      </TableCell>
-                      <TableCell className="font-medium">{r.voornaam}</TableCell>
-                      <TableCell>{r.bedrijf}</TableCell>
-                      <TableCell className="max-w-[240px] truncate">{r.thema}</TableCell>
-                      <TableCell className="max-w-[200px] truncate text-xs">{r.moment}</TableCell>
-                      <TableCell>
-                        <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+          <TabsContent value="inschrijvingen" className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(Object.keys(stats) as Status[]).map((s) => (
+                <Card key={s}>
+                  <CardContent className="pt-6">
+                    <p className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</p>
+                    <p className="text-2xl font-bold">{stats[s]}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Filters */}
+            <Card>
+              <CardContent className="pt-6 flex flex-wrap gap-3 items-end">
+                <div className="space-y-1">
+                  <Label className="text-xs">Thema</Label>
+                  <Select value={themaFilter} onValueChange={setThemaFilter}>
+                    <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Alle thema's</SelectItem>
+                      {themas.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Sessie</Label>
+                  <Select value={sessieFilter} onValueChange={setSessieFilter}>
+                    <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Alle sessies</SelectItem>
+                      {sessies.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Status</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Alle statussen</SelectItem>
+                      {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+                        <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={exportCSV} variant="outline" className="ml-auto">
+                  <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Table */}
+            <Card>
+              <CardContent className="pt-6">
+                {fetching ? (
+                  <p className="text-sm text-muted-foreground">Laden…</p>
+                ) : filtered.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Geen inschrijvingen gevonden.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Naam</TableHead>
+                        <TableHead>Bedrijf</TableHead>
+                        <TableHead>Thema</TableHead>
+                        <TableHead>Sessie</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((r) => (
+                        <TableRow key={r.id} onClick={() => openDetail(r)} className="cursor-pointer">
+                          <TableCell className="text-xs whitespace-nowrap">
+                            {new Date(r.created_at).toLocaleDateString("nl-BE")}
+                          </TableCell>
+                          <TableCell className="font-medium">{r.voornaam}</TableCell>
+                          <TableCell>{r.bedrijf}</TableCell>
+                          <TableCell className="max-w-[240px] truncate">{r.thema}</TableCell>
+                          <TableCell className="max-w-[200px] truncate text-xs">{r.moment}</TableCell>
+                          <TableCell>
+                            <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="abonnees" className="space-y-6">
+            <Card>
+              <CardContent className="pt-6 flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">
+                  Mensen die zich aanmeldden voor updates ("Houd me op de hoogte").
+                </p>
+                <Button onClick={() => exportSubsCSV()} variant="outline">
+                  <Download className="mr-2 h-4 w-4" /> Export CSV ({subs.length})
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                {fetching ? (
+                  <p className="text-sm text-muted-foreground">Laden…</p>
+                ) : subs.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nog geen abonnees.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Voornaam</TableHead>
+                        <TableHead>Achternaam</TableHead>
+                        <TableHead>E-mail</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {subs.map((s) => (
+                        <TableRow key={s.id}>
+                          <TableCell className="text-xs whitespace-nowrap">
+                            {new Date(s.created_at).toLocaleDateString("nl-BE")}
+                          </TableCell>
+                          <TableCell>{s.voornaam || "—"}</TableCell>
+                          <TableCell>{s.achternaam || "—"}</TableCell>
+                          <TableCell className="font-medium">{s.email}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
