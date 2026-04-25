@@ -9,10 +9,9 @@ interface BrevoContact {
   email: string
   attributes: Record<string, unknown>
   tags?: string[]
-  modifiedAt?: string
 }
 
-interface MappedRow {
+interface MappedRegistration {
   email: string
   voornaam: string
   bedrijf: string
@@ -32,7 +31,7 @@ function pickStr(attrs: Record<string, unknown>, ...keys: string[]): string {
   return ''
 }
 
-function mapContact(c: BrevoContact): { row: MappedRow | null; missing: string[] } {
+function mapRegistration(c: BrevoContact): { row: MappedRegistration | null; missing: string[] } {
   const a = c.attributes || {}
   const firstName = pickStr(a, 'FIRSTNAME', 'VOORNAAM')
   const lastName = pickStr(a, 'LASTNAME', 'NAAM', 'ACHTERNAAM')
@@ -45,27 +44,38 @@ function mapContact(c: BrevoContact): { row: MappedRow | null; missing: string[]
   const telefoon = pickStr(a, 'SMS', 'WHATSAPP', 'PHONE', 'TELEFOON', 'GSM')
 
   const missing: string[] = []
-  if (!voornaam) missing.push('voornaam (FIRSTNAME/LASTNAME)')
-  if (!bedrijf) missing.push('bedrijf (COMPANY)')
-  if (!functie) missing.push('functie (JOB_TITLE)')
-  if (!thema) missing.push('thema (TAFEL)')
-  if (!moment) missing.push('moment (SESSIE)')
+  if (!voornaam) missing.push('voornaam')
+  if (!bedrijf) missing.push('bedrijf')
+  if (!functie) missing.push('functie')
+  if (!thema) missing.push('thema')
+  if (!moment) missing.push('moment')
 
   if (missing.length) return { row: null, missing }
 
   return {
-    row: {
-      email: c.email,
-      voornaam,
-      bedrijf,
-      functie,
-      telefoon: telefoon || null,
-      thema,
-      moment,
-      toelichting: toelichting || null,
-    },
+    row: { email: c.email, voornaam, bedrijf, functie, telefoon: telefoon || null, thema, moment, toelichting: toelichting || null },
     missing: [],
   }
+}
+
+async function fetchList(brevoKey: string, listId: number): Promise<BrevoContact[]> {
+  const all: BrevoContact[] = []
+  let offset = 0
+  const limit = 100
+  for (let page = 0; page < 20; page++) {
+    const url = `https://api.brevo.com/v3/contacts/lists/${listId}/contacts?limit=${limit}&offset=${offset}&sort=desc`
+    const resp = await fetch(url, { headers: { 'api-key': brevoKey } })
+    if (!resp.ok) {
+      const txt = await resp.text()
+      throw new Error(`Brevo list ${listId} error [${resp.status}]: ${txt}`)
+    }
+    const data = await resp.json()
+    const contacts: BrevoContact[] = data.contacts || []
+    all.push(...contacts)
+    if (contacts.length < limit) break
+    offset += limit
+  }
+  return all
 }
 
 Deno.serve(async (req) => {
@@ -85,7 +95,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 1. Verify caller is authenticated admin
+    // 1. Verify admin
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Niet ingelogd' }), {
@@ -110,89 +120,98 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 2. Fetch contacts from Brevo list #61 (paginate)
-    const LIST_ID = 61
-    const allContacts: BrevoContact[] = []
-    let offset = 0
-    const limit = 100
-    const maxPages = 20 // safety cap = 2000 contacts
+    // 2. Fetch both lists from Brevo
+    const [registrationsContacts, subscribersContacts] = await Promise.all([
+      fetchList(BREVO_API_KEY, 61),
+      fetchList(BREVO_API_KEY, 60),
+    ])
+    console.log(`List #61 (inschrijvingen): ${registrationsContacts.length} contacts`)
+    console.log(`List #60 (op de hoogte): ${subscribersContacts.length} contacts`)
 
-    for (let page = 0; page < maxPages; page++) {
-      const url = `https://api.brevo.com/v3/contacts/lists/${LIST_ID}/contacts?limit=${limit}&offset=${offset}&sort=desc`
-      const resp = await fetch(url, { headers: { 'api-key': BREVO_API_KEY } })
-      if (!resp.ok) {
-        const txt = await resp.text()
-        console.error(`Brevo list error [${resp.status}]: ${txt}`)
-        return new Response(JSON.stringify({ error: 'Brevo API fout', details: txt }), {
-          status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
-      }
-      const data = await resp.json()
-      const contacts: BrevoContact[] = data.contacts || []
-      allContacts.push(...contacts)
-      if (contacts.length < limit) break
-      offset += limit
+    // 3a. Process registrations (list #61)
+    const regToUpsert: MappedRegistration[] = []
+    const regSkipped: { email: string; missing: string[] }[] = []
+    for (const c of registrationsContacts) {
+      const { row, missing } = mapRegistration(c)
+      if (row) regToUpsert.push(row)
+      else regSkipped.push({ email: c.email, missing })
     }
 
-    console.log(`Fetched ${allContacts.length} contacts from Brevo list #${LIST_ID}`)
-
-    // 3. All contacts in this list are candidates
-    const candidates = allContacts
-
-    console.log(`${candidates.length} contacts match RondeTafel filter`)
-
-    // 4. Map and split
-    const toUpsert: MappedRow[] = []
-    const skipped: { email: string; missing: string[] }[] = []
-    for (const c of candidates) {
-      const { row, missing } = mapContact(c)
-      if (row) toUpsert.push(row)
-      else skipped.push({ email: c.email, missing })
-    }
-
-    // 5. Fetch existing rows so admin edits (status/notitie) are preserved
-    let imported = 0
-    let updated = 0
-    const errors: string[] = []
-
-    for (const row of toUpsert) {
+    let regImported = 0, regUpdated = 0
+    const regErrors: string[] = []
+    for (const row of regToUpsert) {
       const { data: existing } = await admin
         .from('registrations')
         .select('id, voornaam, bedrijf, functie, telefoon, toelichting')
-        .eq('email', row.email)
-        .eq('thema', row.thema)
-        .maybeSingle()
+        .eq('email', row.email).eq('thema', row.thema).maybeSingle()
 
       if (existing) {
-        // Only fill empty fields, never overwrite admin-curated data nor status/notitie
         const patch: Record<string, unknown> = {}
         if (!existing.voornaam && row.voornaam) patch.voornaam = row.voornaam
         if (!existing.bedrijf && row.bedrijf) patch.bedrijf = row.bedrijf
         if (!existing.functie && row.functie) patch.functie = row.functie
         if (!existing.telefoon && row.telefoon) patch.telefoon = row.telefoon
         if (!existing.toelichting && row.toelichting) patch.toelichting = row.toelichting
-
         if (Object.keys(patch).length > 0) {
           const { error } = await admin.from('registrations').update(patch).eq('id', existing.id)
-          if (error) errors.push(`${row.email}: ${error.message}`)
-          else updated++
+          if (error) regErrors.push(`${row.email}: ${error.message}`)
+          else regUpdated++
         }
       } else {
         const { error } = await admin.from('registrations').insert(row)
-        if (error) errors.push(`${row.email}: ${error.message}`)
-        else imported++
+        if (error) regErrors.push(`${row.email}: ${error.message}`)
+        else regImported++
+      }
+    }
+
+    // 3b. Process subscribers (list #60) — only e-mail required
+    let subImported = 0, subUpdated = 0
+    const subErrors: string[] = []
+    for (const c of subscribersContacts) {
+      if (!c.email) continue
+      const a = c.attributes || {}
+      const voornaam = pickStr(a, 'FIRSTNAME', 'VOORNAAM')
+      const achternaam = pickStr(a, 'LASTNAME', 'NAAM', 'ACHTERNAAM')
+
+      const { data: existing } = await admin
+        .from('subscribers').select('id, voornaam, achternaam').eq('email', c.email).maybeSingle()
+
+      if (existing) {
+        const patch: Record<string, unknown> = {}
+        if (!existing.voornaam && voornaam) patch.voornaam = voornaam
+        if (!existing.achternaam && achternaam) patch.achternaam = achternaam
+        if (Object.keys(patch).length > 0) {
+          const { error } = await admin.from('subscribers').update(patch).eq('id', existing.id)
+          if (error) subErrors.push(`${c.email}: ${error.message}`)
+          else subUpdated++
+        }
+      } else {
+        const { error } = await admin.from('subscribers').insert({
+          email: c.email,
+          voornaam: voornaam || null,
+          achternaam: achternaam || null,
+        })
+        if (error) subErrors.push(`${c.email}: ${error.message}`)
+        else subImported++
       }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        totalFetched: allContacts.length,
-        candidates: candidates.length,
-        imported,
-        updated,
-        skipped,
-        errors,
+        registrations: {
+          fetched: registrationsContacts.length,
+          imported: regImported,
+          updated: regUpdated,
+          skipped: regSkipped,
+          errors: regErrors,
+        },
+        subscribers: {
+          fetched: subscribersContacts.length,
+          imported: subImported,
+          updated: subUpdated,
+          errors: subErrors,
+        },
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
