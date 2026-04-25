@@ -84,6 +84,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ db: boolean; brevo: boolean; brevoError?: string }>({ db: false, brevo: false });
 
   useEffect(() => {
     if (preselectedTheme) {
@@ -105,6 +106,9 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
     setLoading(true);
 
     const listTag = form.thema.includes("AI") ? "ronde-tafel-ai-hr" : "ronde-tafel-verandering";
+    let dbOk = false;
+    let brevoOk = false;
+    let brevoErrorMsg: string | undefined;
 
     try {
       // Save to Lovable Cloud (admin dashboard)
@@ -119,6 +123,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         toelichting: form.toelichting || null,
       });
       if (dbError) throw dbError;
+      dbOk = true;
 
       const brevoAttributes: Record<string, unknown> = {
         FIRSTNAME: form.voornaam.split(" ")[0],
@@ -134,32 +139,34 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         brevoAttributes.WHATSAPP = form.telefoon;
       }
 
-      // Pass thema/moment/toelichting along — the edge function decides what Brevo accepts.
-      // Dashboard already has the canonical copy, so any Brevo loss is non-fatal.
-      const { data, error } = await supabase.functions.invoke("brevo-contact", {
-        body: {
-          email: form.email,
-          attributes: brevoAttributes,
-          listIds: [61],
-          updateEnabled: true,
-          ext_id: listTag,
-          sendConfirmation: true,
-          confirmation: { thema: form.thema, moment: form.moment },
-        },
-      });
+      try {
+        const { data, error } = await supabase.functions.invoke("brevo-contact", {
+          body: {
+            email: form.email,
+            attributes: brevoAttributes,
+            listIds: [61],
+            updateEnabled: true,
+            ext_id: listTag,
+            sendConfirmation: true,
+            confirmation: { thema: form.thema, moment: form.moment },
+          },
+        });
 
-      if (error) throw error;
-
-      if (data?.error) {
-        throw new Error(data.error);
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+        brevoOk = true;
+      } catch (brevoErr) {
+        console.error("Brevo sync error:", brevoErr);
+        brevoErrorMsg = brevoErr instanceof Error ? brevoErr.message : "Onbekende fout";
       }
 
+      setStatus({ db: dbOk, brevo: brevoOk, brevoError: brevoErrorMsg });
       setSubmitted(true);
     } catch (err) {
       console.error("Registration error:", err);
       toast({
-        title: "Er ging iets mis",
-        description: "Je aanvraag kon niet verzonden worden. Probeer het later opnieuw of neem contact op.",
+        title: "Inschrijving niet opgeslagen",
+        description: "Je aanvraag kon niet bewaard worden in onze database. Probeer het later opnieuw of neem contact op.",
         variant: "destructive",
       });
     } finally {
@@ -169,10 +176,27 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
 
   if (submitted) {
     return (
-      <div className="bg-card rounded-xl shadow-sm p-8 text-center">
-        <p className="text-lg font-heading font-semibold text-foreground">
+      <div className="bg-card rounded-xl shadow-sm p-8 space-y-4">
+        <p className="text-lg font-heading font-semibold text-foreground text-center">
           ✅ Bedankt voor je aanvraag. We laten je snel weten of deze ronde tafel de juiste match is.
         </p>
+
+        <div className="border-t border-border pt-4 space-y-2 max-w-md mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center mb-2">
+            Status van je inschrijving
+          </p>
+          <StatusRow ok={status.db} label="Opgeslagen in onze database" />
+          <StatusRow
+            ok={status.brevo}
+            label={status.brevo ? "Doorgestuurd naar Brevo (bevestigingsmail verzonden)" : "Brevo-synchronisatie mislukt"}
+          />
+          {!status.brevo && (
+            <p className="text-xs text-muted-foreground text-center pt-2">
+              Geen zorgen: je inschrijving is veilig bewaard. We voegen je handmatig toe aan onze mailing en bevestigen persoonlijk.
+              {status.brevoError && <span className="block mt-1 opacity-60">({status.brevoError})</span>}
+            </p>
+          )}
+        </div>
       </div>
     );
   }
@@ -279,7 +303,19 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         </a>
       </div>
     </form>
+);
+
+/* ── Status row helper ── */
+function StatusRow({ ok, label }: { ok: boolean; label: string }) {
+  return (
+    <div className="flex items-start gap-2 text-sm">
+      <span className={`mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${ok ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+        {ok ? "✓" : "!"}
+      </span>
+      <span className="text-foreground/80">{label}</span>
+    </div>
   );
+}
 };
 
 /* ── Field helper ── */
