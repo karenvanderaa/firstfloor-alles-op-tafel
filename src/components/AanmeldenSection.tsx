@@ -84,6 +84,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ db: boolean; brevo: boolean; brevoError?: string }>({ db: false, brevo: false });
 
   useEffect(() => {
     if (preselectedTheme) {
