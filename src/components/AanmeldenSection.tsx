@@ -303,7 +303,17 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         </a>
       </div>
     </form>
-  );
+);
+
+/* ── Status row helper ── */
+const StatusRow = ({ ok, label }: { ok: boolean; label: string }) => (
+  <div className="flex items-start gap-2 text-sm">
+    <span className={`mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${ok ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+      {ok ? "✓" : "!"}
+    </span>
+    <span className="text-foreground/80">{label}</span>
+  </div>
+);
 };
 
 /* ── Field helper ── */
