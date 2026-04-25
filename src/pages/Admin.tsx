@@ -31,6 +31,14 @@ interface Registration {
   created_at: string;
 }
 
+interface Subscriber {
+  id: string;
+  email: string;
+  voornaam: string | null;
+  achternaam: string | null;
+  created_at: string;
+}
+
 const STATUS_LABEL: Record<Status, string> = {
   in_afwachting: "In afwachting",
   bevestigd: "Bevestigd",
