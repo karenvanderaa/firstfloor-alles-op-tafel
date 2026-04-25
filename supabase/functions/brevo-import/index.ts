@@ -59,12 +59,16 @@ function mapRegistration(c: BrevoContact): { row: MappedRegistration | null; mis
 
   const missing: string[] = []
   if (!c.email) missing.push('email')
-  if (!thema) missing.push('thema (geen EXT_ID of TAFEL gevonden)')
 
   if (missing.length) return { row: null, missing }
 
+  // Fallback: als geen thema bekend is, importeer als "onbekend" zodat de admin
+  // het contact ziet en handmatig een thema kan toekennen.
+  const finalThema = thema || 'onbekend'
+  const finalMoment = moment || 'Nog te bepalen'
+
   return {
-    row: { email: c.email, voornaam, bedrijf, functie, telefoon: telefoon || null, thema, moment, toelichting: toelichting || null },
+    row: { email: c.email, voornaam, bedrijf, functie, telefoon: telefoon || null, thema: finalThema, moment: finalMoment, toelichting: toelichting || null },
     missing: [],
   }
 }
