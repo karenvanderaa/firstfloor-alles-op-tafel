@@ -161,6 +161,24 @@ const Admin = () => {
     URL.revokeObjectURL(url);
   };
 
+  const exportSubsCSV = () => {
+    const headers = ["Datum", "Voornaam", "Achternaam", "E-mail"];
+    const escape = (v: string | null) => `"${(v || "").replace(/"/g, '""')}"`;
+    const csv = [
+      headers.join(","),
+      ...subs.map((s) =>
+        [new Date(s.created_at).toLocaleString("nl-BE"), s.voornaam, s.achternaam, s.email].map(escape).join(","),
+      ),
+    ].join("\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `abonnees-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const importFromBrevo = async () => {
     setImporting(true);
     const { data, error } = await supabase.functions.invoke("brevo-import");
