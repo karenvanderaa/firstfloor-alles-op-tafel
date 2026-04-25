@@ -87,15 +87,14 @@ const Admin = () => {
 
   const fetchRows = async () => {
     setFetching(true);
-    const { data, error } = await supabase
-      .from("registrations")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) {
-      toast({ title: "Fout", description: error.message, variant: "destructive" });
-    } else {
-      setRows((data as Registration[]) || []);
-    }
+    const [regRes, subRes] = await Promise.all([
+      supabase.from("registrations").select("*").order("created_at", { ascending: false }),
+      supabase.from("subscribers").select("*").order("created_at", { ascending: false }),
+    ]);
+    if (regRes.error) toast({ title: "Fout", description: regRes.error.message, variant: "destructive" });
+    else setRows((regRes.data as Registration[]) || []);
+    if (subRes.error) toast({ title: "Fout abonnees", description: subRes.error.message, variant: "destructive" });
+    else setSubs((subRes.data as Subscriber[]) || []);
     setFetching(false);
   };
 
