@@ -172,10 +172,10 @@ Deno.serve(async (req) => {
     }
 
     // 3. Send confirmation email if requested
-    if (sendConfirmation && attributes?.TAFEL && attributes?.SESSIE) {
+    if (sendConfirmation && confirmation?.thema && confirmation?.moment) {
       try {
-        const voornaam = `${attributes.FIRSTNAME || ''} ${attributes.LASTNAME || ''}`.trim()
-        const emailHtml = buildConfirmationHtml(voornaam, attributes.TAFEL, attributes.SESSIE)
+        const voornaam = `${attributes?.FIRSTNAME || ''} ${attributes?.LASTNAME || ''}`.trim()
+        const emailHtml = buildConfirmationHtml(voornaam, confirmation.thema, confirmation.moment)
 
         const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
