@@ -110,14 +110,15 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 2. Fetch contacts from Brevo (paginate, filter by tag client-side)
+    // 2. Fetch contacts from Brevo list #61 (paginate)
+    const LIST_ID = 61
     const allContacts: BrevoContact[] = []
     let offset = 0
     const limit = 100
     const maxPages = 20 // safety cap = 2000 contacts
 
     for (let page = 0; page < maxPages; page++) {
-      const url = `https://api.brevo.com/v3/contacts?limit=${limit}&offset=${offset}&sort=desc`
+      const url = `https://api.brevo.com/v3/contacts/lists/${LIST_ID}/contacts?limit=${limit}&offset=${offset}&sort=desc`
       const resp = await fetch(url, { headers: { 'api-key': BREVO_API_KEY } })
       if (!resp.ok) {
         const txt = await resp.text()
@@ -133,14 +134,10 @@ Deno.serve(async (req) => {
       offset += limit
     }
 
-    console.log(`Fetched ${allContacts.length} total Brevo contacts`)
+    console.log(`Fetched ${allContacts.length} contacts from Brevo list #${LIST_ID}`)
 
-    // 3. Filter for RondeTafel contacts
-    const candidates = allContacts.filter((c) => {
-      const tags = c.tags || []
-      const campaign = (c.attributes as Record<string, unknown>)?.OUTBOUND_CAMPAIGN
-      return tags.includes('RondeTafel') || campaign === 'Ronde Tafel LP'
-    })
+    // 3. All contacts in this list are candidates
+    const candidates = allContacts
 
     console.log(`${candidates.length} contacts match RondeTafel filter`)
 
