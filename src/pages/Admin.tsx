@@ -152,6 +152,26 @@ const Admin = () => {
     URL.revokeObjectURL(url);
   };
 
+  const importFromBrevo = async () => {
+    setImporting(true);
+    const { data, error } = await supabase.functions.invoke("brevo-import");
+    setImporting(false);
+    if (error) {
+      toast({ title: "Import mislukt", description: error.message, variant: "destructive" });
+      return;
+    }
+    const { imported = 0, updated = 0, skipped = [], candidates = 0 } = data || {};
+    const skippedCount = Array.isArray(skipped) ? skipped.length : 0;
+    toast({
+      title: "Brevo import voltooid",
+      description: `${candidates} matches gevonden · ${imported} nieuw · ${updated} aangevuld · ${skippedCount} overgeslagen (incomplete data)`,
+    });
+    if (skippedCount > 0) {
+      console.log("Overgeslagen contacten:", skipped);
+    }
+    fetchRows();
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Laden…</div>;
 
   if (user && !isAdmin) {
