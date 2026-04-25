@@ -56,6 +56,7 @@ const Admin = () => {
   const [selected, setSelected] = useState<Registration | null>(null);
   const [editStatus, setEditStatus] = useState<Status>("in_afwachting");
   const [editNotitie, setEditNotitie] = useState("");
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     document.title = "Admin dashboard | Ronde Tafels";
