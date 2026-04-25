@@ -118,14 +118,17 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         moment: form.moment,
         toelichting: form.toelichting || null,
       });
-      if (dbError) console.error("DB save error:", dbError);
+      if (dbError) throw dbError;
 
       const brevoAttributes: Record<string, unknown> = {
         FIRSTNAME: form.voornaam.split(" ")[0],
         LASTNAME: form.voornaam.split(" ").slice(1).join(" "),
         BEDRIJF: form.bedrijf,
         JOB_TITLE: form.functie,
+        TAFEL: form.thema,
+        SESSIE: form.moment,
       };
+      if (form.toelichting) brevoAttributes.TOELICHTING = form.toelichting;
       if (form.telefoon) {
         brevoAttributes.SMS = form.telefoon;
         brevoAttributes.WHATSAPP = form.telefoon;

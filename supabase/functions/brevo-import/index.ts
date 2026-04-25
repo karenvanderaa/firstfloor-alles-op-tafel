@@ -157,8 +157,8 @@ Deno.serve(async (req) => {
     for (const row of regToUpsert) {
       const { data: existing } = await admin
         .from('registrations')
-        .select('id, voornaam, bedrijf, functie, telefoon, toelichting')
-        .eq('email', row.email).eq('thema', row.thema).maybeSingle()
+        .select('id, voornaam, bedrijf, functie, telefoon, thema, moment, toelichting')
+        .eq('email', row.email).maybeSingle()
 
       if (existing) {
         const patch: Record<string, unknown> = {}
@@ -166,6 +166,8 @@ Deno.serve(async (req) => {
         if (!existing.bedrijf && row.bedrijf) patch.bedrijf = row.bedrijf
         if (!existing.functie && row.functie) patch.functie = row.functie
         if (!existing.telefoon && row.telefoon) patch.telefoon = row.telefoon
+        if ((!existing.thema || existing.thema === 'onbekend') && row.thema && row.thema !== 'onbekend') patch.thema = row.thema
+        if ((!existing.moment || existing.moment === 'Nog te bepalen') && row.moment && row.moment !== 'Nog te bepalen') patch.moment = row.moment
         if (!existing.toelichting && row.toelichting) patch.toelichting = row.toelichting
         if (Object.keys(patch).length > 0) {
           const { error } = await admin.from('registrations').update(patch).eq('id', existing.id)
