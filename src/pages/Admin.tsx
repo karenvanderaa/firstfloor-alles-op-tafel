@@ -169,15 +169,16 @@ const Admin = () => {
       toast({ title: "Import mislukt", description: error.message, variant: "destructive" });
       return;
     }
-    const { imported = 0, updated = 0, skipped = [], candidates = 0 } = data || {};
-    const skippedCount = Array.isArray(skipped) ? skipped.length : 0;
+    const reg = data?.registrations || {};
+    const sub = data?.subscribers || {};
+    const skippedCount = Array.isArray(reg.skipped) ? reg.skipped.length : 0;
     toast({
       title: "Brevo import voltooid",
-      description: `${candidates} matches gevonden · ${imported} nieuw · ${updated} aangevuld · ${skippedCount} overgeslagen (incomplete data)`,
+      description: `Inschrijvingen: ${reg.imported || 0} nieuw · ${reg.updated || 0} aangevuld · ${skippedCount} overgeslagen. Abonnees: ${sub.imported || 0} nieuw · ${sub.updated || 0} aangevuld.`,
     });
-    if (skippedCount > 0) {
-      console.log("Overgeslagen contacten:", skipped);
-    }
+    if (skippedCount > 0) console.log("Overgeslagen inschrijvingen:", reg.skipped);
+    if (reg.errors?.length) console.log("Reg errors:", reg.errors);
+    if (sub.errors?.length) console.log("Sub errors:", sub.errors);
     fetchRows();
   };
 
