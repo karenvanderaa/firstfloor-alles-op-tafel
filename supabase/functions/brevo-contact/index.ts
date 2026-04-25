@@ -93,6 +93,8 @@ Deno.serve(async (req) => {
       EXTRA: ['Ronde Tafels'],
     }
     if (ext_id) enrichedAttributes.EXT_ID = ext_id
+    if (confirmation?.thema && !enrichedAttributes.TAFEL) enrichedAttributes.TAFEL = confirmation.thema
+    if (confirmation?.moment && !enrichedAttributes.SESSIE) enrichedAttributes.SESSIE = confirmation.moment
 
     const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
