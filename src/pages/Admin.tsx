@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Download, LogOut } from "lucide-react";
+import { Download, LogOut, RefreshCw } from "lucide-react";
 
 type Status = "in_afwachting" | "bevestigd" | "wachtlijst" | "afgewezen";
 
@@ -56,6 +56,7 @@ const Admin = () => {
   const [selected, setSelected] = useState<Registration | null>(null);
   const [editStatus, setEditStatus] = useState<Status>("in_afwachting");
   const [editNotitie, setEditNotitie] = useState("");
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     document.title = "Admin dashboard | Ronde Tafels";
@@ -151,6 +152,26 @@ const Admin = () => {
     URL.revokeObjectURL(url);
   };
 
+  const importFromBrevo = async () => {
+    setImporting(true);
+    const { data, error } = await supabase.functions.invoke("brevo-import");
+    setImporting(false);
+    if (error) {
+      toast({ title: "Import mislukt", description: error.message, variant: "destructive" });
+      return;
+    }
+    const { imported = 0, updated = 0, skipped = [], candidates = 0 } = data || {};
+    const skippedCount = Array.isArray(skipped) ? skipped.length : 0;
+    toast({
+      title: "Brevo import voltooid",
+      description: `${candidates} matches gevonden · ${imported} nieuw · ${updated} aangevuld · ${skippedCount} overgeslagen (incomplete data)`,
+    });
+    if (skippedCount > 0) {
+      console.log("Overgeslagen contacten:", skipped);
+    }
+    fetchRows();
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Laden…</div>;
 
   if (user && !isAdmin) {
@@ -229,9 +250,15 @@ const Admin = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={exportCSV} variant="outline" className="ml-auto">
-              <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
-            </Button>
+            <div className="ml-auto flex gap-2">
+              <Button onClick={importFromBrevo} variant="outline" disabled={importing}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${importing ? "animate-spin" : ""}`} />
+                {importing ? "Importeren…" : "Importeer uit Brevo"}
+              </Button>
+              <Button onClick={exportCSV} variant="outline">
+                <Download className="mr-2 h-4 w-4" /> Export CSV ({filtered.length})
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
