@@ -85,8 +85,14 @@ Deno.serve(async (req) => {
       )
     }
 
-    // 1. Create/update contact — OUTBOUND_CAMPAGNES is multi-choice in Brevo (array).
-    const enrichedAttributes = { ...(attributes || {}), OUTBOUND_CAMPAGNES: ['Ronde Tafel LP'] }
+    // 1. Create/update contact.
+    // Keep EXT_ID as a normal Brevo attribute as well: the import flow reads it from attributes.
+    // EXTRA is the existing Brevo multi-choice field that contains "Ronde Tafels".
+    const enrichedAttributes: Record<string, unknown> = {
+      ...(attributes || {}),
+      EXTRA: ['Ronde Tafels'],
+    }
+    if (ext_id) enrichedAttributes.EXT_ID = ext_id
 
     const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
