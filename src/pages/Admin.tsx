@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Download, LogOut, RefreshCw } from "lucide-react";
@@ -66,6 +67,15 @@ const Admin = () => {
   const [selected, setSelected] = useState<Registration | null>(null);
   const [editStatus, setEditStatus] = useState<Status>("in_afwachting");
   const [editNotitie, setEditNotitie] = useState("");
+  const [editVoornaam, setEditVoornaam] = useState("");
+  const [editBedrijf, setEditBedrijf] = useState("");
+  const [editFunctie, setEditFunctie] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editTelefoon, setEditTelefoon] = useState("");
+  const [editThema, setEditThema] = useState("");
+  const [editMoment, setEditMoment] = useState("");
+  const [editToelichting, setEditToelichting] = useState("");
+  const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
 
   useEffect(() => {
@@ -122,18 +132,52 @@ const Admin = () => {
     setSelected(r);
     setEditStatus(r.status);
     setEditNotitie(r.notitie || "");
+    setEditVoornaam(r.voornaam || "");
+    setEditBedrijf(r.bedrijf || "");
+    setEditFunctie(r.functie || "");
+    setEditEmail(r.email || "");
+    setEditTelefoon(r.telefoon || "");
+    setEditThema(r.thema || "");
+    setEditMoment(r.moment || "");
+    setEditToelichting(r.toelichting || "");
   };
 
   const saveDetail = async () => {
     if (!selected) return;
+    setSaving(true);
     const { error } = await supabase
       .from("registrations")
-      .update({ status: editStatus, notitie: editNotitie })
+      .update({
+        status: editStatus,
+        notitie: editNotitie,
+        voornaam: editVoornaam.trim(),
+        bedrijf: editBedrijf.trim(),
+        functie: editFunctie.trim(),
+        email: editEmail.trim(),
+        telefoon: editTelefoon.trim() || null,
+        thema: editThema.trim(),
+        moment: editMoment.trim(),
+        toelichting: editToelichting.trim() || null,
+      })
       .eq("id", selected.id);
+    setSaving(false);
     if (error) {
       toast({ title: "Opslaan mislukt", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Opgeslagen" });
+      setSelected(null);
+      fetchRows();
+    }
+  };
+
+  const deleteRegistration = async () => {
+    if (!selected) return;
+    if (!confirm(`Inschrijving van ${selected.voornaam} verwijderen?`)) return;
+    const { error } = await supabase.from("registrations").delete().eq("id", selected.id);
+    if (error) {
+      toast({ title: "Verwijderen mislukt", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Verwijderd" });
       setSelected(null);
       fetchRows();
     }
@@ -389,20 +433,54 @@ const Admin = () => {
       </main>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           {selected && (
             <>
               <DialogHeader>
-                <DialogTitle>{selected.voornaam}</DialogTitle>
-                <DialogDescription>{selected.bedrijf} — {selected.functie}</DialogDescription>
+                <DialogTitle>Inschrijving bewerken</DialogTitle>
+                <DialogDescription>
+                  Aangemeld op {new Date(selected.created_at).toLocaleString("nl-BE")}
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-3 text-sm">
-                <Detail label="E-mail" value={selected.email} />
-                <Detail label="Telefoon" value={selected.telefoon || "—"} />
-                <Detail label="Thema" value={selected.thema} />
-                <Detail label="Sessie" value={selected.moment} />
-                <Detail label="Toelichting" value={selected.toelichting || "—"} />
-                <Detail label="Aangemeld op" value={new Date(selected.created_at).toLocaleString("nl-BE")} />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label>Voornaam / Naam</Label>
+                    <Input value={editVoornaam} onChange={(e) => setEditVoornaam(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Bedrijf</Label>
+                    <Input value={editBedrijf} onChange={(e) => setEditBedrijf(e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label>Functie</Label>
+                  <Input value={editFunctie} onChange={(e) => setEditFunctie(e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label>E-mail</Label>
+                    <Input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Telefoon</Label>
+                    <Input value={editTelefoon} onChange={(e) => setEditTelefoon(e.target.value)} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label>Thema</Label>
+                    <Input value={editThema} onChange={(e) => setEditThema(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Sessie / Moment</Label>
+                    <Input value={editMoment} onChange={(e) => setEditMoment(e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label>Toelichting</Label>
+                  <Textarea value={editToelichting} onChange={(e) => setEditToelichting(e.target.value)} rows={2} />
+                </div>
 
                 <div className="space-y-1 pt-2">
                   <Label>Status</Label>
@@ -422,8 +500,11 @@ const Admin = () => {
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <Button onClick={saveDetail} className="flex-1 bg-[#315eff] hover:bg-[#315eff]/90">Opslaan</Button>
+                  <Button onClick={saveDetail} disabled={saving} className="flex-1 bg-[#315eff] hover:bg-[#315eff]/90">
+                    {saving ? "Opslaan…" : "Opslaan"}
+                  </Button>
                   <Button onClick={() => setSelected(null)} variant="outline">Sluiten</Button>
+                  <Button onClick={deleteRegistration} variant="destructive">Verwijderen</Button>
                 </div>
               </div>
             </>
@@ -433,12 +514,5 @@ const Admin = () => {
     </div>
   );
 };
-
-const Detail = ({ label, value }: { label: string; value: string }) => (
-  <div className="grid grid-cols-3 gap-2">
-    <span className="text-muted-foreground">{label}</span>
-    <span className="col-span-2 break-words">{value}</span>
-  </div>
-);
 
 export default Admin;
