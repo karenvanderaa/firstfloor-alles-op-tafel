@@ -89,6 +89,33 @@ export type Database = {
         }
         Relationships: []
       }
+      subscribers: {
+        Row: {
+          achternaam: string | null
+          created_at: string
+          email: string
+          id: string
+          updated_at: string
+          voornaam: string | null
+        }
+        Insert: {
+          achternaam?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          updated_at?: string
+          voornaam?: string | null
+        }
+        Update: {
+          achternaam?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          updated_at?: string
+          voornaam?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
