@@ -31,24 +31,35 @@ function pickStr(attrs: Record<string, unknown>, ...keys: string[]): string {
   return ''
 }
 
+function bedrijfFromEmail(email: string): string {
+  const domain = email.split('@')[1] || ''
+  const name = domain.split('.')[0] || ''
+  if (!name) return 'Onbekend'
+  return name.charAt(0).toUpperCase() + name.slice(1)
+}
+
+function themaFromExtId(extId: string): string {
+  // bv. "ronde-tafel-ai-hr" -> "ai-hr"; "ronde-tafel-verandering" -> "verandering"
+  return extId.replace(/^ronde-tafel-/, '').trim()
+}
+
 function mapRegistration(c: BrevoContact): { row: MappedRegistration | null; missing: string[] } {
   const a = c.attributes || {}
   const firstName = pickStr(a, 'FIRSTNAME', 'VOORNAAM')
   const lastName = pickStr(a, 'LASTNAME', 'NAAM', 'ACHTERNAAM')
-  const voornaam = `${firstName} ${lastName}`.trim()
-  const bedrijf = pickStr(a, 'COMPANY', 'BEDRIJF', 'ORGANISATIE')
-  const functie = pickStr(a, 'JOB_TITLE', 'FUNCTIE', 'TITLE', 'ROL')
-  const thema = pickStr(a, 'TAFEL', 'THEMA')
-  const moment = pickStr(a, 'SESSIE', 'MOMENT')
+  const voornaam = `${firstName} ${lastName}`.trim() || c.email
+  const bedrijfRaw = pickStr(a, 'COMPANY', 'BEDRIJF', 'ORGANISATIE')
+  const bedrijf = bedrijfRaw || bedrijfFromEmail(c.email)
+  const functie = pickStr(a, 'JOB_TITLE', 'FUNCTIE', 'TITLE', 'ROL') || 'Onbekend'
+  const extId = pickStr(a, 'EXT_ID')
+  const thema = pickStr(a, 'TAFEL', 'THEMA') || (extId ? themaFromExtId(extId) : '')
+  const moment = pickStr(a, 'SESSIE', 'MOMENT') || 'Nog te bepalen'
   const toelichting = pickStr(a, 'TOELICHTING', 'NOTES', 'NOTE')
   const telefoon = pickStr(a, 'SMS', 'WHATSAPP', 'PHONE', 'TELEFOON', 'GSM')
 
   const missing: string[] = []
-  if (!voornaam) missing.push('voornaam')
-  if (!bedrijf) missing.push('bedrijf')
-  if (!functie) missing.push('functie')
-  if (!thema) missing.push('thema')
-  if (!moment) missing.push('moment')
+  if (!c.email) missing.push('email')
+  if (!thema) missing.push('thema (geen EXT_ID of TAFEL gevonden)')
 
   if (missing.length) return { row: null, missing }
 
