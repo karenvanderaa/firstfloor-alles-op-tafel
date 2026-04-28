@@ -1,6 +1,17 @@
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+}
+
+function normalizePhoneForBrevo(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const compact = value.trim().replace(/[^\d+]/g, '')
+  if (!compact) return undefined
+  if (compact.startsWith('+')) return compact
+  if (compact.startsWith('00')) return `+${compact.slice(2)}`
+  if (compact.startsWith('32')) return `+${compact}`
+  if (compact.startsWith('0')) return `+32${compact.slice(1)}`
+  return undefined
 }
 
 function buildConfirmationHtml(voornaam: string, thema: string, moment: string): string {
@@ -86,15 +97,26 @@ Deno.serve(async (req) => {
     }
 
     // 1. Create/update contact.
-    // Keep EXT_ID as a normal Brevo attribute as well: the import flow reads it from attributes.
-    // EXTRA is the existing Brevo multi-choice field that contains "Ronde Tafels".
+    // IMPORTANT: Brevo's top-level ext_id is a unique contact identifier, not a campaign/table tag.
+    // Reusing the same value for multiple registrations blocks the sync with duplicate_parameter.
+    // EXTRA/OUTBOUND_CAMPAGNES are existing multi-choice fields for segmentation.
     const enrichedAttributes: Record<string, unknown> = {
       ...(attributes || {}),
       EXTRA: ['Ronde Tafels'],
+      OUTBOUND_CAMPAGNES: ['Ronde Tafel LP'],
     }
-    if (ext_id) enrichedAttributes.EXT_ID = ext_id
-    if (confirmation?.thema && !enrichedAttributes.TAFEL) enrichedAttributes.TAFEL = confirmation.thema
-    if (confirmation?.moment && !enrichedAttributes.SESSIE) enrichedAttributes.SESSIE = confirmation.moment
+    delete enrichedAttributes.EXT_ID
+    delete enrichedAttributes.TAFEL
+    delete enrichedAttributes.SESSIE
+    delete enrichedAttributes.TOELICHTING
+
+    const normalizedPhone = normalizePhoneForBrevo(enrichedAttributes.SMS || enrichedAttributes.WHATSAPP)
+    delete enrichedAttributes.SMS
+    delete enrichedAttributes.WHATSAPP
+    if (normalizedPhone) {
+      enrichedAttributes.SMS = normalizedPhone
+      enrichedAttributes.WHATSAPP = normalizedPhone
+    }
 
     const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
@@ -107,7 +129,6 @@ Deno.serve(async (req) => {
         attributes: enrichedAttributes,
         listIds: listIds || [],
         updateEnabled: updateEnabled ?? true,
-        ext_id: ext_id || undefined,
       }),
     })
 
@@ -139,6 +160,10 @@ Deno.serve(async (req) => {
       const updateData = await updateResponse.text()
       if (!updateResponse.ok && updateResponse.status !== 204) {
         console.error(`Brevo update API error [${updateResponse.status}]: ${updateData}`)
+        return new Response(
+          JSON.stringify({ error: 'Failed to update contact', details: updateData }),
+          { status: updateResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
       } else {
         console.log('Contact updated successfully')
       }
