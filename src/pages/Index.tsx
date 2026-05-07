@@ -70,6 +70,7 @@ const Index = () => {
       <AanmeldenSection key={preselectedTheme || "default"} preselectedTheme={preselectedTheme} />
       <AboutSection />
       <Footer />
+      <KeepMePostedDialog />
     </div>
   );
 };
