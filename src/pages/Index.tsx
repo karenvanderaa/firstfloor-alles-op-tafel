@@ -7,6 +7,7 @@ import PhotoSlider from "@/components/PhotoSlider";
 import AboutSection from "@/components/AboutSection";
 import AanmeldenSection from "@/components/AanmeldenSection";
 import Footer from "@/components/Footer";
+import KeepMePostedDialog from "@/components/KeepMePostedDialog";
 
 type Theme = "AI in HR: wat betekent dat nu écht?" | "Verandering staat op de agenda. Draagvlak niet.";
 
