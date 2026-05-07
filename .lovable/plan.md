@@ -1,62 +1,52 @@
-## Wortel van het probleem
 
-Brevo verwerpt onbekende attributen **stilzwijgend** (geen error, gewoon weg). De edge function `brevo-contact` stuurt op dit moment velden die niet bestaan in jouw Brevo-account:
+## Doel
 
-| Wij sturen | Brevo kent | Resultaat |
-|---|---|---|
-| `COMPANY` | `BEDRIJF` | weggegooid |
-| `FUNCTION` | `JOB_TITLE` | weggegooid |
-| `PHONE` | `SMS` / `WHATSAPP` | weggegooid |
-| `TAFEL` | bestaat niet | weggegooid |
-| `SESSIE` | bestaat niet | weggegooid |
-| `TOELICHTING` | bestaat niet | weggegooid |
-| `OUTBOUND_CAMPAIGN` | `OUTBOUND_CAMPAGNES` (meervoud, multi-choice) | weggegooid |
+De "Houd me op de hoogte"-conversie verhogen door het inschrijfblok niet alleen onderaan te tonen, maar actief naar voren te brengen via een pop-up en een knop in de navbar.
 
-Daarbovenop slaat de site de inschrijving **niet zelf op** in `registrations` — er wordt enkel naar Brevo gestuurd. Als Brevo iets verliest, is het voorgoed weg en het dashboard heeft niets om te tonen. De importknop is dus de enige manier om data te zien, en die kan enkel ophalen wat Brevo aanvaardde.
+## Wat we bouwen
 
-## Aanpak: beide combineren
+### 1. Nieuwe pop-up component `KeepMePostedDialog`
+Een Radix Dialog met dezelfde inhoud/logica als het bestaande `KeepMePosted`-blok (subscribers-tabel + Brevo lijst 60), maar in modal-vorm.
 
-### 1. Dashboard wordt primaire opslag
+**Inhoud:**
+- Titel: *"Kan je er niet bij zijn? Niet het juiste thema?"*
+- Subtitel: *"Blijf op de hoogte van de tafels en ontvang als eerste de key insights van elke editie."*
+- Velden: Voornaam & naam, E-mail
+- Knop: "Houd me op de hoogte" (primaire kleur #315eff)
+- Succes-state met bevestiging
+- Discrete sluit-knop (X) — sluiten = "later misschien"
 
-`AanmeldenSection.tsx` zal bij elke submit:
-1. **Eerst** `INSERT` in `registrations` (volledige data: voornaam, bedrijf, functie, email, telefoon, thema, moment, toelichting, status `in_afwachting`).
-2. **Dan pas** Brevo aanroepen voor de mailing-sync. Als Brevo faalt, blijft de inschrijving in het dashboard staan.
+### 2. Triggers (alle drie actief)
+- **Exit-intent**: `mouseleave` event aan top van viewport (desktop)
+- **Timer**: na 15 seconden op de pagina (mobile-fallback voor exit-intent)
+- **Navbar-knop**: nieuwe knop "Blijf op de hoogte" rechts in de Navbar — opent direct de pop-up
 
-Idem voor de "op de hoogte"-flow → `subscribers`-tabel.
+Eerste van timer/exit-intent wint; daarna gedeactiveerd voor de sessie.
 
-Hierdoor is de importknop niet meer nodig voor nieuwe inschrijvingen. Hij blijft bestaan voor het ophalen van bestaande contacten in list #61/#60 (handig voor mensen die je manueel toevoegt of historische data).
+### 3. Frequentie-logica
+- Bij sluiten of succesvolle inschrijving: `localStorage.setItem('keepPostedDismissedAt', Date.now())`
+- Bij paginalaad: pop-up alleen automatisch tonen als laatste dismiss > 7 dagen geleden (of nooit getoond)
+- Navbar-knop werkt **altijd** (negeert frequentie-cap) — zo kan de bezoeker zelf altijd opnieuw
 
-### 2. Brevo-attributen aligneren
+### 4. Bestaand footer-blok
+Blijft staan als backup, ongewijzigd.
 
-`brevo-contact` stuurt voortaan de juiste namen:
-- `BEDRIJF` ipv `COMPANY`
-- `JOB_TITLE` ipv `FUNCTION`
-- `SMS` en `WHATSAPP` ipv `PHONE` (telefoon wordt naar beide gemapt)
-- `OUTBOUND_CAMPAGNES` als array (`["Ronde Tafel LP"]`) ipv string
+## Technische details
 
-Voor `TAFEL`, `SESSIE`, `TOELICHTING` zijn er twee opties:
-- **A.** Aanmaken als nieuwe custom attributes via Brevo's `POST /v3/contacts/attributes/normal/{NAME}` endpoint (eenmalig, in een aparte stap of via de edge function bij eerste call).
-- **B.** Niet doorsturen naar Brevo, want die info hoort thuis in het dashboard. Brevo krijgt enkel naam, bedrijf, functie, telefoon en de RondeTafel-tag/list.
+**Nieuwe/aangepaste files:**
+- `src/components/KeepMePostedDialog.tsx` (nieuw) — Dialog wrapper met formulier, herbruikt submit-logica
+- `src/hooks/useKeepMePostedTrigger.ts` (nieuw) — beheert exit-intent + timer + 7-dagen localStorage
+- `src/components/Navbar.tsx` — knop toevoegen die `setOpen(true)` triggert via context of prop-drilling
+- `src/pages/Index.tsx` — `<KeepMePostedDialog>` mounten, `open`-state delen met Navbar
+- (optioneel kleine refactor) submit-logica in `AanmeldenSection.tsx` extraheren naar shared util zodat dialog en footer-blok dezelfde code gebruiken
 
-→ Voorstel: **B** voor `TAFEL`/`SESSIE`/`TOELICHTING` (dashboard volstaat), wel `EXT_ID` blijven zetten met de tafel-slug zodat je in Brevo nog kan filteren op tafel.
+**State management:**
+Eenvoudige `useState` in `Index.tsx` + context (of prop) zodat Navbar de dialog kan openen. Geen extra library nodig.
 
-### 3. Importknop blijft, maar wordt cosmetisch
+**Brevo & DB:**
+Hergebruik exact dezelfde call: `subscribers` insert + `brevo-contact` edge function met `listIds: [60]`, `ext_id: "ronde-tafel-updates"`.
 
-`brevo-import` blijft bestaan voor handmatig toegevoegde contacten. Deduplicatie op email blijft, en de huidige "ontbrekende velden = fallback" logica blijft staan zodat oude contacten zoals Caro & Caroline nog binnenkomen met `Onbekend`/`Nog te bepalen` waar nodig.
-
-### 4. Dashboard standaardfilter
-
-`Admin.tsx` standaardfilter op "Alle statussen" (nu staat hij blijkbaar op "Wachtlijst"), zodat je na import/inschrijving altijd direct alles ziet.
-
-## Technische wijzigingen
-
-- `src/components/AanmeldenSection.tsx` — voeg `supabase.from('registrations').insert(...)` toe **vóór** de `brevo-contact`-invoke. Idem voor de op-de-hoogte-flow → `subscribers`.
-- `supabase/functions/brevo-contact/index.ts` — hernoem attribuutkeys naar Brevo-conventies (`BEDRIJF`, `JOB_TITLE`, `SMS`, `WHATSAPP`, `OUTBOUND_CAMPAGNES` als array). Stop met `TAFEL`/`SESSIE`/`TOELICHTING` te sturen. `EXT_ID` blijft.
-- `src/pages/Admin.tsx` — standaard statusfilter naar "alle".
-- Geen DB-migratie nodig (tabellen bestaan al en zijn correct).
-
-## Wat jij daarna ziet
-
-- Iedere nieuwe inschrijving via de site verschijnt **onmiddellijk** in het dashboard, ongeacht wat Brevo doet.
-- Brevo krijgt alle relevante mailing-velden correct gevuld (geen verloren `BEDRIJF`/`JOB_TITLE` meer).
-- De 4 huidige inschrijvingen die je al manueel zag verschijnen via de import blijven zichtbaar; nieuwe inschrijvingen werken vanaf nu “gewoon”.
+## Niet in scope
+- A/B testen van varianten
+- Aanpassen van Brevo-templates
+- Wijzigen van de inhoud van het bestaande footer-blok
