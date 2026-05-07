@@ -1,4 +1,5 @@
 import logoFirstFloor from "@/assets/logo-firstfloor.png";
+import { openKeepPostedDialog } from "@/components/KeepMePostedDialog";
 
 const Navbar = () => (
   <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
@@ -14,6 +15,13 @@ const Navbar = () => (
         <a href="#edities" className="hover:text-primary transition-colors">Edities</a>
         <a href="#facilitators" className="hover:text-primary transition-colors">Facilitators</a>
         <a href="#over" className="hover:text-primary transition-colors">Over ons</a>
+        <button
+          type="button"
+          onClick={openKeepPostedDialog}
+          className="text-foreground/70 hover:text-primary transition-colors"
+        >
+          Blijf op de hoogte
+        </button>
         <a
           href="#aanmelden"
           className="bg-primary text-primary-foreground px-4 py-2 rounded-full font-semibold hover:bg-primary/90 transition-colors"
@@ -40,6 +48,13 @@ const Navbar = () => (
       <a href="#edities" className="block text-foreground/70 hover:text-primary">Edities</a>
       <a href="#facilitators" className="block text-foreground/70 hover:text-primary">Facilitators</a>
       <a href="#over" className="block text-foreground/70 hover:text-primary">Over ons</a>
+      <button
+        type="button"
+        onClick={openKeepPostedDialog}
+        className="block text-left text-foreground/70 hover:text-primary"
+      >
+        Blijf op de hoogte
+      </button>
       <a href="#aanmelden" className="block text-primary font-semibold">Aanmelden</a>
     </div>
   </nav>
