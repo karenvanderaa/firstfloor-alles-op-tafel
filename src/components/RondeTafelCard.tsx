@@ -42,7 +42,12 @@ const RondeTafelCard = ({ editieLabel, title, body, borderColor, onSelectTheme }
         {title.includes("AI") ? (
           <>
             <p>📅 Avondsessie: don 28/5 — 16u tot 18u</p>
-            <p>📅 Ochtendsessie: vrij 29/5 — 8u tot 10u</p>
+            <p className="flex items-center gap-2">
+              📅 Ochtendsessie: vrij 29/5 — 8u tot 10u
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
+                Volzet
+              </span>
+            </p>
           </>
         ) : (
           <>
