@@ -250,6 +250,23 @@ const Admin = () => {
     fetchRows();
   };
 
+  const resyncBrevo = async (table: "registrations" | "subscribers", id: string) => {
+    toast({ title: "Brevo-sync gestart…" });
+    const { data, error } = await supabase.functions.invoke("sync-to-brevo", {
+      body: { table, id },
+    });
+    if (error || data?.error) {
+      toast({
+        title: "Brevo-sync mislukt",
+        description: error?.message || data?.error || "Onbekende fout",
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "Brevo-sync gelukt" });
+    }
+    fetchRows();
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Laden…</div>;
 
   if (user && !isAdmin) {
