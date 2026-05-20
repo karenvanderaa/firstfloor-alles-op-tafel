@@ -131,7 +131,7 @@ const Admin = () => {
   );
 
   const stats = useMemo(() => {
-    const counts: Record<Status, number> = { in_afwachting: 0, bevestigd: 0, wachtlijst: 0, afgewezen: 0 };
+    const counts: Record<Status, number> = { in_afwachting: 0, bevestigd: 0, wachtlijst: 0, afgewezen: 0, geannuleerd: 0 };
     rows.forEach((r) => counts[r.status]++);
     return counts;
   }, [rows]);
