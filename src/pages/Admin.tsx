@@ -538,6 +538,23 @@ const Admin = () => {
                   <Textarea value={editNotitie} onChange={(e) => setEditNotitie(e.target.value)} rows={3} />
                 </div>
 
+                <div className="space-y-2 pt-2 border-t border-border">
+                  <Label>Brevo-synchronisatie</Label>
+                  <div className="flex items-center gap-3 text-xs">
+                    <BrevoSyncCell
+                      syncedAt={selected.brevo_synced_at}
+                      error={selected.brevo_last_error}
+                      onResync={() => resyncBrevo("registrations", selected.id)}
+                    />
+                    <span className="text-muted-foreground">
+                      {selected.brevo_attempts || 0} poging(en)
+                    </span>
+                  </div>
+                  {selected.brevo_last_error && (
+                    <p className="text-xs text-destructive break-all">{selected.brevo_last_error}</p>
+                  )}
+                </div>
+
                 <div className="flex gap-2 pt-2">
                   <Button onClick={saveDetail} disabled={saving} className="flex-1 bg-[#315eff] hover:bg-[#315eff]/90">
                     {saving ? "Opslaan…" : "Opslaan"}
