@@ -571,4 +571,44 @@ const Admin = () => {
   );
 };
 
+function BrevoSyncCell({
+  syncedAt,
+  error,
+  onResync,
+}: {
+  syncedAt: string | null;
+  error: string | null;
+  onResync: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const handle = async () => {
+    setBusy(true);
+    await onResync();
+    setBusy(false);
+  };
+  if (syncedAt) {
+    return (
+      <div className="flex items-center gap-2">
+        <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
+          ✓ Gesynct
+        </Badge>
+        <Button size="sm" variant="ghost" onClick={handle} disabled={busy} className="h-7 px-2">
+          <RefreshCw className={`h-3 w-3 ${busy ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <Badge variant={error ? "destructive" : "secondary"}>
+        {error ? "Fout" : "Wachten…"}
+      </Badge>
+      <Button size="sm" variant="outline" onClick={handle} disabled={busy} className="h-7 px-2 text-xs">
+        <RefreshCw className={`mr-1 h-3 w-3 ${busy ? "animate-spin" : ""}`} />
+        Resync
+      </Button>
+    </div>
+  );
+}
+
 export default Admin;
