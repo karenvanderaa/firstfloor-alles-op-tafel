@@ -383,6 +383,7 @@ const Admin = () => {
                         <TableHead>Thema</TableHead>
                         <TableHead>Sessie</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Brevo</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -397,6 +398,13 @@ const Admin = () => {
                           <TableCell className="max-w-[200px] truncate text-xs">{r.moment}</TableCell>
                           <TableCell>
                             <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
+                          </TableCell>
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <BrevoSyncCell
+                              syncedAt={r.brevo_synced_at}
+                              error={r.brevo_last_error}
+                              onResync={() => resyncBrevo("registrations", r.id)}
+                            />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -433,6 +441,7 @@ const Admin = () => {
                         <TableHead>Voornaam</TableHead>
                         <TableHead>Achternaam</TableHead>
                         <TableHead>E-mail</TableHead>
+                        <TableHead>Brevo</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -444,6 +453,13 @@ const Admin = () => {
                           <TableCell>{s.voornaam || "—"}</TableCell>
                           <TableCell>{s.achternaam || "—"}</TableCell>
                           <TableCell className="font-medium">{s.email}</TableCell>
+                          <TableCell>
+                            <BrevoSyncCell
+                              syncedAt={s.brevo_synced_at}
+                              error={s.brevo_last_error}
+                              onResync={() => resyncBrevo("subscribers", s.id)}
+                            />
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
