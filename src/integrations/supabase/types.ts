@@ -44,6 +44,9 @@ export type Database = {
       registrations: {
         Row: {
           bedrijf: string
+          brevo_attempts: number
+          brevo_last_error: string | null
+          brevo_synced_at: string | null
           created_at: string
           email: string
           functie: string
@@ -59,6 +62,9 @@ export type Database = {
         }
         Insert: {
           bedrijf: string
+          brevo_attempts?: number
+          brevo_last_error?: string | null
+          brevo_synced_at?: string | null
           created_at?: string
           email: string
           functie: string
@@ -74,6 +80,9 @@ export type Database = {
         }
         Update: {
           bedrijf?: string
+          brevo_attempts?: number
+          brevo_last_error?: string | null
+          brevo_synced_at?: string | null
           created_at?: string
           email?: string
           functie?: string
@@ -92,6 +101,9 @@ export type Database = {
       subscribers: {
         Row: {
           achternaam: string | null
+          brevo_attempts: number
+          brevo_last_error: string | null
+          brevo_synced_at: string | null
           created_at: string
           email: string
           id: string
@@ -100,6 +112,9 @@ export type Database = {
         }
         Insert: {
           achternaam?: string | null
+          brevo_attempts?: number
+          brevo_last_error?: string | null
+          brevo_synced_at?: string | null
           created_at?: string
           email: string
           id?: string
@@ -108,6 +123,9 @@ export type Database = {
         }
         Update: {
           achternaam?: string | null
+          brevo_attempts?: number
+          brevo_last_error?: string | null
+          brevo_synced_at?: string | null
           created_at?: string
           email?: string
           id?: string
