@@ -30,6 +30,9 @@ interface Registration {
   status: Status;
   notitie: string | null;
   created_at: string;
+  brevo_synced_at: string | null;
+  brevo_last_error: string | null;
+  brevo_attempts: number;
 }
 
 interface Subscriber {
@@ -38,6 +41,9 @@ interface Subscriber {
   voornaam: string | null;
   achternaam: string | null;
   created_at: string;
+  brevo_synced_at: string | null;
+  brevo_last_error: string | null;
+  brevo_attempts: number;
 }
 
 const STATUS_LABEL: Record<Status, string> = {
