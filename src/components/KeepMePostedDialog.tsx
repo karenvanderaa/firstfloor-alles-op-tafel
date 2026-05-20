@@ -85,27 +85,15 @@ const KeepMePostedDialog = () => {
     const achternaam = form.naam.split(" ").slice(1).join(" ");
 
     try {
+      // Save to Lovable Cloud — DB trigger handles Brevo sync server-side
       const { error: dbError } = await supabase.from("subscribers").insert({
         email: form.email,
         voornaam: voornaam || null,
         achternaam: achternaam || null,
       });
       if (dbError && !dbError.message.toLowerCase().includes("duplicate")) {
-        console.error("DB subscribe error:", dbError);
+        throw dbError;
       }
-
-      const { data, error } = await supabase.functions.invoke("brevo-contact", {
-        body: {
-          email: form.email,
-          attributes: { FIRSTNAME: voornaam, LASTNAME: achternaam },
-          listIds: [60],
-          updateEnabled: true,
-          ext_id: "ronde-tafel-updates",
-        },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
 
       setSubmitted(true);
       markDismissed();
