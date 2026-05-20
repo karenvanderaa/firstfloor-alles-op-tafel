@@ -175,6 +175,7 @@ export type Database = {
         | "bevestigd"
         | "wachtlijst"
         | "afgewezen"
+        | "geannuleerd"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -308,6 +309,7 @@ export const Constants = {
         "bevestigd",
         "wachtlijst",
         "afgewezen",
+        "geannuleerd",
       ],
     },
   },
