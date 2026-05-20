@@ -84,7 +84,6 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<{ db: boolean; brevo: boolean; brevoError?: string }>({ db: false, brevo: false });
 
   useEffect(() => {
     if (preselectedTheme) {
@@ -105,13 +104,8 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
     e.preventDefault();
     setLoading(true);
 
-    const listTag = form.thema.includes("AI") ? "ronde-tafel-ai-hr" : "ronde-tafel-verandering";
-    let dbOk = false;
-    let brevoOk = false;
-    let brevoErrorMsg: string | undefined;
-
     try {
-      // Save to Lovable Cloud (admin dashboard)
+      // Save to Lovable Cloud — DB trigger handles Brevo sync server-side
       const { error: dbError } = await supabase.from("registrations").insert({
         voornaam: form.voornaam,
         bedrijf: form.bedrijf,
@@ -123,50 +117,12 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         toelichting: form.toelichting || null,
       });
       if (dbError) throw dbError;
-      dbOk = true;
-
-      const brevoAttributes: Record<string, unknown> = {
-        FIRSTNAME: form.voornaam.split(" ")[0],
-        LASTNAME: form.voornaam.split(" ").slice(1).join(" "),
-        BEDRIJF: form.bedrijf,
-        JOB_TITLE: form.functie,
-        TAFEL: form.thema,
-        SESSIE: form.moment,
-      };
-      if (form.toelichting) brevoAttributes.TOELICHTING = form.toelichting;
-      if (form.telefoon) {
-        brevoAttributes.SMS = form.telefoon;
-        brevoAttributes.WHATSAPP = form.telefoon;
-      }
-
-      try {
-        const { data, error } = await supabase.functions.invoke("brevo-contact", {
-          body: {
-            email: form.email,
-            attributes: brevoAttributes,
-            listIds: [61],
-            updateEnabled: true,
-            ext_id: listTag,
-            sendConfirmation: true,
-            confirmation: { thema: form.thema, moment: form.moment },
-          },
-        });
-
-        if (error) throw error;
-        if (data?.error) throw new Error(data.error);
-        brevoOk = true;
-      } catch (brevoErr) {
-        console.error("Brevo sync error:", brevoErr);
-        brevoErrorMsg = brevoErr instanceof Error ? brevoErr.message : "Onbekende fout";
-      }
-
-      setStatus({ db: dbOk, brevo: brevoOk, brevoError: brevoErrorMsg });
       setSubmitted(true);
     } catch (err) {
       console.error("Registration error:", err);
       toast({
         title: "Inschrijving niet opgeslagen",
-        description: "Je aanvraag kon niet bewaard worden in onze database. Probeer het later opnieuw of neem contact op.",
+        description: "Je aanvraag kon niet bewaard worden. Probeer het later opnieuw of neem contact op via karen@firstfloortalent.be.",
         variant: "destructive",
       });
     } finally {
@@ -180,23 +136,9 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         <p className="text-lg font-heading font-semibold text-foreground text-center">
           ✅ Bedankt voor je aanvraag. We laten je snel weten of deze ronde tafel de juiste match is.
         </p>
-
-        <div className="border-t border-border pt-4 space-y-2 max-w-md mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center mb-2">
-            Status van je inschrijving
-          </p>
-          <StatusRow ok={status.db} label="Opgeslagen in onze database" />
-          <StatusRow
-            ok={status.brevo}
-            label={status.brevo ? "Doorgestuurd naar Brevo (bevestigingsmail verzonden)" : "Brevo-synchronisatie mislukt"}
-          />
-          {!status.brevo && (
-            <p className="text-xs text-muted-foreground text-center pt-2">
-              Geen zorgen: je inschrijving is veilig bewaard. We voegen je handmatig toe aan onze mailing en bevestigen persoonlijk.
-              {status.brevoError && <span className="block mt-1 opacity-60">({status.brevoError})</span>}
-            </p>
-          )}
-        </div>
+        <p className="text-sm text-muted-foreground text-center">
+          Je ontvangt binnen enkele minuten een bevestiging in je mailbox.
+        </p>
       </div>
     );
   }
@@ -312,19 +254,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
         </a>
       </div>
     </form>
-);
-
-/* ── Status row helper ── */
-function StatusRow({ ok, label }: { ok: boolean; label: string }) {
-  return (
-    <div className="flex items-start gap-2 text-sm">
-      <span className={`mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${ok ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
-        {ok ? "✓" : "!"}
-      </span>
-      <span className="text-foreground/80">{label}</span>
-    </div>
   );
-}
 };
 
 /* ── Field helper ── */
@@ -368,30 +298,15 @@ const KeepMePosted = () => {
     const achternaam = form.naam.split(" ").slice(1).join(" ");
 
     try {
-      // Save to Lovable Cloud
+      // Save to Lovable Cloud — DB trigger handles Brevo sync server-side
       const { error: dbError } = await supabase.from("subscribers").insert({
         email: form.email,
         voornaam: voornaam || null,
         achternaam: achternaam || null,
       });
-      // Ignore unique-violation (already subscribed) — still send to Brevo
       if (dbError && !dbError.message.toLowerCase().includes("duplicate")) {
-        console.error("DB subscribe error:", dbError);
+        throw dbError;
       }
-
-      const { data, error } = await supabase.functions.invoke("brevo-contact", {
-        body: {
-          email: form.email,
-          attributes: { FIRSTNAME: voornaam, LASTNAME: achternaam },
-          listIds: [60],
-          updateEnabled: true,
-          ext_id: "ronde-tafel-updates",
-        },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
       setSubmitted(true);
     } catch (err) {
       console.error("Keep me posted error:", err);

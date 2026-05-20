@@ -30,6 +30,9 @@ interface Registration {
   status: Status;
   notitie: string | null;
   created_at: string;
+  brevo_synced_at: string | null;
+  brevo_last_error: string | null;
+  brevo_attempts: number;
 }
 
 interface Subscriber {
@@ -38,6 +41,9 @@ interface Subscriber {
   voornaam: string | null;
   achternaam: string | null;
   created_at: string;
+  brevo_synced_at: string | null;
+  brevo_last_error: string | null;
+  brevo_attempts: number;
 }
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -244,6 +250,23 @@ const Admin = () => {
     fetchRows();
   };
 
+  const resyncBrevo = async (table: "registrations" | "subscribers", id: string) => {
+    toast({ title: "Brevo-sync gestart…" });
+    const { data, error } = await supabase.functions.invoke("sync-to-brevo", {
+      body: { table, id },
+    });
+    if (error || data?.error) {
+      toast({
+        title: "Brevo-sync mislukt",
+        description: error?.message || data?.error || "Onbekende fout",
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "Brevo-sync gelukt" });
+    }
+    fetchRows();
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Laden…</div>;
 
   if (user && !isAdmin) {
@@ -360,6 +383,7 @@ const Admin = () => {
                         <TableHead>Thema</TableHead>
                         <TableHead>Sessie</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Brevo</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -374,6 +398,13 @@ const Admin = () => {
                           <TableCell className="max-w-[200px] truncate text-xs">{r.moment}</TableCell>
                           <TableCell>
                             <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
+                          </TableCell>
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <BrevoSyncCell
+                              syncedAt={r.brevo_synced_at}
+                              error={r.brevo_last_error}
+                              onResync={() => resyncBrevo("registrations", r.id)}
+                            />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -410,6 +441,7 @@ const Admin = () => {
                         <TableHead>Voornaam</TableHead>
                         <TableHead>Achternaam</TableHead>
                         <TableHead>E-mail</TableHead>
+                        <TableHead>Brevo</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -421,6 +453,13 @@ const Admin = () => {
                           <TableCell>{s.voornaam || "—"}</TableCell>
                           <TableCell>{s.achternaam || "—"}</TableCell>
                           <TableCell className="font-medium">{s.email}</TableCell>
+                          <TableCell>
+                            <BrevoSyncCell
+                              syncedAt={s.brevo_synced_at}
+                              error={s.brevo_last_error}
+                              onResync={() => resyncBrevo("subscribers", s.id)}
+                            />
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -499,6 +538,23 @@ const Admin = () => {
                   <Textarea value={editNotitie} onChange={(e) => setEditNotitie(e.target.value)} rows={3} />
                 </div>
 
+                <div className="space-y-2 pt-2 border-t border-border">
+                  <Label>Brevo-synchronisatie</Label>
+                  <div className="flex items-center gap-3 text-xs">
+                    <BrevoSyncCell
+                      syncedAt={selected.brevo_synced_at}
+                      error={selected.brevo_last_error}
+                      onResync={() => resyncBrevo("registrations", selected.id)}
+                    />
+                    <span className="text-muted-foreground">
+                      {selected.brevo_attempts || 0} poging(en)
+                    </span>
+                  </div>
+                  {selected.brevo_last_error && (
+                    <p className="text-xs text-destructive break-all">{selected.brevo_last_error}</p>
+                  )}
+                </div>
+
                 <div className="flex gap-2 pt-2">
                   <Button onClick={saveDetail} disabled={saving} className="flex-1 bg-[#315eff] hover:bg-[#315eff]/90">
                     {saving ? "Opslaan…" : "Opslaan"}
@@ -514,5 +570,45 @@ const Admin = () => {
     </div>
   );
 };
+
+function BrevoSyncCell({
+  syncedAt,
+  error,
+  onResync,
+}: {
+  syncedAt: string | null;
+  error: string | null;
+  onResync: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const handle = async () => {
+    setBusy(true);
+    await onResync();
+    setBusy(false);
+  };
+  if (syncedAt) {
+    return (
+      <div className="flex items-center gap-2">
+        <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
+          ✓ Gesynct
+        </Badge>
+        <Button size="sm" variant="ghost" onClick={handle} disabled={busy} className="h-7 px-2">
+          <RefreshCw className={`h-3 w-3 ${busy ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <Badge variant={error ? "destructive" : "secondary"}>
+        {error ? "Fout" : "Wachten…"}
+      </Badge>
+      <Button size="sm" variant="outline" onClick={handle} disabled={busy} className="h-7 px-2 text-xs">
+        <RefreshCw className={`mr-1 h-3 w-3 ${busy ? "animate-spin" : ""}`} />
+        Resync
+      </Button>
+    </div>
+  );
+}
 
 export default Admin;
