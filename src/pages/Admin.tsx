@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Download, LogOut, RefreshCw } from "lucide-react";
 
-type Status = "in_afwachting" | "bevestigd" | "wachtlijst" | "afgewezen";
+type Status = "in_afwachting" | "bevestigd" | "wachtlijst" | "afgewezen" | "geannuleerd";
 
 interface Registration {
   id: string;
@@ -51,6 +51,7 @@ const STATUS_LABEL: Record<Status, string> = {
   bevestigd: "Bevestigd",
   wachtlijst: "Wachtlijst",
   afgewezen: "Afgewezen",
+  geannuleerd: "Geannuleerd",
 };
 
 const STATUS_VARIANT: Record<Status, "default" | "secondary" | "destructive" | "outline"> = {
@@ -58,6 +59,7 @@ const STATUS_VARIANT: Record<Status, "default" | "secondary" | "destructive" | "
   bevestigd: "default",
   wachtlijst: "outline",
   afgewezen: "destructive",
+  geannuleerd: "destructive",
 };
 
 const Admin = () => {
