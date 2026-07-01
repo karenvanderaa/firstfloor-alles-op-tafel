@@ -122,7 +122,7 @@ const UpcomingCard = ({
           </Badge>
         )}
         {partner?.logoUrl && (
-          <img src={partner.logoUrl} alt={partner.name} className="h-6 w-auto" />
+          <img src={partner.logoUrl} alt={partner.name} className="h-12 md:h-14 w-auto" />
         )}
       </div>
 
