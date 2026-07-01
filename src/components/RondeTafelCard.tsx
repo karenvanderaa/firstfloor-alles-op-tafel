@@ -361,15 +361,24 @@ export const useSeatsAvailable = (thema: string, moment: string, capacity = 6) =
 
   useEffect(() => {
     let active = true;
+
     const load = async () => {
-      const { count } = await supabase
-        .from("registrations")
-        .select("id", { count: "exact", head: true })
-        .eq("thema", thema)
-        .eq("moment", moment);
-      if (active) setTaken(count ?? 0);
+      const { data, error } = await supabase.rpc("get_seats_taken", {
+        _thema: thema,
+        _moment: moment,
+      });
+      if (!active) return;
+      if (error) {
+        console.error("get_seats_taken error:", error);
+        return;
+      }
+      setTaken(typeof data === "number" ? data : 0);
     };
+
     load();
+
+    // Realtime: werkt enkel als de bezoeker SELECT-rechten heeft.
+    // Voor anonieme bezoekers vangen we dat op met polling + visibility refresh.
     const channel = supabase
       .channel(`seats-${thema}-${moment}`)
       .on(
@@ -378,9 +387,18 @@ export const useSeatsAvailable = (thema: string, moment: string, capacity = 6) =
         () => load(),
       )
       .subscribe();
+
+    const interval = window.setInterval(load, 30_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       active = false;
       supabase.removeChannel(channel);
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [thema, moment, capacity]);
 
