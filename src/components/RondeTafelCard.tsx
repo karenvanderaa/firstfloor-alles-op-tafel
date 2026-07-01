@@ -298,23 +298,31 @@ const WhitepaperForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 bg-muted rounded-md p-5 md:p-6 space-y-4"
+      className="mt-8 relative overflow-hidden rounded-xl p-6 md:p-8 space-y-4 shadow-lg"
+      style={{ background: "linear-gradient(135deg, #315eff 0%, #1e3fcc 100%)" }}
     >
-      <div>
-        <h4 className="font-heading font-semibold text-foreground mb-1">
+      {/* Decoratieve vormen — knipoog naar de whitepaper share image */}
+      <div className="pointer-events-none absolute -top-6 -right-6 w-24 h-24 rounded-full bg-[#ffd23f] opacity-90" />
+      <div className="pointer-events-none absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-[#ff8fa3] opacity-80" />
+
+      <div className="relative">
+        <span className="inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#ffd23f] mb-2">
+          📄 Gratis whitepaper
+        </span>
+        <h4 className="font-heading text-xl md:text-2xl font-bold text-white mb-1">
           Download de whitepaper
         </h4>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-white/85">
           Laat je gegevens achter, dan sturen we je de whitepaper per e-mail.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-3">
         <input
           required
           placeholder="Voornaam & naam"
           value={form.naam}
           onChange={(e) => setForm({ ...form, naam: e.target.value })}
-          className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full px-3 py-2.5 rounded-md border-0 bg-white text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#ffd23f]"
         />
         <input
           required
@@ -322,27 +330,28 @@ const WhitepaperForm = () => {
           placeholder="E-mail"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full px-3 py-2.5 rounded-md border-0 bg-white text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#ffd23f]"
         />
       </div>
-      <label className="flex items-start gap-2 text-xs text-foreground/80 cursor-pointer">
+      <label className="relative flex items-start gap-2 text-xs text-white/90 cursor-pointer">
         <input
           type="checkbox"
           checked={form.toestemming}
           onChange={(e) => setForm({ ...form, toestemming: e.target.checked })}
           required
-          className="mt-0.5 accent-[#315eff]"
+          className="mt-0.5 accent-[#ffd23f]"
         />
         <span>Ik ga akkoord dat First Floor mij mag contacteren.</span>
       </label>
       <Button
         type="submit"
         disabled={loading || !form.toestemming}
-        className="w-full bg-[#315eff] hover:bg-[#315eff]/90 text-white"
+        className="relative w-full bg-[#ffd23f] hover:bg-[#ffdd6b] text-[#1a2b7a] font-semibold shadow-md"
       >
-        {loading ? "Verzenden…" : "Download de whitepaper"}
+        {loading ? "Verzenden…" : "📄 Download de whitepaper"}
       </Button>
     </form>
+
   );
 };
 
