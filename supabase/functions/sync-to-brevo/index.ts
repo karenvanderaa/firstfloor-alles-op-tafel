@@ -9,6 +9,14 @@ const corsHeaders = {
 
 const ALERT_EMAIL = 'karen@firstfloortalent.be'
 
+// TODO Karen: invullen na aanmaken lijst "Whitepaper - AI in HR" in Brevo
+const WHITEPAPER_LIST_ID = 0
+
+// Storage locatie van de whitepaper-PDF (bucket + object). Bestand wordt door Karen geüpload.
+const WHITEPAPER_BUCKET = 'whitepapers'
+const WHITEPAPER_OBJECT = 'ai-in-hr.pdf'
+const WHITEPAPER_SIGNED_URL_TTL = 60 * 60 * 24 * 30 // 30 dagen
+
 function normalizePhone(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
   const compact = value.trim().replace(/[^\d+]/g, '')
@@ -45,6 +53,36 @@ function buildConfirmationHtml(voornaam: string, thema: string, moment: string):
 </td></tr></table></td></tr></table></body></html>`
 }
 
+function buildWhitepaperHtml(naam: string, downloadUrl: string | null): string {
+  const firstName = (naam || '').split(' ')[0] || 'daar'
+  const downloadBlock = downloadUrl
+    ? `<p style="text-align:center;margin:0 0 24px;">
+         <a href="${downloadUrl}" style="display:inline-block;background:#315eff;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:600;">📄 Download de whitepaper</a>
+       </p>
+       <p style="color:#71737a;font-size:12px;text-align:center;margin:0 0 20px;">De link is 30 dagen geldig.</p>`
+    : `<p style="color:#4e5056;font-size:15px;line-height:1.6;margin:0 0 20px;background:#fff8e6;padding:16px;border-radius:8px;">
+         De whitepaper is bijna klaar. Zodra hij beschikbaar is, sturen we je persoonlijk de downloadlink toe.
+       </p>`
+
+  return `<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Inter',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 20px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
+<tr><td style="background:#315eff;padding:32px 40px;text-align:center;">
+<h1 style="color:#ffffff;font-family:'Sora',Arial,sans-serif;font-size:22px;margin:0;">Whitepaper — AI in HR</h1>
+<p style="color:rgba(255,255,255,0.8);font-size:13px;margin:8px 0 0;letter-spacing:0.1em;text-transform:uppercase;">Ronde Tafels by First Floor</p>
+</td></tr>
+<tr><td style="padding:40px;">
+<h2 style="font-family:'Sora',Arial,sans-serif;color:#4e5056;font-size:20px;margin:0 0 16px;">Hallo ${firstName},</h2>
+<p style="color:#4e5056;font-size:15px;line-height:1.6;margin:0 0 24px;">Bedankt voor je interesse in onze whitepaper "AI in HR: wat betekent dat nu écht?" Hierin bundelen we de scherpste inzichten die aan onze ronde tafel naar boven kwamen.</p>
+${downloadBlock}
+<p style="color:#71737a;font-size:13px;line-height:1.5;margin:24px 0 0;border-top:1px solid #e5e7eb;padding-top:20px;">Vragen of zin om verder in gesprek te gaan? Mail gerust naar <a href="mailto:karen@firstfloortalent.be" style="color:#315eff;text-decoration:none;">karen@firstfloortalent.be</a>.</p>
+</td></tr>
+<tr><td style="background:#f0f4f8;padding:20px 40px;text-align:center;">
+<p style="color:#71737a;font-size:12px;margin:0;">© ${new Date().getFullYear()} First Floor · Prins Boudewijnlaan 24C, 2550 Kontich</p>
+</td></tr></table></td></tr></table></body></html>`
+}
+
 async function sendAlertEmail(apiKey: string, subject: string, details: string) {
   try {
     await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -67,10 +105,11 @@ async function syncToBrevo(payload: {
   attributes: Record<string, unknown>
   listIds: number[]
   apiKey: string
-  sendConfirmation?: boolean
-  confirmation?: { thema: string; moment: string }
+  extraTags?: string[]
+  emailToSend?: { subject: string; html: string; toName?: string }
+  confirmation?: { thema: string; moment: string; voornaam: string }
 }): Promise<void> {
-  const { email, attributes, listIds, apiKey, sendConfirmation, confirmation } = payload
+  const { email, attributes, listIds, apiKey, extraTags = [], emailToSend, confirmation } = payload
 
   const enriched: Record<string, unknown> = {
     ...attributes,
@@ -90,22 +129,24 @@ async function syncToBrevo(payload: {
     enriched.WHATSAPP = phone
   }
 
+  // Skip listIds with 0 (placeholder not yet configured)
+  const effectiveListIds = listIds.filter((id) => id > 0)
+
   // 1. Create / update contact
   const createRes = await fetch('https://api.brevo.com/v3/contacts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
-    body: JSON.stringify({ email, attributes: enriched, listIds, updateEnabled: true }),
+    body: JSON.stringify({ email, attributes: enriched, listIds: effectiveListIds, updateEnabled: true }),
   })
   const createBody = await createRes.text()
   if (!createRes.ok && createRes.status !== 204) {
     if (!createBody.includes('duplicate_parameter')) {
       throw new Error(`Brevo POST /contacts [${createRes.status}]: ${createBody}`)
     }
-    // duplicate → PUT update
     const putRes = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
-      body: JSON.stringify({ attributes: enriched, listIds }),
+      body: JSON.stringify({ attributes: enriched, listIds: effectiveListIds }),
     })
     const putBody = await putRes.text()
     if (!putRes.ok && putRes.status !== 204) {
@@ -113,20 +154,21 @@ async function syncToBrevo(payload: {
     }
   }
 
-  // 2. Add tag (best-effort)
+  // 2. Merge tags (best-effort)
   try {
     const getRes = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
       headers: { 'api-key': apiKey },
     })
     if (getRes.ok) {
       const info = await getRes.json()
-      const tags: string[] = info.tags || []
-      if (!tags.includes('RondeTafel')) {
-        tags.push('RondeTafel')
+      const existing: string[] = info.tags || []
+      const desired = ['RondeTafel', ...extraTags]
+      const toAdd = desired.filter((t) => !existing.includes(t))
+      if (toAdd.length) {
         await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
-          body: JSON.stringify({ tags }),
+          body: JSON.stringify({ tags: [...existing, ...toAdd] }),
         }).then(r => r.text())
       }
     }
@@ -134,24 +176,46 @@ async function syncToBrevo(payload: {
     console.error('Tag sync failed (non-fatal):', e)
   }
 
-  // 3. Send confirmation email (for registrations only)
-  if (sendConfirmation && confirmation?.thema && confirmation?.moment) {
-    const voornaam = `${attributes.FIRSTNAME || ''} ${attributes.LASTNAME || ''}`.trim()
-    const html = buildConfirmationHtml(voornaam, confirmation.thema, confirmation.moment)
+  // 3. Send email (confirmation OR whitepaper)
+  if (confirmation?.thema && confirmation?.moment) {
+    const html = buildConfirmationHtml(confirmation.voornaam, confirmation.thema, confirmation.moment)
     const mailRes = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
       body: JSON.stringify({
         sender: { name: 'Ronde Tafels by First Floor', email: 'karen@firstfloortalent.be' },
-        to: [{ email, name: voornaam }],
+        to: [{ email, name: confirmation.voornaam }],
         subject: 'Bedankt voor je aanvraag – Ronde Tafels',
         htmlContent: html,
       }),
     })
     const mailBody = await mailRes.text()
-    if (!mailRes.ok) {
-      throw new Error(`Brevo POST /smtp/email [${mailRes.status}]: ${mailBody}`)
-    }
+    if (!mailRes.ok) throw new Error(`Brevo POST /smtp/email [${mailRes.status}]: ${mailBody}`)
+  } else if (emailToSend) {
+    const mailRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
+      body: JSON.stringify({
+        sender: { name: 'Ronde Tafels by First Floor', email: 'karen@firstfloortalent.be' },
+        to: [{ email, name: emailToSend.toName || email }],
+        subject: emailToSend.subject,
+        htmlContent: emailToSend.html,
+      }),
+    })
+    const mailBody = await mailRes.text()
+    if (!mailRes.ok) throw new Error(`Brevo POST /smtp/email [${mailRes.status}]: ${mailBody}`)
+  }
+}
+
+async function getWhitepaperUrl(admin: ReturnType<typeof createClient>): Promise<string | null> {
+  try {
+    const { data, error } = await admin.storage
+      .from(WHITEPAPER_BUCKET)
+      .createSignedUrl(WHITEPAPER_OBJECT, WHITEPAPER_SIGNED_URL_TTL)
+    if (error || !data?.signedUrl) return null
+    return data.signedUrl
+  } catch {
+    return null
   }
 }
 
@@ -180,13 +244,13 @@ Deno.serve(async (req) => {
   }
 
   const { table, id } = body
-  if (!table || !id || (table !== 'registrations' && table !== 'subscribers')) {
-    return new Response(JSON.stringify({ error: 'table (registrations|subscribers) and id required' }), {
+  const allowed = ['registrations', 'subscribers', 'whitepaper_downloads']
+  if (!table || !id || !allowed.includes(table)) {
+    return new Response(JSON.stringify({ error: `table (${allowed.join('|')}) and id required` }), {
       status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
-  // Fetch row
   const { data: row, error: fetchErr } = await admin.from(table).select('*').eq('id', id).maybeSingle()
   if (fetchErr || !row) {
     return new Response(JSON.stringify({ error: `Row not found: ${fetchErr?.message || 'no row'}` }), {
@@ -194,7 +258,6 @@ Deno.serve(async (req) => {
     })
   }
 
-  // Build payload per table
   let syncPayload: Parameters<typeof syncToBrevo>[0]
   if (table === 'registrations') {
     const attrs: Record<string, unknown> = {
@@ -212,19 +275,36 @@ Deno.serve(async (req) => {
       attributes: attrs,
       listIds: [61],
       apiKey: BREVO_API_KEY,
-      sendConfirmation: true,
-      confirmation: { thema: row.thema, moment: row.moment },
+      confirmation: { thema: row.thema, moment: row.moment, voornaam: row.voornaam || '' },
     }
-  } else {
+  } else if (table === 'subscribers') {
     syncPayload = {
       email: row.email,
       attributes: { FIRSTNAME: row.voornaam || '', LASTNAME: row.achternaam || '' },
       listIds: [60],
       apiKey: BREVO_API_KEY,
     }
+  } else {
+    // whitepaper_downloads
+    const downloadUrl = await getWhitepaperUrl(admin)
+    const naam = row.naam || ''
+    syncPayload = {
+      email: row.email,
+      attributes: {
+        FIRSTNAME: naam.split(' ')[0] || '',
+        LASTNAME: naam.split(' ').slice(1).join(' ') || '',
+      },
+      listIds: [WHITEPAPER_LIST_ID],
+      apiKey: BREVO_API_KEY,
+      extraTags: ['Whitepaper'],
+      emailToSend: {
+        subject: 'Je whitepaper — AI in HR',
+        html: buildWhitepaperHtml(naam, downloadUrl),
+        toName: naam,
+      },
+    }
   }
 
-  // Increment attempts
   await admin.from(table).update({ brevo_attempts: (row.brevo_attempts || 0) + 1 }).eq('id', id)
 
   try {
@@ -242,8 +322,7 @@ Deno.serve(async (req) => {
       .update({ brevo_last_error: msg.slice(0, 2000) })
       .eq('id', id)
 
-    // Alert
-    const details = `Tabel: ${table}\nID: ${id}\nE-mail: ${row.email}\nNaam: ${row.voornaam || ''} ${row.achternaam || ''}\nFout:\n${msg}`
+    const details = `Tabel: ${table}\nID: ${id}\nE-mail: ${row.email}\nNaam: ${row.voornaam || row.naam || ''} ${row.achternaam || ''}\nFout:\n${msg}`
     await sendAlertEmail(BREVO_API_KEY, `Brevo-sync mislukt (${table})`, details)
 
     return new Response(JSON.stringify({ error: msg }), {
