@@ -12,6 +12,8 @@ import ellenPhoto from "@/assets/facilitator-ellen.jpeg";
 import ankeAsset from "@/assets/tafelgast-anke.png.asset.json";
 import pelckmansLocatieAsset from "@/assets/pelckmans-locatie.jpeg.asset.json";
 import pelckmansBoekenAsset from "@/assets/pelckmans-boeken.jpeg.asset.json";
+import pelckmansLogoAsset from "@/assets/pelckmans-logo.png.asset.json";
+
 
 type Theme = "Verandering staat op de agenda. Draagvlak niet.";
 
@@ -92,7 +94,7 @@ const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void
         </>
       }
       capacityLabel={capacityLabel}
-      partner={{ name: "Pelckmans Uitgevers" /* logoUrl: TODO Karen levert aan */ }}
+      partner={{ name: "Pelckmans Uitgevers", logoUrl: pelckmansLogoAsset.url }}
       heroImage={pelckmansLocatieAsset.url}
       secondaryImage={{ src: pelckmansBoekenAsset.url, alt: "Pelckmans boekenkast" }}
       tafelgast={ankeTafelgast}
