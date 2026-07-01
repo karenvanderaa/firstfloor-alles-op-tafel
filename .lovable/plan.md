@@ -1,52 +1,60 @@
+# Grote update — implementatieplan
 
-## Doel
+Voor ik alles bouw, hieronder de aanpak zodat je kan bevestigen. Ik werk in de volgorde van je briefing en houd de code generiek zodat toekomstige "afgelopen edities" makkelijk toegevoegd kunnen worden.
 
-De "Houd me op de hoogte"-conversie verhogen door het inschrijfblok niet alleen onderaan te tonen, maar actief naar voren te brengen via een pop-up en een knop in de navbar.
+## Actiepunten voor Karen (nog manueel)
 
-## Wat we bouwen
+- **Whitepaper PDF** → uploaden naar Supabase Storage bucket `whitepapers` (die ik nu aanmaak). Ik voorzie een constante `WHITEPAPER_PDF_URL` met placeholder.
+- **Pelckmans-logo** → nette lege slot, geen kapotte image.
+- **Eigen og:image whitepaper** → fallback op huidige og-image tot beeld beschikbaar is.
+- **Brevo-lijst "Whitepaper - AI in HR"** → placeholder-constante `WHITEPAPER_LIST_ID = 0` in `sync-to-brevo`.
 
-### 1. Nieuwe pop-up component `KeepMePostedDialog`
-Een Radix Dialog met dezelfde inhoud/logica als het bestaande `KeepMePosted`-blok (subscribers-tabel + Brevo lijst 60), maar in modal-vorm.
+## 1. AI in HR → whitepaper lead magnet
 
-**Inhoud:**
-- Titel: *"Kan je er niet bij zijn? Niet het juiste thema?"*
-- Subtitel: *"Blijf op de hoogte van de tafels en ontvang als eerste de key insights van elke editie."*
-- Velden: Voornaam & naam, E-mail
-- Knop: "Houd me op de hoogte" (primaire kleur #315eff)
-- Succes-state met bevestiging
-- Discrete sluit-knop (X) — sluiten = "later misschien"
+**RondeTafelCard.tsx** — herbouw als generieke component met varianten:
+- `variant: "upcoming"` (huidig gedrag, behouden voor Verandering-kaart)
+- `variant: "past-whitepaper"` (nieuw): "Afgelopen editie"-badge, takeaways-blok, inline whitepaper-formulier, Tafelgast-credit met foto+bio+label
 
-### 2. Triggers (alle drie actief)
-- **Exit-intent**: `mouseleave` event aan top van viewport (desktop)
-- **Timer**: na 15 seconden op de pagina (mobile-fallback voor exit-intent)
-- **Navbar-knop**: nieuwe knop "Blijf op de hoogte" rechts in de Navbar — opent direct de pop-up
+**Nieuwe files/edits:**
+- Migratie: `whitepaper_downloads` tabel + bucket `whitepapers` (publieke read) + trigger op `sync-to-brevo`
+- `sync-to-brevo/index.ts`: derde case `whitepaper_downloads` → list #WHITEPAPER_LIST_ID + tag "Whitepaper" + eigen mail-template (`buildWhitepaperHtml`) met downloadlink
+- `Index.tsx`: AI-kaart met variant `past-whitepaper`, tafel1Body ongewijzigd, takeaways + Ellen-blok als props
+- `AanmeldenSection.tsx`: AI verwijderd als thema-optie, praktisch-blok toont "AI in HR: bekijk de whitepaper hierboven"
+- `Admin.tsx`: derde tab "Whitepaper-downloads"
 
-Eerste van timer/exit-intent wint; daarna gedeactiveerd voor de sessie.
+## 2. Tafelgast als USP
 
-### 3. Frequentie-logica
-- Bij sluiten of succesvolle inschrijving: `localStorage.setItem('keepPostedDismissedAt', Date.now())`
-- Bij paginalaad: pop-up alleen automatisch tonen als laatste dismiss > 7 dagen geleden (of nooit getoond)
-- Navbar-knop werkt **altijd** (negeert frequentie-cap) — zo kan de bezoeker zelf altijd opnieuw
+- **Hero.tsx**: pill "🎙️ Telkens een tafelgast" + extra intro-zin
+- **FacilitatorsSection.tsx**: Ellen verwijderd, titel wordt "Karen aan tafel, telkens met een expert tafelgast" + nieuwe intro
+- Label "Tafelgast" hergebruikbaar in card-component
 
-### 4. Bestaand footer-blok
-Blijft staan als backup, ongewijzigd.
+## 3. Verandering-editie update
 
-## Technische details
+- Enige sessie: **do 27/8 8u–10u**, editielabel "Editie | Augustus 2026"
+- Locatie: Pelckmans, Mechelsesteenweg 271, 2018 Antwerpen + badge "In samenwerking met Pelckmans Uitgevers" + logo-slot
+- **Foto's**: skyline-vergadertafel (hoofdbeeld bovenaan card), boekenkast (secundair), Anke portret (tafelgast) — assets via `lovable-assets` uploaden vanuit `/mnt/user-uploads/`
+- Layout: hoofdbeeld full-width bovenaan met afgeronde hoeken (matcht card radius), boekenkast als kleiner beeld in tafelgast/partner-blok, responsive stack op mobiel
+- tafel2Body één zin verbreed (HR → "wie de verandering moet dragen")
+- Anke Tafelgast-blok met bio + boekcredit (target=_blank rel=noopener noreferrer)
+- `AanmeldenSection.tsx`: 1 moment-optie, praktisch-blok Pelckmans-locatie
 
-**Nieuwe/aangepaste files:**
-- `src/components/KeepMePostedDialog.tsx` (nieuw) — Dialog wrapper met formulier, herbruikt submit-logica
-- `src/hooks/useKeepMePostedTrigger.ts` (nieuw) — beheert exit-intent + timer + 7-dagen localStorage
-- `src/components/Navbar.tsx` — knop toevoegen die `setOpen(true)` triggert via context of prop-drilling
-- `src/pages/Index.tsx` — `<KeepMePostedDialog>` mounten, `open`-state delen met Navbar
-- (optioneel kleine refactor) submit-logica in `AanmeldenSection.tsx` extraheren naar shared util zodat dialog en footer-blok dezelfde code gebruiken
+## 4. Site-brede consistentie
 
-**State management:**
-Eenvoudige `useState` in `Index.tsx` + context (of prop) zodat Navbar de dialog kan openen. Geen extra library nodig.
+- Hero eyebrow: "Ronde Tafels | by First Floor"
+- `index.html` title/og:title/twitter:title: idem
+- Editielabels op kaarten blijven per-maand
 
-**Brevo & DB:**
-Hergebruik exact dezelfde call: `subscribers` insert + `brevo-contact` edge function met `listIds: [60]`, `ext_id: "ronde-tafel-updates"`.
+## 5. Extra
 
-## Niet in scope
-- A/B testen van varianten
-- Aanpassen van Brevo-templates
-- Wijzigen van de inhoud van het bestaande footer-blok
+- **Live schaarste-teller**: Supabase count-query op `registrations` (thema+moment), toont "Nog X van 6 plekken vrij" of "Volzet" badge bij 0. Realtime channel voor live update.
+- **og:image whitepaper**: `<Helmet>` niet nodig — SPA. Ik zet een generieke aparte `<meta>`-slot in index.html met commentaar dat het later per-route via helmet kan (huidig: fallback op bestaande og-image).
+
+## Technische keuzes
+
+- **Card refactor**: één component met discriminated union props (`variant`), niet twee losse components — voorkomt duplicatie en houdt het patroon herbruikbaar voor toekomstige afgelopen edities
+- **Tafelgast**: gedeelde sub-component `TafelgastCredit` (foto + label + naam + bio + optionele boekcredit) — hergebruikt in beide kaartvarianten
+- **Storage bucket**: publieke read policy zodat de mail-downloadlink direct werkt
+- **Consent-vinkje**: alleen bij whitepaper-formulier, gevalideerd voor submit (button disabled tot aangevinkt)
+- **Theme-type**: literal union in `AanmeldenSection.tsx` beperkt tot alleen Verandering; Index.tsx preselect-logica voor AI verwijderd (kaart heeft eigen inline flow)
+
+Zeg maar "go" (of eventuele bijsturing) en ik voer alles in één beweging uit.
