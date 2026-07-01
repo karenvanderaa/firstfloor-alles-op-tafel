@@ -129,7 +129,7 @@ const UpcomingCard = ({
       <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-5 pr-24">{title}</h2>
 
       {body.map((p, i) => (
-        <p key={i} className="text-foreground/80 font-body leading-relaxed mb-4">{p}</p>
+        <p key={i} className="text-foreground/80 font-body leading-relaxed mb-4 whitespace-pre-line">{p}</p>
       ))}
 
       <div className="bg-muted rounded-md p-5 my-6 space-y-2 text-sm text-foreground">
@@ -191,7 +191,7 @@ const PastWhitepaperCard = ({
     <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-5 pr-24">{title}</h2>
 
     {body.map((p, i) => (
-      <p key={i} className="text-foreground/80 font-body leading-relaxed mb-4">{p}</p>
+      <p key={i} className="text-foreground/80 font-body leading-relaxed mb-4 whitespace-pre-line">{p}</p>
     ))}
 
     <div className="mt-8">
