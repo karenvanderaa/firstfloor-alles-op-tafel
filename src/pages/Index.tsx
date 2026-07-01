@@ -26,10 +26,14 @@ const tafel1Body = [
   "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek.",
 ];
 
-const tafel2Body = [
+const tafel2Body: React.ReactNode[] = [
   "In veel organisaties volgen veranderingen elkaar snel op. Nieuwe prioriteiten, nieuwe structuren, nieuwe verwachtingen. Op papier klopt het vaak. Maar in de praktijk blijft de beweging uit. Teams haken af, leidinggevenden botsen op weerstand en wie de verandering moet dragen, trekt aan initiatieven die onvoldoende landen.",
   "Want daar wringt het vaak: verandering wordt wel beslist, maar niet echt gedragen. Zonder draagvlak blijft impact beperkt.",
-  "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek. Hoe wordt verandering vandaag écht beleefd? Waar stokt het? En wat is er nodig om mensen mee te krijgen, in plaats van enkel iets uit te rollen?\n\n\nWe zijn te gast bij Uitgeverij Pelckmans, dus het wordt een gesprek met uitzicht op de ochtend-skyline van Antwerpen!",
+  "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek. Hoe wordt verandering vandaag écht beleefd? Waar stokt het? En wat is er nodig om mensen mee te krijgen, in plaats van enkel iets uit te rollen?",
+  <span key="pelckmans-note" className="block mt-5 pt-4 border-t border-border/60 text-sm italic text-muted-foreground">
+    <span className="not-italic text-accent-pink mr-1.5">◆</span>
+    We zijn te gast bij Uitgeverij Pelckmans, dus het wordt een gesprek met uitzicht op de ochtend-skyline van Antwerpen.
+  </span>,
 ];
 
 const aiTakeaways = [
