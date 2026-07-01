@@ -193,6 +193,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_seats_taken: {
+        Args: { _moment: string; _thema: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
