@@ -49,7 +49,7 @@ export interface PastWhitepaperVariantProps {
   variant: "past-whitepaper";
   editieLabel: string;
   title: string;
-  body: string[];
+  body: React.ReactNode[];
   borderColor: string;
   tafelName: string;
   takeaways: Takeaway[];
