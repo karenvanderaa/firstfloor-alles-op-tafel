@@ -32,7 +32,7 @@ export interface UpcomingVariantProps {
   variant?: "upcoming";
   editieLabel: string;
   title: string;
-  body: string[];
+  body: React.ReactNode[];
   borderColor: string;
   tafelName: string;
   onSelectTheme?: (theme: string) => void;
