@@ -66,10 +66,9 @@ const ankeTafelgast = {
 };
 
 const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
-  const { available: liveAvailable, capacity, loading } = useSeatsAvailable(VERANDERING_THEMA, VERANDERING_MOMENT, 6);
-  // Handmatige correctie: toon max 3 vrije plekken (i.p.v. live count)
-  const available = liveAvailable === null ? null : Math.min(liveAvailable, 3);
+  const { available, capacity, loading } = useSeatsAvailable(VERANDERING_THEMA, VERANDERING_MOMENT, 6);
   const volzet = !loading && available === 0;
+
 
   const capacityLabel = loading ? (
     <>👥 Max. {capacity} deelnemers</>
