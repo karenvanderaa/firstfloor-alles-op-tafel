@@ -327,6 +327,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="inschrijvingen">Inschrijvingen ({rows.length})</TabsTrigger>
             <TabsTrigger value="abonnees">Op de hoogte ({subs.length})</TabsTrigger>
+            <TabsTrigger value="whitepapers">Whitepaper-downloads ({whitepapers.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="inschrijvingen" className="space-y-6">
