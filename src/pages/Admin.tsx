@@ -46,6 +46,17 @@ interface Subscriber {
   brevo_attempts: number;
 }
 
+interface WhitepaperDownload {
+  id: string;
+  naam: string;
+  email: string;
+  toestemming: boolean;
+  created_at: string;
+  brevo_synced_at: string | null;
+  brevo_last_error: string | null;
+  brevo_attempts: number;
+}
+
 const STATUS_LABEL: Record<Status, string> = {
   in_afwachting: "In afwachting",
   bevestigd: "Bevestigd",
@@ -68,6 +79,7 @@ const Admin = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<Registration[]>([]);
   const [subs, setSubs] = useState<Subscriber[]>([]);
+  const [whitepapers, setWhitepapers] = useState<WhitepaperDownload[]>([]);
   const [fetching, setFetching] = useState(true);
   const [themaFilter, setThemaFilter] = useState<string>("all");
   const [sessieFilter, setSessieFilter] = useState<string>("all");
@@ -105,14 +117,17 @@ const Admin = () => {
 
   const fetchRows = async () => {
     setFetching(true);
-    const [regRes, subRes] = await Promise.all([
+    const [regRes, subRes, wpRes] = await Promise.all([
       supabase.from("registrations").select("*").order("created_at", { ascending: false }),
       supabase.from("subscribers").select("*").order("created_at", { ascending: false }),
+      supabase.from("whitepaper_downloads").select("*").order("created_at", { ascending: false }),
     ]);
     if (regRes.error) toast({ title: "Fout", description: regRes.error.message, variant: "destructive" });
     else setRows((regRes.data as Registration[]) || []);
     if (subRes.error) toast({ title: "Fout abonnees", description: subRes.error.message, variant: "destructive" });
     else setSubs((subRes.data as Subscriber[]) || []);
+    if (wpRes.error) toast({ title: "Fout whitepapers", description: wpRes.error.message, variant: "destructive" });
+    else setWhitepapers((wpRes.data as WhitepaperDownload[]) || []);
     setFetching(false);
   };
 
@@ -252,7 +267,7 @@ const Admin = () => {
     fetchRows();
   };
 
-  const resyncBrevo = async (table: "registrations" | "subscribers", id: string) => {
+  const resyncBrevo = async (table: "registrations" | "subscribers" | "whitepaper_downloads", id: string) => {
     toast({ title: "Brevo-sync gestart…" });
     const { data, error } = await supabase.functions.invoke("sync-to-brevo", {
       body: { table, id },
