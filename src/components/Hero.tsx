@@ -17,7 +17,7 @@ const Hero = () => (
         />
       </div>
       <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em] mb-6">
-        Ronde Tafels | Mei 2026
+        Ronde Tafels | by First Floor
       </p>
       <h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground leading-tight max-w-4xl mb-6">
         Een open gesprek met de mensen die er écht toe doen.
@@ -27,11 +27,13 @@ const Hero = () => (
         <p>Wij geloven in de kracht van een klein, goed samengesteld gezelschap. Geen netwerkevent. Geen kennissessie met slides. Twee uur lang een open, eerlijk gesprek met maximaal zes professionals, zorgvuldig geselecteerd op complementariteit en betrokkenheid.</p>
         <p className="font-semibold text-foreground">Dat is onze Ronde Tafel.</p>
         <p className="text-primary font-semibold text-foreground">Nieuw vanaf 2026: nog exclusiever, nog intiemer. Bewust gekozen voor maximaal zes deelnemers per tafel.</p>
+        <p>Elke editie schuift een tafelgast mee aan: een expert die het thema mee scherpstelt.</p>
       </div>
       <div className="flex flex-wrap gap-4">
         <Pill icon="✨" text="Nieuw formaat" highlight />
         <Pill icon="🕐" text="2 uur" />
         <Pill icon="👥" text="Max. 6 deelnemers" />
+        <Pill icon="🎙️" text="Telkens een tafelgast" />
         <Pill icon="✅" text="Deelname op uitnodiging" />
       </div>
     </div>

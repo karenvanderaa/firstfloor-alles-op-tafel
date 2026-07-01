@@ -155,6 +155,39 @@ export type Database = {
         }
         Relationships: []
       }
+      whitepaper_downloads: {
+        Row: {
+          brevo_attempts: number
+          brevo_last_error: string | null
+          brevo_synced_at: string | null
+          created_at: string
+          email: string
+          id: string
+          naam: string
+          toestemming: boolean
+        }
+        Insert: {
+          brevo_attempts?: number
+          brevo_last_error?: string | null
+          brevo_synced_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          naam: string
+          toestemming: boolean
+        }
+        Update: {
+          brevo_attempts?: number
+          brevo_last_error?: string | null
+          brevo_synced_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          naam?: string
+          toestemming?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

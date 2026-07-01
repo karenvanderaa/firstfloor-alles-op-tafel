@@ -4,13 +4,17 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-type Theme = "AI in HR: wat betekent dat nu écht?" | "Verandering staat op de agenda. Draagvlak niet.";
+type Theme = "Verandering staat op de agenda. Draagvlak niet.";
 
 interface AanmeldenSectionProps {
   preselectedTheme?: Theme;
 }
 
 const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
+  const scrollToAI = () => {
+    document.getElementById("tafel-ai-in-hr")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section id="aanmelden" className="bg-secondary py-12 md:py-16">
       <div className="container max-w-5xl mx-auto px-6 space-y-12">
@@ -38,23 +42,23 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
         {/* 3B — Praktisch */}
         <div className="bg-card rounded-xl p-6 md:p-8">
           <div className="space-y-4 text-sm text-foreground">
-            <p>📍 <a href="https://firstfloortalent.be/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">First Floor</a>, Prins Boudewijnlaan 24C, 2550 Kontich</p>
             <div>
               <p className="font-semibold mb-1">AI in HR: wat betekent dat nu écht?</p>
-              <p>📅 Avondsessie: don 28/5 — 16u tot 18u</p>
-              <p>📅 Ochtendsessie: vrij 29/5 — 8u tot 10u</p>
+              <p>
+                📄 <button onClick={scrollToAI} className="text-primary hover:underline">Bekijk de whitepaper hierboven.</button>
+              </p>
             </div>
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
-              <p>📅 Avondsessie: di 9/6 — 16u tot 18u</p>
-              <p>📅 Ochtendsessie: do 18/6 — 8u tot 10u</p>
+              <p>📅 Ochtendsessie: do 27/8 — 8u tot 10u</p>
+              <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
             </div>
             <p>🥂 Snacks en drankjes voorzien</p>
           </div>
         </div>
 
         {/* 3C — Formulier */}
-        <RegistrationFormFull preselectedTheme={preselectedTheme} />
+        <RegistrationFormFull preselectedTheme={preselectedTheme} onSelectAI={scrollToAI} />
 
         {/* 3D — Secundaire CTA */}
         <KeepMePosted />
@@ -70,7 +74,13 @@ const InfoPill = ({ text }: { text: string }) => (
 );
 
 /* ── 3C: Main registration form ── */
-const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }) => {
+const RegistrationFormFull = ({
+  preselectedTheme,
+  onSelectAI,
+}: {
+  preselectedTheme?: Theme;
+  onSelectAI: () => void;
+}) => {
   const { toast } = useToast();
   const [form, setForm] = useState({
     voornaam: "",
@@ -78,7 +88,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
     functie: "",
     email: "",
     telefoon: "",
-    thema: preselectedTheme || "" as string,
+    thema: (preselectedTheme || "") as string,
     moment: "" as string,
     toelichting: "",
   });
@@ -103,9 +113,7 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      // Save to Lovable Cloud — DB trigger handles Brevo sync server-side
       const { error: dbError } = await supabase.from("registrations").insert({
         voornaam: form.voornaam,
         bedrijf: form.bedrijf,
@@ -156,68 +164,54 @@ const RegistrationFormFull = ({ preselectedTheme }: { preselectedTheme?: Theme }
       <Field label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
       <Field label="Telefoonnummer" name="telefoon" value={form.telefoon} onChange={handleChange} helperText="Voor snelle afstemming indien nodig" />
 
+      {/* AI teaser — geen formulier-optie meer, verwijst naar whitepaper-kaart */}
+      <div className="rounded-md border border-dashed border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex-1 text-sm">
+          <p className="font-semibold text-foreground mb-0.5">Zoek je "AI in HR"?</p>
+          <p className="text-foreground/70">Deze editie is afgelopen. Download de whitepaper met de belangrijkste inzichten.</p>
+        </div>
+        <Button type="button" variant="outline" onClick={onSelectAI} className="border-primary text-primary hover:bg-primary/10">
+          Bekijk de whitepaper →
+        </Button>
+      </div>
+
       {/* Thema */}
       <fieldset className="space-y-2">
         <legend className="text-sm font-body font-medium text-foreground">Voor welk thema? *</legend>
         <label className="flex items-center gap-2 text-sm cursor-pointer">
-          <input type="radio" name="thema" value="AI in HR: wat betekent dat nu écht?" checked={form.thema === "AI in HR: wat betekent dat nu écht?"} onChange={handleChange} className="accent-[#315eff]" required />
-          AI in HR: wat betekent dat nu écht?
-        </label>
-        <label className="flex items-center gap-2 text-sm cursor-pointer">
-          <input type="radio" name="thema" value="Verandering staat op de agenda. Draagvlak niet." checked={form.thema === "Verandering staat op de agenda. Draagvlak niet."} onChange={handleChange} className="accent-[#315eff]" />
+          <input
+            type="radio"
+            name="thema"
+            value="Verandering staat op de agenda. Draagvlak niet."
+            checked={form.thema === "Verandering staat op de agenda. Draagvlak niet."}
+            onChange={handleChange}
+            className="accent-[#315eff]"
+            required
+          />
           Verandering staat op de agenda. Draagvlak niet.
         </label>
       </fieldset>
 
       {/* Moment */}
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment *</legend>
-        <div className="flex flex-col gap-2">
-          {form.thema.includes("AI") ? (
-            <>
-              <label className="flex items-center gap-2 text-sm cursor-pointer opacity-50">
-                <input type="radio" name="moment" value="Avondsessie — don 28/5 (16u - 18u)" checked={form.moment === "Avondsessie — don 28/5 (16u - 18u)"} onChange={handleChange} className="accent-[#315eff]" disabled />
-                Avondsessie — don 28/5 (16u - 18u)
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
-                  Volzet
-                </span>
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer opacity-50">
-                <input type="radio" name="moment" value="Ochtendsessie — vrij 29/5 (8u - 10u)" checked={form.moment === "Ochtendsessie — vrij 29/5 (8u - 10u)"} onChange={handleChange} className="accent-[#315eff]" disabled />
-                Ochtendsessie — vrij 29/5 (8u - 10u)
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
-                  Volzet
-                </span>
-              </label>
-            </>
-          ) : form.thema.includes("Verandering") ? (
-            <>
-              <label className="flex items-center gap-2 text-sm cursor-pointer opacity-50">
-                <input type="radio" name="moment" value="Avondsessie — di 9/6 (16u - 18u)" checked={form.moment === "Avondsessie — di 9/6 (16u - 18u)"} onChange={handleChange} className="accent-[#315eff]" disabled />
-                 Avondsessie — di 9/6 (16u - 18u)
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
-                  Volzet
-                </span>
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Ochtendsessie — do 18/6 (8u - 10u)" checked={form.moment === "Ochtendsessie — do 18/6 (8u - 10u)"} onChange={handleChange} className="accent-[#315eff]" required />
-                 Ochtendsessie — do 18/6 (8u - 10u)
-              </label>
-            </>
-          ) : (
-            <>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Avondsessie" checked={form.moment === "Avondsessie"} onChange={handleChange} className="accent-[#315eff]" required />
-                Avondsessie (16u - 18u)
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="moment" value="Ochtendsessie" checked={form.moment === "Ochtendsessie"} onChange={handleChange} className="accent-[#315eff]" />
-                Ochtendsessie (8u - 10u)
-              </label>
-            </>
-          )}
-        </div>
-      </fieldset>
+      {form.thema.includes("Verandering") && (
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment *</legend>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="moment"
+                value="Ochtendsessie — do 27/8 (8u - 10u)"
+                checked={form.moment === "Ochtendsessie — do 27/8 (8u - 10u)"}
+                onChange={handleChange}
+                className="accent-[#315eff]"
+                required
+              />
+              Ochtendsessie — do 27/8 (8u - 10u)
+            </label>
+          </div>
+        </fieldset>
+      )}
 
       {/* Toelichting */}
       <div>
@@ -298,7 +292,6 @@ const KeepMePosted = () => {
     const achternaam = form.naam.split(" ").slice(1).join(" ");
 
     try {
-      // Save to Lovable Cloud — DB trigger handles Brevo sync server-side
       const { error: dbError } = await supabase.from("subscribers").insert({
         email: form.email,
         voornaam: voornaam || null,
