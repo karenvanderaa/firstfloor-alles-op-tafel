@@ -486,6 +486,63 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="whitepapers" className="space-y-6">
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-sm text-muted-foreground">
+                  Mensen die de whitepaper "AI in HR" hebben opgevraagd. Bij inschrijving wordt automatisch een downloadlink per e-mail verstuurd via Brevo.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                {fetching ? (
+                  <p className="text-sm text-muted-foreground">Laden…</p>
+                ) : whitepapers.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nog geen whitepaper-aanvragen.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Naam</TableHead>
+                        <TableHead>E-mail</TableHead>
+                        <TableHead>Toestemming</TableHead>
+                        <TableHead>Brevo</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {whitepapers.map((w) => (
+                        <TableRow key={w.id}>
+                          <TableCell className="text-xs whitespace-nowrap">
+                            {new Date(w.created_at).toLocaleDateString("nl-BE")}
+                          </TableCell>
+                          <TableCell className="font-medium">{w.naam}</TableCell>
+                          <TableCell>{w.email}</TableCell>
+                          <TableCell>
+                            {w.toestemming ? (
+                              <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">✓</Badge>
+                            ) : (
+                              <Badge variant="destructive">Nee</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <BrevoSyncCell
+                              syncedAt={w.brevo_synced_at}
+                              error={w.brevo_last_error}
+                              onResync={() => resyncBrevo("whitepaper_downloads", w.id)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
 
