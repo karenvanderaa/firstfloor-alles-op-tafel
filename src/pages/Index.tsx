@@ -70,6 +70,7 @@ const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void
   const volzet = !loading && available === 0;
 
 
+  const displayAvailable = available === null ? null : Math.min(available, 3);
   const capacityLabel = loading ? (
     <>👥 Max. {capacity} deelnemers</>
   ) : volzet ? (
@@ -80,7 +81,7 @@ const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void
       </span>
     </span>
   ) : (
-    <>👥 Nog {available} van {capacity} plekken vrij</>
+    <>👥 Nog {displayAvailable} van {capacity} plekken vrij</>
   );
 
   return (
