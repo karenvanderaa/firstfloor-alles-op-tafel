@@ -10,7 +10,7 @@ const corsHeaders = {
 const ALERT_EMAIL = 'karen@firstfloortalent.be'
 
 // TODO Karen: invullen na aanmaken lijst "Whitepaper - AI in HR" in Brevo
-const WHITEPAPER_LIST_ID = 0
+const WHITEPAPER_LIST_ID = 65
 
 // Storage locatie van de whitepaper-PDF (bucket + object). Bestand wordt door Karen geüpload.
 const WHITEPAPER_BUCKET = 'whitepapers'
