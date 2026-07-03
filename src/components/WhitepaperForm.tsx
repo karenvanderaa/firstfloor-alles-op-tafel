@@ -23,10 +23,10 @@ const WhitepaperForm = ({ source = "homepage" }: WhitepaperFormProps) => {
         naam: form.naam.trim(),
         email: form.email.trim(),
         toestemming: true,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ...(source ? ({ source } as any) : {}),
       });
       if (error) throw error;
+      // Source enkel voor toekomstige tracking — kolom nog niet in DB
+      void source;
       setSubmitted(true);
     } catch (err) {
       console.error("Whitepaper submit error:", err);
