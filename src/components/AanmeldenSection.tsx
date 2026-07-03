@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-type Theme = "Verandering staat op de agenda. Draagvlak niet.";
+type Theme =
+  | "Verandering staat op de agenda. Draagvlak niet."
+  | "Generaties: geen probleem maar een welkom signaal";
 
 interface AanmeldenSectionProps {
   preselectedTheme?: Theme;
