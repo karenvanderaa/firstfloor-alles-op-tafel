@@ -608,7 +608,27 @@ const Admin = () => {
                   </div>
                   <div className="space-y-1">
                     <Label>Sessie / Moment</Label>
-                    <Input value={editMoment} onChange={(e) => setEditMoment(e.target.value)} />
+                    {(() => {
+                      const known = [
+                        "Ochtendsessie — do 27/8 (8u - 10u)",
+                        "Ochtendsessie — ma 21/9 (8u - 10u)",
+                        "Ochtendsessie — vrij 29/5 (8u - 10u)",
+                        "Avondsessie — don 28/5 (16u - 18u)",
+                      ];
+                      const options = editMoment && !known.includes(editMoment)
+                        ? [...known, editMoment]
+                        : known;
+                      return (
+                        <Select value={editMoment || undefined} onValueChange={setEditMoment}>
+                          <SelectTrigger><SelectValue placeholder="Kies een sessie" /></SelectTrigger>
+                          <SelectContent>
+                            {options.map((m) => (
+                              <SelectItem key={m} value={m}>{m}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      );
+                    })()}
                   </div>
                 </div>
                 <div className="space-y-1">
