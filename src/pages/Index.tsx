@@ -71,6 +71,22 @@ const ankeTafelgast = {
   bookUrl: "https://www.pelckmansuitgevers.be/de-meeste-mensen-willen-werken.html",
 };
 
+const tafel3Body: React.ReactNode[] = [
+  "Generaties aan tafel? Vaak gaat het gesprek meteen over verschillen: babyboomers versus Gen Z, ervaring versus digitale reflex, loyaliteit versus flexibiliteit. Handig als kader, maar zelden de echte kern.",
+  "Want generatiespanningen zijn geen probleem op zich. Ze zijn een signaal. Ze maken zichtbaar hoe moeilijk wij als mensen en organisaties omgaan met verschil, verandering en verbinding. En net dáár ligt de kans: als je die spanningen niet wegorganiseert, maar leest, krijg je zicht op wat een organisatie écht nodig heeft om vandaag te werken.",
+  "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek. Wat zeggen generatieverschillen over jouw organisatie? Waar zit weerstand, waar zit potentieel? En hoe zorg je dat elke generatie — van babyboomer tot Gen Z — ten volle tot haar recht komt?",
+  <span key="pelckmans-note-3" className="block mt-5 pt-4 border-t border-border/60 text-sm italic text-muted-foreground">
+    <span className="not-italic text-accent-pink mr-1.5">◆</span>
+    Opnieuw te gast bij Uitgeverij Pelckmans, met uitzicht op de ochtend-skyline van Antwerpen.
+  </span>,
+];
+
+const saskiaTafelgast = {
+  photo: saskiaAsset.url,
+  name: "Saskia Van Uffelen",
+  bio: "Saskia Van Uffelen werkt al meer dan 25 jaar in de ICT- en telecombusiness. Ze is aangesteld als 'Digital Champion' voor België bij de Europese Commissie. Saskia is een rolmodel: als topmanager en digitaal ambassadeur, maar ook als vrouwelijke ondernemer die een drukke job combineert met een gezin van vijf kinderen. Ze pleit voor een nieuwe manier van werken waarbij de kwaliteiten van alle generaties — van babyboomers tot Gen Z — ten volle aan bod komen.",
+};
+
 const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
   const { available, capacity, loading } = useSeatsAvailable(VERANDERING_THEMA, VERANDERING_MOMENT, 6);
   const volzet = !loading && available === 0;
