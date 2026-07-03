@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import WhitepaperForm from "@/components/WhitepaperForm";
 import rondeTafelsLogo from "@/assets/ronde-tafels-logo.svg";
 
 export interface Takeaway {
