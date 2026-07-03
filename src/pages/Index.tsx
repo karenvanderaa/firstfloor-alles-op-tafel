@@ -10,12 +10,15 @@ import Footer from "@/components/Footer";
 import KeepMePostedDialog from "@/components/KeepMePostedDialog";
 import ellenPhoto from "@/assets/facilitator-ellen.jpeg";
 import ankeAsset from "@/assets/tafelgast-anke.png.asset.json";
+import saskiaAsset from "@/assets/tafelgast-saskia.jpg.asset.json";
 import pelckmansLocatieAsset from "@/assets/pelckmans-locatie.jpeg.asset.json";
 import pelckmansBoekenAsset from "@/assets/pelckmans-boeken.jpeg.asset.json";
 import pelckmansLogoAsset from "@/assets/pelckmans-logo.png.asset.json";
 
 
-type Theme = "Verandering staat op de agenda. Draagvlak niet.";
+type Theme =
+  | "Verandering staat op de agenda. Draagvlak niet."
+  | "Generaties: geen probleem maar een welkom signaal";
 
 const VERANDERING_THEMA = "Verandering staat op de agenda. Draagvlak niet.";
 const VERANDERING_MOMENT = "Ochtendsessie — do 27/8 (8u - 10u)";
