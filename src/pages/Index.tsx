@@ -130,12 +130,53 @@ const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void
   );
 };
 
+const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
+  const { available, capacity, loading } = useSeatsAvailable(GENERATIES_THEMA, GENERATIES_MOMENT, 6);
+  const volzet = !loading && available === 0;
+
+  const capacityLabel = loading ? (
+    <>👥 Max. {capacity} deelnemers</>
+  ) : volzet ? (
+    <span className="inline-flex items-center gap-2">
+      👥
+      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
+        Volzet
+      </span>
+    </span>
+  ) : (
+    <>👥 Nog {available} van {capacity} plekken vrij</>
+  );
+
+  return (
+    <RondeTafelCard
+      variant="upcoming"
+      editieLabel="Editie | September 2026"
+      title="Generaties: geen probleem maar een welkom signaal"
+      body={tafel3Body}
+      borderColor="#ff6b9d"
+      tafelName="Generaties"
+      onSelectTheme={onSelectTheme}
+      sessions={[{ label: "📅 Ochtendsessie: ma 21/9 — 8u tot 10u", volzet }]}
+      locationLine={
+        <>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</>
+      }
+      capacityLabel={capacityLabel}
+      partner={{ name: "Pelckmans Uitgevers", logoUrl: pelckmansLogoAsset.url }}
+      heroImage={pelckmansLocatieAsset.url}
+      secondaryImage={{ src: pelckmansBoekenAsset.url, alt: "Pelckmans boekenkast" }}
+      tafelgast={saskiaTafelgast}
+    />
+  );
+};
+
 const Index = () => {
   const [preselectedTheme, setPreselectedTheme] = useState<Theme | undefined>(undefined);
 
   const handleSelectTheme = useCallback((title: string) => {
     if (title.includes("Verandering")) {
       setPreselectedTheme("Verandering staat op de agenda. Draagvlak niet.");
+    } else if (title.includes("Generaties")) {
+      setPreselectedTheme("Generaties: geen probleem maar een welkom signaal");
     }
   }, []);
 
