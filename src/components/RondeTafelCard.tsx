@@ -208,7 +208,9 @@ const PastWhitepaperCard = ({
       </div>
     </div>
 
-    <WhitepaperForm />
+    <div className="mt-8">
+      <WhitepaperForm />
+    </div>
 
     <TafelgastBlock tafelgast={tafelgast} />
 
