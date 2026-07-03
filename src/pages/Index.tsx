@@ -206,6 +206,8 @@ const Index = () => {
           />
 
           <VeranderingCard onSelectTheme={handleSelectTheme} />
+
+          <GeneratiesCard onSelectTheme={handleSelectTheme} />
         </div>
       </section>
 
