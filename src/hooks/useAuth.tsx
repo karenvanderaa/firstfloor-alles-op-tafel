@@ -21,36 +21,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const checkAdmin = async (userId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
+    // Don't flip isAdmin to false on a transient query error — keep previous value
+    if (error) return;
     setIsAdmin(!!data);
   };
 
   useEffect(() => {
-    // Listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    let lastCheckedUserId: string | null = null;
+
+    const handleSession = (newSession: Session | null) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
-      if (newSession?.user) {
-        setTimeout(() => checkAdmin(newSession.user.id), 0);
+      const uid = newSession?.user?.id ?? null;
+      if (uid) {
+        // Only re-check when user actually changes to avoid transient false-negatives
+        if (uid !== lastCheckedUserId) {
+          lastCheckedUserId = uid;
+          setTimeout(() => checkAdmin(uid), 0);
+        }
       } else {
+        lastCheckedUserId = null;
         setIsAdmin(false);
       }
+    };
+
+    // Listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      handleSession(newSession);
+      setLoading(false);
     });
 
     // THEN check existing session
     supabase.auth.getSession().then(({ data: { session: existing } }) => {
-      setSession(existing);
-      setUser(existing?.user ?? null);
-      if (existing?.user) {
-        checkAdmin(existing.user.id).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
-      }
+      handleSession(existing);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
