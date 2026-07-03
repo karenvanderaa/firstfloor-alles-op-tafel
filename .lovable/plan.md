@@ -1,60 +1,38 @@
-# Grote update — implementatieplan
+# Whitepaper landingspagina
 
-Voor ik alles bouw, hieronder de aanpak zodat je kan bevestigen. Ik werk in de volgorde van je briefing en houd de code generiek zodat toekomstige "afgelopen edities" makkelijk toegevoegd kunnen worden.
+Doel: één deelbare URL waar bezoekers vanuit externe campagnes (LinkedIn ads, e-mails, partnersites) rechtstreeks de AI-in-HR whitepaper kunnen aanvragen, zonder afleiding van de rest van de site.
 
-## Actiepunten voor Karen (nog manueel)
+## Nieuwe route
 
-- **Whitepaper PDF** → uploaden naar Supabase Storage bucket `whitepapers` (die ik nu aanmaak). Ik voorzie een constante `WHITEPAPER_PDF_URL` met placeholder.
-- **Pelckmans-logo** → nette lege slot, geen kapotte image.
-- **Eigen og:image whitepaper** → fallback op huidige og-image tot beeld beschikbaar is.
-- **Brevo-lijst "Whitepaper - AI in HR"** → placeholder-constante `WHITEPAPER_LIST_ID = 0` in `sync-to-brevo`.
+`/whitepaper/ai-in-hr` — publieke, standalone landingspagina.
 
-## 1. AI in HR → whitepaper lead magnet
+Structuur (top → bottom):
+1. **Compacte header** met logo (linkt naar `/`), geen volledige navbar → focus op conversie.
+2. **Hero split-layout**
+   - Links: badge "Gratis whitepaper", H1 "AI in HR: wat betekent dat nu écht?", korte intro (2 zinnen), 3 bullet-takeaways (hergebruik `aiTakeaways` uit `Index.tsx`), download-formulier (hergebruikt exact hetzelfde blauwe gradient-formulier dat nu in de kaart zit).
+   - Rechts: whitepaper share-image (`whitepaper-ai-hr-share.png`) als mockup/cover.
+3. **Tafelgast-blok** (Ellen Poppe) — social proof.
+4. **Over Alles op Tafel** — 2-3 zinnen + CTA-link "Ontdek de volgende ronde tafels →" naar `/#edities`.
+5. **Footer** (hergebruik bestaande `Footer`).
 
-**RondeTafelCard.tsx** — herbouw als generieke component met varianten:
-- `variant: "upcoming"` (huidig gedrag, behouden voor Verandering-kaart)
-- `variant: "past-whitepaper"` (nieuw): "Afgelopen editie"-badge, takeaways-blok, inline whitepaper-formulier, Tafelgast-credit met foto+bio+label
+## Refactor voor hergebruik
 
-**Nieuwe files/edits:**
-- Migratie: `whitepaper_downloads` tabel + bucket `whitepapers` (publieke read) + trigger op `sync-to-brevo`
-- `sync-to-brevo/index.ts`: derde case `whitepaper_downloads` → list #WHITEPAPER_LIST_ID + tag "Whitepaper" + eigen mail-template (`buildWhitepaperHtml`) met downloadlink
-- `Index.tsx`: AI-kaart met variant `past-whitepaper`, tafel1Body ongewijzigd, takeaways + Ellen-blok als props
-- `AanmeldenSection.tsx`: AI verwijderd als thema-optie, praktisch-blok toont "AI in HR: bekijk de whitepaper hierboven"
-- `Admin.tsx`: derde tab "Whitepaper-downloads"
+De whitepaper-form zit nu ingebakken in `RondeTafelCard.tsx` als interne `WhitepaperForm`. Extraheer naar `src/components/WhitepaperForm.tsx` zodat zowel de kaart op de homepage als de nieuwe landingspagina exact hetzelfde formulier tonen (zelfde DB-insert → zelfde Brevo-trigger → zelfde list #65). Nul gedragsverandering.
 
-## 2. Tafelgast als USP
+Optioneel `source`-veld toevoegen aan het formulier (default `"homepage"` op de kaart, `"landing"` op de nieuwe pagina) → later handig om te zien welke campagne converteert. Vereist één extra kolom in `whitepaper_downloads` + doorgeven aan de sync-functie zodat het als attribuut mee naar Brevo gaat.
 
-- **Hero.tsx**: pill "🎙️ Telkens een tafelgast" + extra intro-zin
-- **FacilitatorsSection.tsx**: Ellen verwijderd, titel wordt "Karen aan tafel, telkens met een expert tafelgast" + nieuwe intro
-- Label "Tafelgast" hergebruikbaar in card-component
+## SEO & deelbaarheid
 
-## 3. Verandering-editie update
+- Per-route `<Helmet>` op de landingspagina met eigen `<title>`, `<meta description>`, canonical `https://allesoptafel.firstfloortalent.be/whitepaper/ai-in-hr`, en `og:image` = de bestaande whitepaper share-image.
+- Vereist installatie van `react-helmet-async` + `HelmetProvider` in `main.tsx` (nog niet aanwezig).
+- Route toevoegen aan `App.tsx`.
 
-- Enige sessie: **do 27/8 8u–10u**, editielabel "Editie | Augustus 2026"
-- Locatie: Pelckmans, Mechelsesteenweg 271, 2018 Antwerpen + badge "In samenwerking met Pelckmans Uitgevers" + logo-slot
-- **Foto's**: skyline-vergadertafel (hoofdbeeld bovenaan card), boekenkast (secundair), Anke portret (tafelgast) — assets via `lovable-assets` uploaden vanuit `/mnt/user-uploads/`
-- Layout: hoofdbeeld full-width bovenaan met afgeronde hoeken (matcht card radius), boekenkast als kleiner beeld in tafelgast/partner-blok, responsive stack op mobiel
-- tafel2Body één zin verbreed (HR → "wie de verandering moet dragen")
-- Anke Tafelgast-blok met bio + boekcredit (target=_blank rel=noopener noreferrer)
-- `AanmeldenSection.tsx`: 1 moment-optie, praktisch-blok Pelckmans-locatie
+## Deelbare URL
 
-## 4. Site-brede consistentie
+Na deploy: `https://allesoptafel.firstfloortalent.be/whitepaper/ai-in-hr` — te gebruiken in LinkedIn, e-mailhandtekeningen, partnermailings, Google Ads. UTM-parameters (`?utm_source=linkedin&utm_campaign=...`) werken automatisch en kunnen later gelogd worden via het `source`-veld hierboven.
 
-- Hero eyebrow: "Ronde Tafels | by First Floor"
-- `index.html` title/og:title/twitter:title: idem
-- Editielabels op kaarten blijven per-maand
+## Vragen voor jou
 
-## 5. Extra
-
-- **Live schaarste-teller**: Supabase count-query op `registrations` (thema+moment), toont "Nog X van 6 plekken vrij" of "Volzet" badge bij 0. Realtime channel voor live update.
-- **og:image whitepaper**: `<Helmet>` niet nodig — SPA. Ik zet een generieke aparte `<meta>`-slot in index.html met commentaar dat het later per-route via helmet kan (huidig: fallback op bestaande og-image).
-
-## Technische keuzes
-
-- **Card refactor**: één component met discriminated union props (`variant`), niet twee losse components — voorkomt duplicatie en houdt het patroon herbruikbaar voor toekomstige afgelopen edities
-- **Tafelgast**: gedeelde sub-component `TafelgastCredit` (foto + label + naam + bio + optionele boekcredit) — hergebruikt in beide kaartvarianten
-- **Storage bucket**: publieke read policy zodat de mail-downloadlink direct werkt
-- **Consent-vinkje**: alleen bij whitepaper-formulier, gevalideerd voor submit (button disabled tot aangevinkt)
-- **Theme-type**: literal union in `AanmeldenSection.tsx` beperkt tot alleen Verandering; Index.tsx preselect-logica voor AI verwijderd (kaart heeft eigen inline flow)
-
-Zeg maar "go" (of eventuele bijsturing) en ik voer alles in één beweging uit.
+1. **URL-slug**: `/whitepaper/ai-in-hr` (aanbevolen, future-proof voor meer whitepapers) of korter `/whitepaper`?
+2. **Source-tracking**: wil je nu al de `source`-kolom + Brevo-attribuut toevoegen, of pas als er echt meerdere campagnes lopen?
+3. **Navbar op landing**: volledig weglaten (max conversie) of toch minimaal logo + link terug naar hoofdsite?
