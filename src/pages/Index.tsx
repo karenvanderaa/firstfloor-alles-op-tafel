@@ -23,6 +23,9 @@ type Theme =
 const VERANDERING_THEMA = "Verandering staat op de agenda. Draagvlak niet.";
 const VERANDERING_MOMENT = "Ochtendsessie — do 27/8 (8u - 10u)";
 
+const GENERATIES_THEMA = "Generaties: geen probleem maar een welkom signaal";
+const GENERATIES_MOMENT = "Ochtendsessie — ma 21/9 (8u - 10u)";
+
 const tafel1Body = [
   "AI zit plots overal in het gesprek. Maar in veel organisaties blijft de vraag dezelfde: wat verandert er nu echt, en wat niet?",
   "HR voelt dat er iets beweegt. Rollen verschuiven, verwachtingen veranderen en de druk om \"iets met AI te doen\" neemt toe. Tegelijk is er veel onduidelijkheid. Waar kan AI vandaag echt waarde toevoegen? Wat vraagt nog altijd menselijke inschatting? En hoe zorg je ervoor dat technologie werk slimmer maakt, zonder extra ruis, weerstand of versnippering te creëren?",
