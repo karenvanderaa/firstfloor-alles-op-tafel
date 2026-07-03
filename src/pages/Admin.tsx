@@ -74,7 +74,7 @@ const STATUS_VARIANT: Record<Status, "default" | "secondary" | "destructive" | "
 };
 
 const Admin = () => {
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { user, isAdmin, adminStatus, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [rows, setRows] = useState<Registration[]>([]);
@@ -103,17 +103,22 @@ const Admin = () => {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || adminStatus === "checking") return;
     if (!user) {
       navigate("/auth", { replace: true });
       return;
     }
-    if (!isAdmin) {
+    if (adminStatus === "not-admin") {
       toast({ title: "Geen toegang", description: "Je hebt geen admin-rechten.", variant: "destructive" });
       return;
     }
+    if (adminStatus === "error") {
+      toast({ title: "Toegang controleren mislukt", description: "Vernieuw de pagina of log opnieuw in.", variant: "destructive" });
+      return;
+    }
+    if (!isAdmin) return;
     fetchRows();
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, adminStatus, loading, navigate]);
 
   const fetchRows = async () => {
     setFetching(true);
@@ -284,9 +289,24 @@ const Admin = () => {
     fetchRows();
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Laden…</div>;
+  if (loading || adminStatus === "checking") return <div className="min-h-screen flex items-center justify-center">Laden…</div>;
 
-  if (user && !isAdmin) {
+  if (user && adminStatus === "error") {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <Card className="max-w-md">
+          <CardHeader><CardTitle>Toegang controleren mislukt</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">Vernieuw de pagina of log opnieuw in.</p>
+            <Button onClick={() => window.location.reload()} variant="outline" className="w-full">Pagina vernieuwen</Button>
+            <Button onClick={() => signOut().then(() => navigate("/auth"))} variant="outline" className="w-full">Uitloggen</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (user && adminStatus === "not-admin") {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <Card className="max-w-md">
