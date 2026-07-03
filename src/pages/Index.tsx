@@ -10,15 +10,21 @@ import Footer from "@/components/Footer";
 import KeepMePostedDialog from "@/components/KeepMePostedDialog";
 import ellenPhoto from "@/assets/facilitator-ellen.jpeg";
 import ankeAsset from "@/assets/tafelgast-anke.png.asset.json";
+import saskiaAsset from "@/assets/tafelgast-saskia.jpg.asset.json";
 import pelckmansLocatieAsset from "@/assets/pelckmans-locatie.jpeg.asset.json";
 import pelckmansBoekenAsset from "@/assets/pelckmans-boeken.jpeg.asset.json";
 import pelckmansLogoAsset from "@/assets/pelckmans-logo.png.asset.json";
 
 
-type Theme = "Verandering staat op de agenda. Draagvlak niet.";
+type Theme =
+  | "Verandering staat op de agenda. Draagvlak niet."
+  | "Generaties: geen probleem maar een welkom signaal";
 
 const VERANDERING_THEMA = "Verandering staat op de agenda. Draagvlak niet.";
 const VERANDERING_MOMENT = "Ochtendsessie — do 27/8 (8u - 10u)";
+
+const GENERATIES_THEMA = "Generaties: geen probleem maar een welkom signaal";
+const GENERATIES_MOMENT = "Ochtendsessie — ma 21/9 (8u - 10u)";
 
 const tafel1Body = [
   "AI zit plots overal in het gesprek. Maar in veel organisaties blijft de vraag dezelfde: wat verandert er nu echt, en wat niet?",
@@ -65,6 +71,22 @@ const ankeTafelgast = {
   bookUrl: "https://www.pelckmansuitgevers.be/de-meeste-mensen-willen-werken.html",
 };
 
+const tafel3Body: React.ReactNode[] = [
+  "Generaties aan tafel? Vaak gaat het gesprek meteen over verschillen: babyboomers versus Gen Z, ervaring versus digitale reflex, loyaliteit versus flexibiliteit. Handig als kader, maar zelden de echte kern.",
+  "Want generatiespanningen zijn geen probleem op zich. Ze zijn een signaal. Ze maken zichtbaar hoe moeilijk wij als mensen en organisaties omgaan met verschil, verandering en verbinding. En net dáár ligt de kans: als je die spanningen niet wegorganiseert, maar leest, krijg je zicht op wat een organisatie écht nodig heeft om vandaag te werken.",
+  "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek. Wat zeggen generatieverschillen over jouw organisatie? Waar zit weerstand, waar zit potentieel? En hoe zorg je dat elke generatie — van babyboomer tot Gen Z — ten volle tot haar recht komt?",
+  <span key="pelckmans-note-3" className="block mt-5 pt-4 border-t border-border/60 text-sm italic text-muted-foreground">
+    <span className="not-italic text-accent-pink mr-1.5">◆</span>
+    Opnieuw te gast bij Uitgeverij Pelckmans, met uitzicht op de ochtend-skyline van Antwerpen.
+  </span>,
+];
+
+const saskiaTafelgast = {
+  photo: saskiaAsset.url,
+  name: "Saskia Van Uffelen",
+  bio: "Saskia Van Uffelen werkt al meer dan 25 jaar in de ICT- en telecombusiness. Ze is aangesteld als 'Digital Champion' voor België bij de Europese Commissie. Saskia is een rolmodel: als topmanager en digitaal ambassadeur, maar ook als vrouwelijke ondernemer die een drukke job combineert met een gezin van vijf kinderen. Ze pleit voor een nieuwe manier van werken waarbij de kwaliteiten van alle generaties — van babyboomers tot Gen Z — ten volle aan bod komen.",
+};
+
 const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
   const { available, capacity, loading } = useSeatsAvailable(VERANDERING_THEMA, VERANDERING_MOMENT, 6);
   const volzet = !loading && available === 0;
@@ -108,12 +130,53 @@ const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void
   );
 };
 
+const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
+  const { available, capacity, loading } = useSeatsAvailable(GENERATIES_THEMA, GENERATIES_MOMENT, 6);
+  const volzet = !loading && available === 0;
+
+  const capacityLabel = loading ? (
+    <>👥 Max. {capacity} deelnemers</>
+  ) : volzet ? (
+    <span className="inline-flex items-center gap-2">
+      👥
+      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
+        Volzet
+      </span>
+    </span>
+  ) : (
+    <>👥 Nog {available} van {capacity} plekken vrij</>
+  );
+
+  return (
+    <RondeTafelCard
+      variant="upcoming"
+      editieLabel="Editie | September 2026"
+      title="Generaties: geen probleem maar een welkom signaal"
+      body={tafel3Body}
+      borderColor="#ff6b9d"
+      tafelName="Generaties"
+      onSelectTheme={onSelectTheme}
+      sessions={[{ label: "📅 Ochtendsessie: ma 21/9 — 8u tot 10u", volzet }]}
+      locationLine={
+        <>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</>
+      }
+      capacityLabel={capacityLabel}
+      partner={{ name: "Pelckmans Uitgevers", logoUrl: pelckmansLogoAsset.url }}
+      heroImage={pelckmansLocatieAsset.url}
+      secondaryImage={{ src: pelckmansBoekenAsset.url, alt: "Pelckmans boekenkast" }}
+      tafelgast={saskiaTafelgast}
+    />
+  );
+};
+
 const Index = () => {
   const [preselectedTheme, setPreselectedTheme] = useState<Theme | undefined>(undefined);
 
   const handleSelectTheme = useCallback((title: string) => {
     if (title.includes("Verandering")) {
       setPreselectedTheme("Verandering staat op de agenda. Draagvlak niet.");
+    } else if (title.includes("Generaties")) {
+      setPreselectedTheme("Generaties: geen probleem maar een welkom signaal");
     }
   }, []);
 
@@ -143,6 +206,8 @@ const Index = () => {
           />
 
           <VeranderingCard onSelectTheme={handleSelectTheme} />
+
+          <GeneratiesCard onSelectTheme={handleSelectTheme} />
         </div>
       </section>
 

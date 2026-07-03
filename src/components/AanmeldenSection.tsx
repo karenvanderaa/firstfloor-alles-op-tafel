@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-type Theme = "Verandering staat op de agenda. Draagvlak niet.";
+type Theme =
+  | "Verandering staat op de agenda. Draagvlak niet."
+  | "Generaties: geen probleem maar een welkom signaal";
 
 interface AanmeldenSectionProps {
   preselectedTheme?: Theme;
@@ -51,6 +53,11 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
               <p>📅 Ochtendsessie: do 27/8 — 8u tot 10u</p>
+              <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
+            </div>
+            <div>
+              <p className="font-semibold mb-1">Generaties: geen probleem maar een welkom signaal</p>
+              <p>📅 Ochtendsessie: ma 21/9 — 8u tot 10u</p>
               <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
             </div>
             <p>🥂 Snacks en drankjes voorzien</p>
@@ -190,6 +197,18 @@ const RegistrationFormFull = ({
           />
           Verandering staat op de agenda. Draagvlak niet.
         </label>
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input
+            type="radio"
+            name="thema"
+            value="Generaties: geen probleem maar een welkom signaal"
+            checked={form.thema === "Generaties: geen probleem maar een welkom signaal"}
+            onChange={handleChange}
+            className="accent-[#315eff]"
+            required
+          />
+          Generaties: geen probleem maar een welkom signaal
+        </label>
       </fieldset>
 
       {/* Moment */}
@@ -208,6 +227,26 @@ const RegistrationFormFull = ({
                 required
               />
               Ochtendsessie — do 27/8 (8u - 10u)
+            </label>
+          </div>
+        </fieldset>
+      )}
+
+      {form.thema.includes("Generaties") && (
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment *</legend>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="moment"
+                value="Ochtendsessie — ma 21/9 (8u - 10u)"
+                checked={form.moment === "Ochtendsessie — ma 21/9 (8u - 10u)"}
+                onChange={handleChange}
+                className="accent-[#315eff]"
+                required
+              />
+              Ochtendsessie — ma 21/9 (8u - 10u)
             </label>
           </div>
         </fieldset>
