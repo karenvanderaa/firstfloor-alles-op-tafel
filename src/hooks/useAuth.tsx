@@ -67,23 +67,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }, 0);
     };
 
-    const syncSessionOnly = (newSession: Session | null) => {
-      if (!mounted) return;
-
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
-
-      if (!newSession?.user) {
-        checkVersion++;
-        setIsAdmin(false);
-        setAdminStatus("idle");
-        setLoading(false);
-      }
-    };
-
     // Listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      syncSessionOnly(newSession);
+      handleSession(newSession);
     });
 
     // THEN check existing session
