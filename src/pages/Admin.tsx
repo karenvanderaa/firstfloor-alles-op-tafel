@@ -372,7 +372,7 @@ const Admin = () => {
                     <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Alle thema's</SelectItem>
-                      {themas.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      {themas.filter(Boolean).map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -382,7 +382,7 @@ const Admin = () => {
                     <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Alle sessies</SelectItem>
-                      {sessies.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      {sessies.filter(Boolean).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
