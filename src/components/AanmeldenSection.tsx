@@ -55,6 +55,11 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
               <p>📅 Ochtendsessie: do 27/8 — 8u tot 10u</p>
               <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
             </div>
+            <div>
+              <p className="font-semibold mb-1">Generaties: geen probleem maar een welkom signaal</p>
+              <p>📅 Ochtendsessie: ma 21/9 — 8u tot 10u</p>
+              <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
+            </div>
             <p>🥂 Snacks en drankjes voorzien</p>
           </div>
         </div>
