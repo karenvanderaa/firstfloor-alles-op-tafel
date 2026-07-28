@@ -171,6 +171,16 @@ const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void 
 
 const Index = () => {
   const [preselectedTheme, setPreselectedTheme] = useState<Theme | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState("upcoming");
+
+  useEffect(() => {
+    if (window.location.hash === "#tafel-ai-in-hr") {
+      setActiveTab("past");
+      setTimeout(() => {
+        document.getElementById("tafel-ai-in-hr")?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, []);
 
   const handleSelectTheme = useCallback((title: string) => {
     if (title.includes("Verandering")) {
@@ -193,21 +203,31 @@ const Index = () => {
         <div className="container max-w-5xl mx-auto px-6 space-y-10">
           <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em]">Onze edities</p>
 
-          <RondeTafelCard
-            variant="past-whitepaper"
-            anchorId="tafel-ai-in-hr"
-            editieLabel="Editie | Mei 2026"
-            title="AI in HR: wat betekent dat nu écht?"
-            body={tafel1Body}
-            borderColor="#315eff"
-            tafelName="AI in HR"
-            takeaways={aiTakeaways}
-            tafelgast={ellenTafelgast}
-          />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex">
+              <TabsTrigger value="upcoming">Komende edities</TabsTrigger>
+              <TabsTrigger value="past">Terugblik & whitepapers</TabsTrigger>
+            </TabsList>
 
-          <VeranderingCard onSelectTheme={handleSelectTheme} />
+            <TabsContent value="upcoming" className="space-y-10 mt-6">
+              <VeranderingCard onSelectTheme={handleSelectTheme} />
+              <GeneratiesCard onSelectTheme={handleSelectTheme} />
+            </TabsContent>
 
-          <GeneratiesCard onSelectTheme={handleSelectTheme} />
+            <TabsContent value="past" className="space-y-10 mt-6">
+              <RondeTafelCard
+                variant="past-whitepaper"
+                anchorId="tafel-ai-in-hr"
+                editieLabel="Editie | Mei 2026"
+                title="AI in HR: wat betekent dat nu écht?"
+                body={tafel1Body}
+                borderColor="#315eff"
+                tafelName="AI in HR"
+                takeaways={aiTakeaways}
+                tafelgast={ellenTafelgast}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
 
