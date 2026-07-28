@@ -169,15 +169,32 @@ const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void 
   );
 };
 
+/* Afgelopen edities — voeg hier simpelweg een item toe voor een extra tabblad */
+const pastEditions = [
+  {
+    id: "ai-in-hr",
+    tabLabel: 'Afgelopen editie "AI in HR" + whitepaper',
+    anchorId: "tafel-ai-in-hr",
+    editieLabel: "Editie | Mei 2026",
+    title: "AI in HR: wat betekent dat nu écht?",
+    body: tafel1Body,
+    borderColor: "#315eff",
+    tafelName: "AI in HR",
+    takeaways: aiTakeaways,
+    tafelgast: ellenTafelgast,
+  },
+];
+
 const Index = () => {
   const [preselectedTheme, setPreselectedTheme] = useState<Theme | undefined>(undefined);
   const [activeTab, setActiveTab] = useState("upcoming");
 
   useEffect(() => {
-    if (window.location.hash === "#tafel-ai-in-hr") {
-      setActiveTab("past");
+    const match = pastEditions.find((e) => window.location.hash === `#${e.anchorId}`);
+    if (match) {
+      setActiveTab(match.id);
       setTimeout(() => {
-        document.getElementById("tafel-ai-in-hr")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(match.anchorId)?.scrollIntoView({ behavior: "smooth" });
       }, 100);
     }
   }, []);
@@ -204,9 +221,22 @@ const Index = () => {
           <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em]">Onze edities</p>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex">
-              <TabsTrigger value="upcoming">Komende edities</TabsTrigger>
-              <TabsTrigger value="past">Terugblik & whitepapers</TabsTrigger>
+            <TabsList className="w-full sm:w-auto flex sm:inline-flex flex-nowrap overflow-x-auto justify-start gap-1 h-auto p-1">
+              <TabsTrigger
+                value="upcoming"
+                className="whitespace-nowrap px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:text-foreground transition-colors"
+              >
+                Komende edities
+              </TabsTrigger>
+              {pastEditions.map((e) => (
+                <TabsTrigger
+                  key={e.id}
+                  value={e.id}
+                  className="whitespace-nowrap px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:text-foreground transition-colors"
+                >
+                  {e.tabLabel}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             <TabsContent value="upcoming" className="space-y-10 mt-6">
@@ -214,19 +244,21 @@ const Index = () => {
               <GeneratiesCard onSelectTheme={handleSelectTheme} />
             </TabsContent>
 
-            <TabsContent value="past" className="space-y-10 mt-6">
-              <RondeTafelCard
-                variant="past-whitepaper"
-                anchorId="tafel-ai-in-hr"
-                editieLabel="Editie | Mei 2026"
-                title="AI in HR: wat betekent dat nu écht?"
-                body={tafel1Body}
-                borderColor="#315eff"
-                tafelName="AI in HR"
-                takeaways={aiTakeaways}
-                tafelgast={ellenTafelgast}
-              />
-            </TabsContent>
+            {pastEditions.map((e) => (
+              <TabsContent key={e.id} value={e.id} className="space-y-10 mt-6">
+                <RondeTafelCard
+                  variant="past-whitepaper"
+                  anchorId={e.anchorId}
+                  editieLabel={e.editieLabel}
+                  title={e.title}
+                  body={e.body}
+                  borderColor={e.borderColor}
+                  tafelName={e.tafelName}
+                  takeaways={e.takeaways}
+                  tafelgast={e.tafelgast}
+                />
+              </TabsContent>
+            ))}
           </Tabs>
         </div>
       </section>
