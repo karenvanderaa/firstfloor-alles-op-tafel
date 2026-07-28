@@ -8,6 +8,7 @@ import AboutSection from "@/components/AboutSection";
 import AanmeldenSection from "@/components/AanmeldenSection";
 import Footer from "@/components/Footer";
 import KeepMePostedDialog from "@/components/KeepMePostedDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ellenPhoto from "@/assets/facilitator-ellen.jpeg";
 import ankeAsset from "@/assets/tafelgast-anke.png.asset.json";
 import saskiaAsset from "@/assets/tafelgast-saskia.jpg.asset.json";
