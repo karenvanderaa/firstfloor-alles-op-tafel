@@ -72,9 +72,9 @@ const ankeTafelgast = {
 };
 
 const tafel3Body: React.ReactNode[] = [
-  "Generaties aan tafel? Vaak gaat het gesprek meteen over verschillen: babyboomers versus Gen Z, ervaring versus digitale reflex, loyaliteit versus flexibiliteit. Handig als kader, maar zelden de echte kern.",
-  "Want generatiespanningen zijn geen probleem op zich. Ze zijn een signaal. Ze maken zichtbaar hoe moeilijk wij als mensen en organisaties omgaan met verschil, verandering en verbinding. En net dáár ligt de kans: als je die spanningen niet wegorganiseert, maar leest, krijg je zicht op wat een organisatie écht nodig heeft om vandaag te werken.",
-  "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek. Wat zeggen generatieverschillen over jouw organisatie? Waar zit weerstand, waar zit potentieel? En hoe zorg je dat elke generatie — van babyboomer tot Gen Z — ten volle tot haar recht komt?",
+  "Wie neemt straks het roer over? Continuïteit vraagt meer dan het aanduiden van een opvolger. Het vraagt een open blik op leiderschap, kennis, vertrouwen en de toekomst van de organisatie.",
+  "Net daar komen ook spanningen tussen generaties naar boven. Wat wil de ene generatie behouden? Wat vindt de volgende generatie noodzakelijk om te veranderen? Wanneer wordt ervaring een stevig fundament, en wanneer dreigt ze vernieuwing af te remmen? Die spanning is geen probleem dat zo snel mogelijk weggewerkt moet worden. Ze maakt zichtbaar wat uitgesproken, herbekeken en zorgvuldig overgedragen moet worden.",
+  "Tijdens deze ronde tafel gaan we daar eerlijk over in gesprek. Hoe bereid je een organisatie voor op een volgende generatie? Hoe draag je verantwoordelijkheid, kennis en leiderschap over zonder alles bij het oude te laten? En hoe zorg je dat verschillende generaties niet tegenover elkaar komen te staan, maar samen bouwen aan continuïteit? Eentje met respect voor het verleden die ook morgen nog werkt?",
   <span key="pelckmans-note-3" className="block mt-5 pt-4 border-t border-border/60 text-sm italic text-muted-foreground">
     <span className="not-italic text-accent-pink mr-1.5">◆</span>
     Opnieuw te gast bij Uitgeverij Pelckmans, met uitzicht op de ochtend-skyline van Antwerpen.
@@ -150,7 +150,7 @@ const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void 
     <RondeTafelCard
       variant="upcoming"
       editieLabel="Editie | September 2026"
-      title="Generaties: geen probleem maar een welkom signaal"
+      title="Successie: continuïteit vraagt meer dan een opvolger"
       body={tafel3Body}
       borderColor="#ff6b9d"
       tafelName="Generaties"
@@ -174,7 +174,7 @@ const Index = () => {
   const handleSelectTheme = useCallback((title: string) => {
     if (title.includes("Verandering")) {
       setPreselectedTheme("Verandering staat op de agenda. Draagvlak niet.");
-    } else if (title.includes("Generaties")) {
+    } else if (title.includes("Successie") || title.includes("Generaties")) {
       setPreselectedTheme("Generaties: geen probleem maar een welkom signaal");
     }
   }, []);
