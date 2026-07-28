@@ -56,7 +56,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
               <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
             </div>
             <div>
-              <p className="font-semibold mb-1">Generaties: geen probleem maar een welkom signaal</p>
+              <p className="font-semibold mb-1">Successie: continuïteit vraagt meer dan een opvolger</p>
               <p>📅 Ochtendsessie: ma 21/9 — 8u tot 10u</p>
               <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
             </div>
@@ -207,7 +207,7 @@ const RegistrationFormFull = ({
             className="accent-[#315eff]"
             required
           />
-          Generaties: geen probleem maar een welkom signaal
+          Successie: continuïteit vraagt meer dan een opvolger
         </label>
       </fieldset>
 
