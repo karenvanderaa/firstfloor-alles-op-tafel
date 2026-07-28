@@ -169,15 +169,32 @@ const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void 
   );
 };
 
+/* Afgelopen edities — voeg hier simpelweg een item toe voor een extra tabblad */
+const pastEditions = [
+  {
+    id: "ai-in-hr",
+    tabLabel: 'Afgelopen editie "AI in HR" + whitepaper',
+    anchorId: "tafel-ai-in-hr",
+    editieLabel: "Editie | Mei 2026",
+    title: "AI in HR: wat betekent dat nu écht?",
+    body: tafel1Body,
+    borderColor: "#315eff",
+    tafelName: "AI in HR",
+    takeaways: aiTakeaways,
+    tafelgast: ellenTafelgast,
+  },
+];
+
 const Index = () => {
   const [preselectedTheme, setPreselectedTheme] = useState<Theme | undefined>(undefined);
   const [activeTab, setActiveTab] = useState("upcoming");
 
   useEffect(() => {
-    if (window.location.hash === "#tafel-ai-in-hr") {
-      setActiveTab("past");
+    const match = pastEditions.find((e) => window.location.hash === `#${e.anchorId}`);
+    if (match) {
+      setActiveTab(match.id);
       setTimeout(() => {
-        document.getElementById("tafel-ai-in-hr")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(match.anchorId)?.scrollIntoView({ behavior: "smooth" });
       }, 100);
     }
   }, []);
