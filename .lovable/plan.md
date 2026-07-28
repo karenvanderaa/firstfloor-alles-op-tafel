@@ -1,35 +1,22 @@
-Doel: de "Onze edities"-sectie op de homepage herstructureren naar een tabblad-interface zodat komende edities altijd bovenaan en prominent staan, terwijl de afgelopen AI-editie + whitepaper toch vindbaar blijven.
+## Doel
+Tabbladen in de sectie "Onze edities" opvallender maken en per afgelopen editie een eigen tabblad voorzien.
 
-### Aanpak
+## Wijzigingen (allemaal in `src/pages/Index.tsx`, plus lichte styling)
 
-1. **Tabblad-interface inbouwen**
-   - Gebruik het bestaande shadcn/ui `Tabs`-component (`src/components/ui/tabs.tsx`).
-   - Vervang de huidige gestapelde kaartenlijst in `src/pages/Index.tsx` door een `<Tabs defaultValue="upcoming">` blok.
-   - Tab 1: **"Komende edities"** (`value="upcoming"`).
-   - Tab 2: **"Terugblik & whitepapers"** (`value="past"`).
+**1. Tabbladen**
+- Tab 1: `Komende edities` (blijft, standaard actief)
+- Tab 2: `Afgelopen editie "AI in HR" + whitepaper` — bevat de bestaande past-whitepaper kaart
+- Structuur wordt zo opgezet dat elke volgende afgelopen editie simpelweg één extra tab wordt (één array van past-edities → tabs gerenderd in een loop), zodat toekomstige edities zonder herstructurering bijkomen.
 
-2. **Inhoud per tab**
-   - **Komende edities**: de bestaande `<VeranderingCard />` en `<GeneratiesCard />` (Augustus en September 2026).
-   - **Terugblik & whitepapers**: de bestaande AI-editie kaart (`variant="past-whitepaper"`) met whitepaper-formulier.
+**2. Opvallender actief tabblad**
+- Actieve tab krijgt een duidelijke merkkleur (primary blauw met witte tekst, subtiele schaduw) i.p.v. het huidige zachte grijs.
+- Inactieve tabs blijven neutraal met hover-effect.
+- Op mobiel: tabs scrollen horizontaal i.p.v. samengeperst grid, want de nieuwe tab-titel is lang.
+- Styling gebeurt via de bestaande design tokens (geen hardcoded kleuren) op de `TabsTrigger` in `Index.tsx`.
 
-3. **Deeplinks behouden**
-   - Behoud het `anchorId="tafel-ai-in-hr"` op de past-whitepaper kaart.
-   - Bij pagina-load: als de URL hash `#tafel-ai-in-hr` bevat, activeer programmatisch de "Terugblik & whitepapers"-tab en scroll naar het anker.
-   - Op die manier blijven bestaande links naar `/whitepaper` en sociale shares werken.
+**3. Deeplink blijft werken**
+- `#tafel-ai-in-hr` activeert nog steeds automatisch het juiste (AI in HR) tabblad en scrollt ernaartoe.
 
-4. **Visuele afwerking**
-   - Tabs krijgen de huidige site-styling: subtiele onderlijn/pill-stijl in lijn met bestaande knoppen en badges.
-   - Behoud `space-y-10` binnen elke tab zodat de kaarten niet visueel samenklonteren.
-   - Mobiel: tabs blijven horizontaal scrollbaar of stacken netjes; kaarten houden hun huidige responsive gedrag.
-
-5. **Functionaliteit behouden**
-   - Alle bestaande props, seat counters, `onSelectTheme`, whitepaper-formulier en Brevo-sync blijven ongewijzigd werken.
-   - Geen wijzigingen aan de individuele kaartcomponenten (`RondeTafelCard`) zelf, enkel hun ordening in de sectie.
-
-### Bestanden die gewijzigd worden
-- `src/pages/Index.tsx` — herstructurering van de edities-sectie naar tabs + deeplink-logica.
-- Eventueel lichte aanpassingen in `src/index.css` als de standaard tab-styling niet voldoende aansluit (alleen indien nodig).
-
-### Niet in scope
-- Geen wijzigingen aan de admin backend, Brevo-sync, registratieformulier of individuele kaartinhoud.
-- Geen nieuwe pagina's of routes.
+## Technisch
+- Geen wijziging aan `RondeTafelCard`, formulieren, teller of backend.
+- Tab-waarden krijgen stabiele id's (`upcoming`, `ai-in-hr`) zodat hash-mapping netjes blijft.
