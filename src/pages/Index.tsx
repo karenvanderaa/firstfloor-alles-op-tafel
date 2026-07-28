@@ -221,9 +221,22 @@ const Index = () => {
           <p className="text-primary font-heading text-xs font-semibold uppercase tracking-[0.2em]">Onze edities</p>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex">
-              <TabsTrigger value="upcoming">Komende edities</TabsTrigger>
-              <TabsTrigger value="past">Terugblik & whitepapers</TabsTrigger>
+            <TabsList className="w-full sm:w-auto flex sm:inline-flex flex-nowrap overflow-x-auto justify-start gap-1 h-auto p-1">
+              <TabsTrigger
+                value="upcoming"
+                className="whitespace-nowrap px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:text-foreground transition-colors"
+              >
+                Komende edities
+              </TabsTrigger>
+              {pastEditions.map((e) => (
+                <TabsTrigger
+                  key={e.id}
+                  value={e.id}
+                  className="whitespace-nowrap px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:text-foreground transition-colors"
+                >
+                  {e.tabLabel}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             <TabsContent value="upcoming" className="space-y-10 mt-6">
@@ -231,19 +244,21 @@ const Index = () => {
               <GeneratiesCard onSelectTheme={handleSelectTheme} />
             </TabsContent>
 
-            <TabsContent value="past" className="space-y-10 mt-6">
-              <RondeTafelCard
-                variant="past-whitepaper"
-                anchorId="tafel-ai-in-hr"
-                editieLabel="Editie | Mei 2026"
-                title="AI in HR: wat betekent dat nu écht?"
-                body={tafel1Body}
-                borderColor="#315eff"
-                tafelName="AI in HR"
-                takeaways={aiTakeaways}
-                tafelgast={ellenTafelgast}
-              />
-            </TabsContent>
+            {pastEditions.map((e) => (
+              <TabsContent key={e.id} value={e.id} className="space-y-10 mt-6">
+                <RondeTafelCard
+                  variant="past-whitepaper"
+                  anchorId={e.anchorId}
+                  editieLabel={e.editieLabel}
+                  title={e.title}
+                  body={e.body}
+                  borderColor={e.borderColor}
+                  tafelName={e.tafelName}
+                  takeaways={e.takeaways}
+                  tafelgast={e.tafelgast}
+                />
+              </TabsContent>
+            ))}
           </Tabs>
         </div>
       </section>
