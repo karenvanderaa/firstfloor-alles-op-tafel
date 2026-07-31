@@ -14,8 +14,18 @@ interface AanmeldenSectionProps {
 
 const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
   const scrollToAI = () => {
-    document.getElementById("tafel-ai-in-hr")?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById("tafel-ai-in-hr");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    if (window.location.hash === "#tafel-ai-in-hr") {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    } else {
+      window.location.hash = "#tafel-ai-in-hr";
+    }
   };
+
 
   return (
     <section id="aanmelden" className="bg-secondary py-12 md:py-16">
