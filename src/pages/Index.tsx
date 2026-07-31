@@ -190,14 +190,20 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("upcoming");
 
   useEffect(() => {
-    const match = pastEditions.find((e) => window.location.hash === `#${e.anchorId}`);
-    if (match) {
-      setActiveTab(match.id);
-      setTimeout(() => {
-        document.getElementById(match.anchorId)?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }
+    const openFromHash = () => {
+      const match = pastEditions.find((e) => window.location.hash === `#${e.anchorId}`);
+      if (match) {
+        setActiveTab(match.id);
+        setTimeout(() => {
+          document.getElementById(match.anchorId)?.scrollIntoView({ behavior: "smooth" });
+        }, 120);
+      }
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
   }, []);
+
 
   const handleSelectTheme = useCallback((title: string) => {
     if (title.includes("Verandering")) {
