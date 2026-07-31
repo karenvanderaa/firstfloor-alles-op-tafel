@@ -57,7 +57,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             <div>
               <p className="font-semibold mb-1">AI in HR: wat betekent dat nu écht?</p>
               <p>
-                📄 <button onClick={scrollToAI} className="text-primary hover:underline">Bekijk de whitepaper hierboven.</button>
+                📄 <button onClick={scrollToAI} className="text-primary hover:underline">Bekijk de whitepaper bij de afgelopen editie.</button>
               </p>
             </div>
             <div>
