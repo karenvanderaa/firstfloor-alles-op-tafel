@@ -14,8 +14,18 @@ interface AanmeldenSectionProps {
 
 const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
   const scrollToAI = () => {
-    document.getElementById("tafel-ai-in-hr")?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById("tafel-ai-in-hr");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    if (window.location.hash === "#tafel-ai-in-hr") {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    } else {
+      window.location.hash = "#tafel-ai-in-hr";
+    }
   };
+
 
   return (
     <section id="aanmelden" className="bg-secondary py-12 md:py-16">
@@ -47,7 +57,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             <div>
               <p className="font-semibold mb-1">AI in HR: wat betekent dat nu écht?</p>
               <p>
-                📄 <button onClick={scrollToAI} className="text-primary hover:underline">Bekijk de whitepaper hierboven.</button>
+                📄 <button onClick={scrollToAI} className="text-primary hover:underline">Bekijk de whitepaper bij de afgelopen editie.</button>
               </p>
             </div>
             <div>
