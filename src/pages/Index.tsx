@@ -21,8 +21,6 @@ type Theme =
   | "Verandering staat op de agenda. Draagvlak niet."
   | "Generaties: geen probleem maar een welkom signaal";
 
-const VERANDERING_THEMA = "Verandering staat op de agenda. Draagvlak niet.";
-const VERANDERING_MOMENT = "Ochtendsessie — do 27/8 (8u - 10u)";
 
 const GENERATIES_THEMA = "Generaties: geen probleem maar een welkom signaal";
 const GENERATIES_MOMENT = "Ochtendsessie — ma 21/9 (8u - 10u)";
