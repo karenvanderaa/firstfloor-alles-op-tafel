@@ -52,9 +52,10 @@ export interface PastWhitepaperVariantProps {
   body: React.ReactNode[];
   borderColor: string;
   tafelName: string;
-  takeaways: Takeaway[];
-  tafelgast: Tafelgast;
+  takeaways?: Takeaway[];
+  tafelgast?: Tafelgast;
   anchorId?: string;
+  whitepaperPending?: boolean;
 }
 
 export type RondeTafelCardProps = UpcomingVariantProps | PastWhitepaperVariantProps;
