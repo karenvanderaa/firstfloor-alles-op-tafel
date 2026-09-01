@@ -62,8 +62,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             </div>
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
-              <p>📅 Ochtendsessie: do 27/8 — 8u tot 10u</p>
-              <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
+              <p className="text-muted-foreground">Deze editie (27/8) is afgelopen — de whitepaper volgt binnenkort.</p>
             </div>
             <div>
               <p className="font-semibold mb-1">Successie: continuïteit vraagt meer dan een opvolger</p>
