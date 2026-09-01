@@ -62,8 +62,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             </div>
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
-              <p>📅 Ochtendsessie: do 27/8 — 8u tot 10u</p>
-              <p>📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)</p>
+              <p className="text-muted-foreground">Deze editie (27/8) is afgelopen — de whitepaper volgt binnenkort.</p>
             </div>
             <div>
               <p className="font-semibold mb-1">Successie: continuïteit vraagt meer dan een opvolger</p>
@@ -199,18 +198,6 @@ const RegistrationFormFull = ({
           <input
             type="radio"
             name="thema"
-            value="Verandering staat op de agenda. Draagvlak niet."
-            checked={form.thema === "Verandering staat op de agenda. Draagvlak niet."}
-            onChange={handleChange}
-            className="accent-[#315eff]"
-            required
-          />
-          Verandering staat op de agenda. Draagvlak niet.
-        </label>
-        <label className="flex items-center gap-2 text-sm cursor-pointer">
-          <input
-            type="radio"
-            name="thema"
             value="Generaties: geen probleem maar een welkom signaal"
             checked={form.thema === "Generaties: geen probleem maar een welkom signaal"}
             onChange={handleChange}
@@ -221,26 +208,7 @@ const RegistrationFormFull = ({
         </label>
       </fieldset>
 
-      {/* Moment */}
-      {form.thema.includes("Verandering") && (
-        <fieldset className="space-y-2">
-          <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment *</legend>
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="radio"
-                name="moment"
-                value="Ochtendsessie — do 27/8 (8u - 10u)"
-                checked={form.moment === "Ochtendsessie — do 27/8 (8u - 10u)"}
-                onChange={handleChange}
-                className="accent-[#315eff]"
-                required
-              />
-              Ochtendsessie — do 27/8 (8u - 10u)
-            </label>
-          </div>
-        </fieldset>
-      )}
+
 
       {form.thema.includes("Generaties") && (
         <fieldset className="space-y-2">

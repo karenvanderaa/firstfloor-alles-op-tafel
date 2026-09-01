@@ -52,9 +52,10 @@ export interface PastWhitepaperVariantProps {
   body: React.ReactNode[];
   borderColor: string;
   tafelName: string;
-  takeaways: Takeaway[];
-  tafelgast: Tafelgast;
+  takeaways?: Takeaway[];
+  tafelgast?: Tafelgast;
   anchorId?: string;
+  whitepaperPending?: boolean;
 }
 
 export type RondeTafelCardProps = UpcomingVariantProps | PastWhitepaperVariantProps;
@@ -173,6 +174,7 @@ const PastWhitepaperCard = ({
   takeaways,
   tafelgast,
   anchorId,
+  whitepaperPending,
 }: PastWhitepaperVariantProps) => (
   <div
     id={anchorId}
@@ -194,25 +196,36 @@ const PastWhitepaperCard = ({
       <p key={i} className="text-foreground/80 font-body leading-relaxed mb-4 whitespace-pre-line">{p}</p>
     ))}
 
-    <div className="mt-8">
-      <h3 className="font-heading text-lg md:text-xl font-bold text-foreground mb-4">
-        Wat er aan tafel naar boven kwam
-      </h3>
-      <div className="space-y-4">
-        {takeaways.map((t, i) => (
-          <div key={i} className="bg-muted rounded-md p-4">
-            <p className="font-heading font-semibold text-foreground mb-1">{t.title}</p>
-            <p className="text-sm text-foreground/80 leading-relaxed">{t.body}</p>
-          </div>
-        ))}
+    {takeaways && takeaways.length > 0 && (
+      <div className="mt-8">
+        <h3 className="font-heading text-lg md:text-xl font-bold text-foreground mb-4">
+          Wat er aan tafel naar boven kwam
+        </h3>
+        <div className="space-y-4">
+          {takeaways.map((t, i) => (
+            <div key={i} className="bg-muted rounded-md p-4">
+              <p className="font-heading font-semibold text-foreground mb-1">{t.title}</p>
+              <p className="text-sm text-foreground/80 leading-relaxed">{t.body}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    )}
 
     <div className="mt-8">
-      <WhitepaperForm />
+      {whitepaperPending ? (
+        <div className="rounded-md border border-dashed border-border bg-muted/50 p-5">
+          <p className="font-heading font-semibold text-foreground mb-1">Whitepaper volgt binnenkort</p>
+          <p className="text-sm text-muted-foreground">
+            We bundelen de inzichten van deze editie. De whitepaper verschijnt hier zodra ze klaar is.
+          </p>
+        </div>
+      ) : (
+        <WhitepaperForm />
+      )}
     </div>
 
-    <TafelgastBlock tafelgast={tafelgast} />
+    {tafelgast && <TafelgastBlock tafelgast={tafelgast} />}
 
     <img src={rondeTafelsLogo} alt="Ronde Tafels" className="absolute top-6 right-6 w-16 h-16 md:w-20 md:h-20 rounded-full shadow-md opacity-80" />
   </div>
