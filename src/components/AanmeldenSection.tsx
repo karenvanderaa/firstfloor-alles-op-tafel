@@ -198,18 +198,6 @@ const RegistrationFormFull = ({
           <input
             type="radio"
             name="thema"
-            value="Verandering staat op de agenda. Draagvlak niet."
-            checked={form.thema === "Verandering staat op de agenda. Draagvlak niet."}
-            onChange={handleChange}
-            className="accent-[#315eff]"
-            required
-          />
-          Verandering staat op de agenda. Draagvlak niet.
-        </label>
-        <label className="flex items-center gap-2 text-sm cursor-pointer">
-          <input
-            type="radio"
-            name="thema"
             value="Generaties: geen probleem maar een welkom signaal"
             checked={form.thema === "Generaties: geen probleem maar een welkom signaal"}
             onChange={handleChange}
@@ -220,26 +208,7 @@ const RegistrationFormFull = ({
         </label>
       </fieldset>
 
-      {/* Moment */}
-      {form.thema.includes("Verandering") && (
-        <fieldset className="space-y-2">
-          <legend className="text-sm font-body font-medium text-foreground">Voorkeur moment *</legend>
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="radio"
-                name="moment"
-                value="Ochtendsessie — do 27/8 (8u - 10u)"
-                checked={form.moment === "Ochtendsessie — do 27/8 (8u - 10u)"}
-                onChange={handleChange}
-                className="accent-[#315eff]"
-                required
-              />
-              Ochtendsessie — do 27/8 (8u - 10u)
-            </label>
-          </div>
-        </fieldset>
-      )}
+
 
       {form.thema.includes("Generaties") && (
         <fieldset className="space-y-2">
