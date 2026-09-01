@@ -233,7 +233,6 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="upcoming" className="space-y-10 mt-6">
-              <VeranderingCard onSelectTheme={handleSelectTheme} />
               <GeneratiesCard onSelectTheme={handleSelectTheme} />
             </TabsContent>
 
@@ -249,6 +248,7 @@ const Index = () => {
                   tafelName={e.tafelName}
                   takeaways={e.takeaways}
                   tafelgast={e.tafelgast}
+                  whitepaperPending={e.whitepaperPending}
                 />
               </TabsContent>
             ))}
