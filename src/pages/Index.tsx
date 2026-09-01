@@ -88,47 +88,8 @@ const saskiaTafelgast = {
   bio: "Saskia Van Uffelen werkt al meer dan 25 jaar in de ICT- en telecombusiness. Ze is aangesteld als 'Digital Champion' voor België bij de Europese Commissie. Saskia is een rolmodel: als topmanager en digitaal ambassadeur, maar ook als vrouwelijke ondernemer die een drukke job combineert met een gezin van vijf kinderen. Ze pleit voor een nieuwe manier van werken waarbij de kwaliteiten van alle generaties — van babyboomers tot Gen Z — ten volle aan bod komen.",
 };
 
-const VeranderingCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
-  const { available, capacity, loading } = useSeatsAvailable(VERANDERING_THEMA, VERANDERING_MOMENT, 6);
-  const volzet = !loading && available === 0;
 
 
-  const capacityLabel = loading ? (
-    <>👥 Max. {capacity} deelnemers</>
-  ) : volzet ? (
-    <span className="inline-flex items-center gap-2">
-      👥
-      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase tracking-wider border border-red-200">
-        Volzet
-      </span>
-    </span>
-  ) : (
-    <>👥 Nog {available} van {capacity} plekken vrij</>
-  );
-
-  return (
-    <RondeTafelCard
-      variant="upcoming"
-      editieLabel="Editie | Augustus 2026"
-      title="Verandering staat op de agenda. Draagvlak niet."
-      body={tafel2Body}
-      borderColor="#04c9ff"
-      tafelName="Verandering & Draagvlak"
-      onSelectTheme={onSelectTheme}
-      sessions={[{ label: "📅 Ochtendsessie: do 27/8 — 8u tot 10u", volzet }]}
-      locationLine={
-        <>
-          📍 Pelckmans Uitgevers, Mechelsesteenweg 271, 2018 Antwerpen (WATT-toren)
-        </>
-      }
-      capacityLabel={capacityLabel}
-      partner={{ name: "Pelckmans Uitgevers", logoUrl: pelckmansLogoAsset.url }}
-      heroImage={pelckmansLocatieAsset.url}
-      secondaryImage={{ src: pelckmansBoekenAsset.url, alt: "Pelckmans boekenkast" }}
-      tafelgast={ankeTafelgast}
-    />
-  );
-};
 
 const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void }) => {
   const { available, capacity, loading } = useSeatsAvailable(GENERATIES_THEMA, GENERATIES_MOMENT, 6);
