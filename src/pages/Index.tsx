@@ -131,7 +131,33 @@ const GeneratiesCard = ({ onSelectTheme }: { onSelectTheme: (t: string) => void 
 };
 
 /* Afgelopen edities — voeg hier simpelweg een item toe voor een extra tabblad */
-const pastEditions = [
+type PastEdition = {
+  id: string;
+  tabLabel: string;
+  anchorId: string;
+  editieLabel: string;
+  title: string;
+  body: React.ReactNode[];
+  borderColor: string;
+  tafelName: string;
+  takeaways?: typeof aiTakeaways;
+  tafelgast?: typeof ellenTafelgast;
+  whitepaperPending?: boolean;
+};
+
+const pastEditions: PastEdition[] = [
+  {
+    id: "verandering",
+    tabLabel: 'Afgelopen editie "Verandering & draagvlak"',
+    anchorId: "tafel-verandering",
+    editieLabel: "Editie | Augustus 2026",
+    title: "Verandering staat op de agenda. Draagvlak niet.",
+    body: tafel2Body,
+    borderColor: "#04c9ff",
+    tafelName: "Verandering & Draagvlak",
+    tafelgast: ankeTafelgast,
+    whitepaperPending: true,
+  },
   {
     id: "ai-in-hr",
     tabLabel: 'Afgelopen editie "AI in HR" + whitepaper',
