@@ -26,6 +26,19 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
     }
   };
 
+  const scrollToVerandering = () => {
+    const el = document.getElementById("tafel-verandering");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    if (window.location.hash === "#tafel-verandering") {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    } else {
+      window.location.hash = "#tafel-verandering";
+    }
+  };
+
 
   return (
     <section id="aanmelden" className="bg-secondary py-12 md:py-16">
@@ -62,7 +75,9 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
             </div>
             <div>
               <p className="font-semibold mb-1">Verandering staat op de agenda. Draagvlak niet.</p>
-              <p className="text-muted-foreground">Deze editie (27/8) is afgelopen — de whitepaper volgt binnenkort.</p>
+              <p>
+                📄 <button onClick={scrollToVerandering} className="text-primary hover:underline">Bekijk de whitepaper bij de afgelopen editie.</button>
+              </p>
             </div>
             <div>
               <p className="font-semibold mb-1">Successie: continuïteit vraagt meer dan een opvolger</p>
