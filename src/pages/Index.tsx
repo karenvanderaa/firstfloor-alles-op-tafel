@@ -55,6 +55,21 @@ const aiTakeaways = [
     body: "Eén deelnemer trok de lijn hard door. Tegelijk bleek uit een ander traject dat meer dan de helft van een populatie het potentieel miste om mee te groeien na automatisering. Ambitie en realiteit botsen hier.",
   },
 ];
+const veranderingTakeaways = [
+  {
+    title: "Begin niet bij communicatie. Begin bij alignment.",
+    body: "Directieteams lijken op één lijn omdat iedereen dezelfde slides heeft goedgekeurd. Vraag ieder lid apart waarom de verandering nodig is en wanneer ze geslaagd is, en de antwoorden lopen uiteen. Dan heb je geen communicatieprobleem, maar een alignmentprobleem.",
+  },
+  {
+    title: "Wat voor de directie het einde is, is voor medewerkers het begin.",
+    body: "Een managementteam werkt maanden aan een beslissing. Medewerkers horen ze op één dinsdag. Verwerkingstijd is geen vertraging, maar iets wat je inplant.",
+  },
+  {
+    title: "Weerstand is informatie, geen probleem dat weg moet.",
+    body: "Mensen beschermen zekerheid, status, autonomie of hun professionele identiteit. Soms is het zelfs geen weerstand, maar verzadiging: te veel, te snel, op te korte tijd. En de middle manager is daarin geen doorgeefluik, maar een van de belangrijkste doelgroepen.",
+  },
+];
+
 
 const ellenTafelgast = {
   photo: ellenPhoto,
@@ -155,6 +170,7 @@ const pastEditions: PastEdition[] = [
     body: tafel2Body,
     borderColor: "#04c9ff",
     tafelName: "Verandering & Draagvlak",
+    takeaways: veranderingTakeaways,
     tafelgast: ankeTafelgast,
     whitepaperKey: "change-adoption",
     whitepaperTitle: "Download de whitepaper 'Change & Adoption'",
