@@ -170,6 +170,7 @@ const pastEditions: PastEdition[] = [
     body: tafel2Body,
     borderColor: "#04c9ff",
     tafelName: "Verandering & Draagvlak",
+    takeaways: veranderingTakeaways,
     tafelgast: ankeTafelgast,
     whitepaperKey: "change-adoption",
     whitepaperTitle: "Download de whitepaper 'Change & Adoption'",
