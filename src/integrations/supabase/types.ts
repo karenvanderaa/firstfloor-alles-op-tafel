@@ -165,6 +165,7 @@ export type Database = {
           id: string
           naam: string
           toestemming: boolean
+          whitepaper: string
         }
         Insert: {
           brevo_attempts?: number
@@ -175,6 +176,7 @@ export type Database = {
           id?: string
           naam: string
           toestemming: boolean
+          whitepaper?: string
         }
         Update: {
           brevo_attempts?: number
@@ -185,6 +187,7 @@ export type Database = {
           id?: string
           naam?: string
           toestemming?: boolean
+          whitepaper?: string
         }
         Relationships: []
       }

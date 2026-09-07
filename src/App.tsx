@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
+import WhitepaperChangeAdoption from "./pages/WhitepaperChangeAdoption";
 import WhitepaperAiInHr from "./pages/WhitepaperAiInHr.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/whitepaper/ai-in-hr" element={<WhitepaperAiInHr />} />
+            <Route path="/whitepaper/change-adoption" element={<WhitepaperChangeAdoption />} />
             <Route path="/whitepaper" element={<WhitepaperAiInHr />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

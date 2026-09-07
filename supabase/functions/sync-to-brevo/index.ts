@@ -14,8 +14,36 @@ const WHITEPAPER_LIST_ID = 65
 
 // Storage locatie van de whitepaper-PDF (bucket + object). Bestand wordt door Karen geüpload.
 const WHITEPAPER_BUCKET = 'whitepapers'
-const WHITEPAPER_OBJECT = 'ai-in-hr.pdf'
 const WHITEPAPER_SIGNED_URL_TTL = 60 * 60 * 24 * 30 // 30 dagen
+
+type WhitepaperKey = 'ai-in-hr' | 'change-adoption'
+
+const WHITEPAPERS: Record<WhitepaperKey, {
+  object: string
+  headerTitle: string
+  emailSubject: string
+  intro: string
+  label: string
+}> = {
+  'ai-in-hr': {
+    object: 'ai-in-hr.pdf',
+    headerTitle: 'Whitepaper — AI in HR',
+    emailSubject: 'Je whitepaper — AI in HR',
+    intro: 'Bedankt voor je interesse in onze whitepaper "AI in HR: wat betekent dat nu écht?" Hierin bundelen we de scherpste inzichten die aan onze ronde tafel naar boven kwamen.',
+    label: 'AI in HR',
+  },
+  'change-adoption': {
+    object: 'change-adoption.pdf',
+    headerTitle: 'Whitepaper — Change & Adoption',
+    emailSubject: 'Je whitepaper — Change & Adoption',
+    intro: 'Bedankt voor je interesse in onze whitepaper "Change & Adoption: veranderen zonder je organisatie onderweg kwijt te raken." Met tien principes uit de praktijk, het CARRP-framework en een change-check van tien vragen.',
+    label: 'Change & Adoption',
+  },
+}
+
+function resolveWhitepaper(key: unknown): WhitepaperKey {
+  return key === 'change-adoption' ? 'change-adoption' : 'ai-in-hr'
+}
 
 function normalizePhone(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
@@ -53,7 +81,8 @@ function buildConfirmationHtml(voornaam: string, thema: string, moment: string):
 </td></tr></table></td></tr></table></body></html>`
 }
 
-function buildWhitepaperHtml(naam: string, downloadUrl: string | null): string {
+function buildWhitepaperHtml(naam: string, downloadUrl: string | null, key: WhitepaperKey): string {
+  const config = WHITEPAPERS[key]
   const firstName = (naam || '').split(' ')[0] || 'daar'
   const downloadBlock = downloadUrl
     ? `<p style="text-align:center;margin:0 0 24px;">
@@ -69,12 +98,12 @@ function buildWhitepaperHtml(naam: string, downloadUrl: string | null): string {
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 20px;"><tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
 <tr><td style="background:#315eff;padding:32px 40px;text-align:center;">
-<h1 style="color:#ffffff;font-family:'Sora',Arial,sans-serif;font-size:22px;margin:0;">Whitepaper — AI in HR</h1>
+<h1 style="color:#ffffff;font-family:'Sora',Arial,sans-serif;font-size:22px;margin:0;">${config.headerTitle}</h1>
 <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:8px 0 0;letter-spacing:0.1em;text-transform:uppercase;">Ronde Tafels by First Floor</p>
 </td></tr>
 <tr><td style="padding:40px;">
 <h2 style="font-family:'Sora',Arial,sans-serif;color:#4e5056;font-size:20px;margin:0 0 16px;">Hallo ${firstName},</h2>
-<p style="color:#4e5056;font-size:15px;line-height:1.6;margin:0 0 24px;">Bedankt voor je interesse in onze whitepaper "AI in HR: wat betekent dat nu écht?" Hierin bundelen we de scherpste inzichten die aan onze ronde tafel naar boven kwamen.</p>
+<p style="color:#4e5056;font-size:15px;line-height:1.6;margin:0 0 24px;">${config.intro}</p>
 ${downloadBlock}
 <p style="color:#71737a;font-size:13px;line-height:1.5;margin:24px 0 0;border-top:1px solid #e5e7eb;padding-top:20px;">Vragen of zin om verder in gesprek te gaan? Mail gerust naar <a href="mailto:karen@firstfloortalent.be" style="color:#315eff;text-decoration:none;">karen@firstfloortalent.be</a>.</p>
 </td></tr>
@@ -207,11 +236,11 @@ async function syncToBrevo(payload: {
   }
 }
 
-async function getWhitepaperUrl(admin: ReturnType<typeof createClient>): Promise<string | null> {
+async function getWhitepaperUrl(admin: ReturnType<typeof createClient>, key: WhitepaperKey): Promise<string | null> {
   try {
     const { data, error } = await admin.storage
       .from(WHITEPAPER_BUCKET)
-      .createSignedUrl(WHITEPAPER_OBJECT, WHITEPAPER_SIGNED_URL_TTL)
+      .createSignedUrl(WHITEPAPERS[key].object, WHITEPAPER_SIGNED_URL_TTL)
     if (error || !data?.signedUrl) return null
     return data.signedUrl
   } catch {
@@ -286,20 +315,23 @@ Deno.serve(async (req) => {
     }
   } else {
     // whitepaper_downloads
-    const downloadUrl = await getWhitepaperUrl(admin)
+    const wpKey = resolveWhitepaper(row.whitepaper)
+    const wpConfig = WHITEPAPERS[wpKey]
+    const downloadUrl = await getWhitepaperUrl(admin, wpKey)
     const naam = row.naam || ''
     syncPayload = {
       email: row.email,
       attributes: {
         FIRSTNAME: naam.split(' ')[0] || '',
         LASTNAME: naam.split(' ').slice(1).join(' ') || '',
+        WHITEPAPER: wpConfig.label,
       },
       listIds: [WHITEPAPER_LIST_ID],
       apiKey: BREVO_API_KEY,
-      extraTags: ['Whitepaper'],
+      extraTags: ['Whitepaper', `Whitepaper ${wpConfig.label}`],
       emailToSend: {
-        subject: 'Je whitepaper — AI in HR',
-        html: buildWhitepaperHtml(naam, downloadUrl),
+        subject: wpConfig.emailSubject,
+        html: buildWhitepaperHtml(naam, downloadUrl, wpKey),
         toName: naam,
       },
     }

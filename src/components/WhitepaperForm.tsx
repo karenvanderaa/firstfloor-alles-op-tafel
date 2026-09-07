@@ -3,12 +3,23 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+export type WhitepaperKey = "ai-in-hr" | "change-adoption";
+
 interface WhitepaperFormProps {
   /** Waar het formulier ingevuld werd — voor latere campagne-attributie */
   source?: string;
+  /** Welke whitepaper wordt aangevraagd */
+  whitepaper?: WhitepaperKey;
+  title?: string;
+  description?: string;
 }
 
-const WhitepaperForm = ({ source = "homepage" }: WhitepaperFormProps) => {
+const WhitepaperForm = ({
+  source = "homepage",
+  whitepaper = "ai-in-hr",
+  title = "Download de whitepaper",
+  description = "Laat je gegevens achter, dan sturen we je de whitepaper per e-mail.",
+}: WhitepaperFormProps) => {
   const { toast } = useToast();
   const [form, setForm] = useState({ naam: "", email: "", toestemming: false });
   const [loading, setLoading] = useState(false);
@@ -23,6 +34,7 @@ const WhitepaperForm = ({ source = "homepage" }: WhitepaperFormProps) => {
         naam: form.naam.trim(),
         email: form.email.trim(),
         toestemming: true,
+        whitepaper,
       });
       if (error) throw error;
       // Source enkel voor toekomstige tracking — kolom nog niet in DB
@@ -67,11 +79,9 @@ const WhitepaperForm = ({ source = "homepage" }: WhitepaperFormProps) => {
           📄 Gratis whitepaper
         </span>
         <h4 className="font-heading text-xl md:text-2xl font-bold text-white mb-1">
-          Download de whitepaper
+          {title}
         </h4>
-        <p className="text-sm text-white/85">
-          Laat je gegevens achter, dan sturen we je de whitepaper per e-mail.
-        </p>
+        <p className="text-sm text-white/85">{description}</p>
       </div>
       <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-3">
         <input
