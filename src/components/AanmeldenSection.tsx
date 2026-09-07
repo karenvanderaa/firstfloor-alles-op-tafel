@@ -89,7 +89,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
         </div>
 
         {/* 3C — Formulier */}
-        <RegistrationFormFull preselectedTheme={preselectedTheme} onSelectAI={scrollToAI} />
+        <RegistrationFormFull preselectedTheme={preselectedTheme} onSelectAI={scrollToAI} onSelectVerandering={scrollToVerandering} />
 
         {/* 3D — Secundaire CTA */}
         <KeepMePosted />
@@ -108,9 +108,11 @@ const InfoPill = ({ text }: { text: string }) => (
 const RegistrationFormFull = ({
   preselectedTheme,
   onSelectAI,
+  onSelectVerandering,
 }: {
   preselectedTheme?: Theme;
   onSelectAI: () => void;
+  onSelectVerandering: () => void;
 }) => {
   const { toast } = useToast();
   const [form, setForm] = useState({
@@ -195,16 +197,29 @@ const RegistrationFormFull = ({
       <Field label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
       <Field label="Telefoonnummer" name="telefoon" value={form.telefoon} onChange={handleChange} helperText="Voor snelle afstemming indien nodig" />
 
-      {/* AI teaser — geen formulier-optie meer, verwijst naar whitepaper-kaart */}
-      <div className="rounded-md border border-dashed border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <div className="flex-1 text-sm">
-          <p className="font-semibold text-foreground mb-0.5">Zoek je "AI in HR"?</p>
-          <p className="text-foreground/70">Deze editie is afgelopen. Download de whitepaper met de belangrijkste inzichten.</p>
+      {/* Afgelopen edities — verwijzen naar de whitepapers */}
+      <div className="rounded-md border border-dashed border-primary/30 bg-primary/5 p-4 space-y-4">
+        <p className="text-sm font-semibold text-foreground">Zoek je een afgelopen editie? De inzichten staan in de whitepapers.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex-1 text-sm">
+            <p className="font-semibold text-foreground mb-0.5">AI in HR</p>
+            <p className="text-foreground/70">Download de whitepaper met de belangrijkste inzichten.</p>
+          </div>
+          <Button type="button" variant="outline" onClick={onSelectAI} className="border-primary text-primary hover:bg-primary/10">
+            Bekijk de whitepaper →
+          </Button>
         </div>
-        <Button type="button" variant="outline" onClick={onSelectAI} className="border-primary text-primary hover:bg-primary/10">
-          Bekijk de whitepaper →
-        </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex-1 text-sm">
+            <p className="font-semibold text-foreground mb-0.5">Verandering &amp; draagvlak</p>
+            <p className="text-foreground/70">Download de whitepaper "Change &amp; Adoption".</p>
+          </div>
+          <Button type="button" variant="outline" onClick={onSelectVerandering} className="border-primary text-primary hover:bg-primary/10">
+            Bekijk de whitepaper →
+          </Button>
+        </div>
       </div>
+
 
       {/* Thema */}
       <fieldset className="space-y-2">
