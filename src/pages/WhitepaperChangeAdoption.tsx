@@ -4,7 +4,7 @@ import WhitepaperForm from "@/components/WhitepaperForm";
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
 import ankeAsset from "@/assets/tafelgast-anke.png.asset.json";
-import shareImageAsset from "@/assets/pelckmans-locatie.jpeg.asset.json";
+import shareImageAsset from "@/assets/whitepaper-change-adoption-cover.jpg.asset.json";
 
 const CANONICAL = "https://allesoptafel.firstfloortalent.be/whitepaper/change-adoption";
 const SHARE_IMAGE = `https://allesoptafel.firstfloortalent.be${shareImageAsset.url}`;
