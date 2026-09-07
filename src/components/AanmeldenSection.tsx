@@ -26,6 +26,19 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
     }
   };
 
+  const scrollToVerandering = () => {
+    const el = document.getElementById("tafel-verandering");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    if (window.location.hash === "#tafel-verandering") {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    } else {
+      window.location.hash = "#tafel-verandering";
+    }
+  };
+
 
   return (
     <section id="aanmelden" className="bg-secondary py-12 md:py-16">
