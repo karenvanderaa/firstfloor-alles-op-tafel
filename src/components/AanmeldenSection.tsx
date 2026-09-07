@@ -89,7 +89,7 @@ const AanmeldenSection = ({ preselectedTheme }: AanmeldenSectionProps) => {
         </div>
 
         {/* 3C — Formulier */}
-        <RegistrationFormFull preselectedTheme={preselectedTheme} onSelectAI={scrollToAI} />
+        <RegistrationFormFull preselectedTheme={preselectedTheme} onSelectAI={scrollToAI} onSelectVerandering={scrollToVerandering} />
 
         {/* 3D — Secundaire CTA */}
         <KeepMePosted />
