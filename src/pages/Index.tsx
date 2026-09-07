@@ -141,12 +141,14 @@ type PastEdition = {
   takeaways?: typeof aiTakeaways;
   tafelgast?: typeof ellenTafelgast;
   whitepaperPending?: boolean;
+  whitepaperKey?: "ai-in-hr" | "change-adoption";
+  whitepaperTitle?: string;
 };
 
 const pastEditions: PastEdition[] = [
   {
     id: "verandering",
-    tabLabel: 'Afgelopen editie "Verandering & draagvlak"',
+    tabLabel: 'Afgelopen editie "Verandering & draagvlak" + whitepaper',
     anchorId: "tafel-verandering",
     editieLabel: "Editie | Augustus 2026",
     title: "Verandering staat op de agenda. Draagvlak niet.",
@@ -154,7 +156,8 @@ const pastEditions: PastEdition[] = [
     borderColor: "#04c9ff",
     tafelName: "Verandering & Draagvlak",
     tafelgast: ankeTafelgast,
-    whitepaperPending: true,
+    whitepaperKey: "change-adoption",
+    whitepaperTitle: "Download de whitepaper 'Change & Adoption'",
   },
   {
     id: "ai-in-hr",
@@ -247,6 +250,8 @@ const Index = () => {
                   takeaways={e.takeaways}
                   tafelgast={e.tafelgast}
                   whitepaperPending={e.whitepaperPending}
+                  whitepaperKey={e.whitepaperKey}
+                  whitepaperTitle={e.whitepaperTitle}
                 />
               </TabsContent>
             ))}
