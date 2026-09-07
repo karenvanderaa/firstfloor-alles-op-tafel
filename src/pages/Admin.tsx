@@ -51,6 +51,7 @@ interface WhitepaperDownload {
   naam: string;
   email: string;
   toestemming: boolean;
+  whitepaper: string | null;
   created_at: string;
   brevo_synced_at: string | null;
   brevo_last_error: string | null;
@@ -511,7 +512,7 @@ const Admin = () => {
             <Card>
               <CardContent className="pt-6">
                 <p className="text-sm text-muted-foreground">
-                  Mensen die de whitepaper "AI in HR" hebben opgevraagd. Bij inschrijving wordt automatisch een downloadlink per e-mail verstuurd via Brevo.
+                  Mensen die een whitepaper hebben opgevraagd. Bij inschrijving wordt automatisch een downloadlink per e-mail verstuurd via Brevo.
                 </p>
               </CardContent>
             </Card>
@@ -529,6 +530,7 @@ const Admin = () => {
                         <TableHead>Datum</TableHead>
                         <TableHead>Naam</TableHead>
                         <TableHead>E-mail</TableHead>
+                        <TableHead>Whitepaper</TableHead>
                         <TableHead>Toestemming</TableHead>
                         <TableHead>Brevo</TableHead>
                       </TableRow>
@@ -541,6 +543,9 @@ const Admin = () => {
                           </TableCell>
                           <TableCell className="font-medium">{w.naam}</TableCell>
                           <TableCell>{w.email}</TableCell>
+                          <TableCell className="text-xs">
+                            {w.whitepaper === "change-adoption" ? "Change & Adoption" : "AI in HR"}
+                          </TableCell>
                           <TableCell>
                             {w.toestemming ? (
                               <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">✓</Badge>

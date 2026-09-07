@@ -56,6 +56,8 @@ export interface PastWhitepaperVariantProps {
   tafelgast?: Tafelgast;
   anchorId?: string;
   whitepaperPending?: boolean;
+  whitepaperKey?: "ai-in-hr" | "change-adoption";
+  whitepaperTitle?: string;
 }
 
 export type RondeTafelCardProps = UpcomingVariantProps | PastWhitepaperVariantProps;
@@ -175,6 +177,8 @@ const PastWhitepaperCard = ({
   tafelgast,
   anchorId,
   whitepaperPending,
+  whitepaperKey,
+  whitepaperTitle,
 }: PastWhitepaperVariantProps) => (
   <div
     id={anchorId}
@@ -221,7 +225,11 @@ const PastWhitepaperCard = ({
           </p>
         </div>
       ) : (
-        <WhitepaperForm />
+        <WhitepaperForm
+          whitepaper={whitepaperKey}
+          title={whitepaperTitle}
+          source={anchorId || "homepage"}
+        />
       )}
     </div>
 
