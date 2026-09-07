@@ -108,9 +108,11 @@ const InfoPill = ({ text }: { text: string }) => (
 const RegistrationFormFull = ({
   preselectedTheme,
   onSelectAI,
+  onSelectVerandering,
 }: {
   preselectedTheme?: Theme;
   onSelectAI: () => void;
+  onSelectVerandering: () => void;
 }) => {
   const { toast } = useToast();
   const [form, setForm] = useState({
